@@ -102,9 +102,6 @@ Follows Anthropic's brand design language — warm off-white backgrounds, Source
 - [x] Multi-language UI (zh-TW / zh-CN / en)
 - [x] Course custom display names
 - [x] 7-day popup task list
-- [ ] PDF auto-download and parsing for all providers
-- [ ] Smarter milestone scheduling
-- [ ] Grade prediction
 
 ---
 
