@@ -65,12 +65,11 @@ async function handleAnalyze({ assignmentId, courseId }, sendResponse) {
   try {
     const data = await chrome.storage.local.get([
       'aiModel', 'geminiApiKey', 'geminiModel', 'claudeApiKey',
-      'assignments', 'files', 'analysis',
+      'assignments', 'files', 'announcements', 'analysis',
     ]);
 
     const aiModel = data.aiModel || 'gemini';
 
-    // Validate key for selected model
     if (aiModel === 'gemini' && !data.geminiApiKey) {
       sendResponse({ success: false, error: 'NO_API_KEY' });
       return;
@@ -86,24 +85,87 @@ async function handleAnalyze({ assignmentId, courseId }, sendResponse) {
       return;
     }
 
-    // Build content parts (unified format)
+    const desc = assignment.description ? stripHtmlService(assignment.description) : '（無描述）';
+    const seenIds = new Set();
     const parts = [];
 
-    for (const file of ((data.files || {})[courseId] || []).slice(0, 3)) {
-      try {
-        const res = await fetch(file.url, { credentials: 'include' });
-        if (!res.ok) continue;
-        const buffer = await res.arrayBuffer();
-        if (buffer.byteLength > 10 * 1024 * 1024) continue;
-        parts.push({ type: 'pdf', base64: arrayBufferToBase64(buffer), mimeType: 'application/pdf' });
-      } catch (_) { /* skip */ }
+    // ── Step 1: Assignment attachments (directly attached by teacher) ──
+    try {
+      const full = await fetchJSON(`${BASE_URL}/api/v1/courses/${courseId}/assignments/${assignmentId}`);
+      for (const att of full.attachments || []) {
+        if (seenIds.has(att.id)) continue;
+        seenIds.add(att.id);
+        const pdf = await tryFetchPdf(`${BASE_URL}/api/v1/files/${att.id}/download`);
+        if (pdf) parts.push(pdf);
+      }
+    } catch (_) {}
+
+    // ── Step 2: Canvas file links embedded in description HTML ──
+    for (const fileId of extractCanvasFileIds(assignment.description || '')) {
+      if (seenIds.has(fileId)) continue;
+      seenIds.add(fileId);
+      const pdf = await tryFetchPdf(`${BASE_URL}/api/v1/files/${fileId}/download`);
+      if (pdf) parts.push(pdf);
     }
 
-    const desc = assignment.description ? stripHtmlService(assignment.description) : '（無描述）';
+    // ── Step 3: AI-assisted selection from course files ──
+    const courseFiles = ((data.files || {})[courseId] || []).filter((f) => !seenIds.has(f.id));
+    if (courseFiles.length > 0) {
+      const selectedIds = await selectRelevantFiles(
+        assignment, desc, courseFiles, aiModel,
+        data.claudeApiKey, data.geminiApiKey, data.geminiModel || 'gemini-2.0-flash-lite'
+      );
+      for (const fileId of selectedIds) {
+        if (seenIds.has(fileId)) continue;
+        seenIds.add(fileId);
+        const file = courseFiles.find((f) => f.id === fileId);
+        if (!file) continue;
+        const pdf = await tryFetchPdf(file.url || `${BASE_URL}/api/v1/files/${fileId}/download`);
+        if (pdf) parts.push(pdf);
+      }
+    }
+
+    // ── Step 3.5: AI-assisted selection from course announcements ──
+    const courseAnnouncements = ((data.announcements || {})[courseId] || []);
+    if (courseAnnouncements.length > 0) {
+      const selectedAnnIds = await selectRelevantAnnouncements(
+        assignment, desc, courseAnnouncements, aiModel,
+        data.claudeApiKey, data.geminiApiKey, data.geminiModel || 'gemini-2.0-flash-lite'
+      );
+      for (const annId of selectedAnnIds) {
+        const ann = courseAnnouncements.find((a) => a.id === annId);
+        if (!ann) continue;
+        const body = ann.message ? stripHtmlService(ann.message) : '';
+        if (body) parts.push({
+          type: 'text',
+          text: `Announcement: ${ann.title}\nPosted: ${ann.posted_at || ''}\n\n${body}`,
+        });
+      }
+    }
+
+    // ── Step 4: Assignment text (always included) ──
     parts.push({
       type: 'text',
       text: `Assignment: ${assignment.name}\nDue: ${assignment.due_at || 'N/A'}\n\nDescription: ${desc}`,
     });
+
+    // ── Early exit: No meaningful content available ──
+    const hasFiles = parts.some(p => p.type === 'pdf');
+    const hasDescription = desc !== '（無描述）' && desc.length > 50;
+    if (!hasFiles && !hasDescription) {
+      const shortResult = {
+        summary: '此作業目前沒有可供分析的資訊（無描述、無附件、無相關檔案或公告）。請查看課程大綱或聯繫老師確認作業要求。',
+        requirements: [],
+        milestones: [],
+        tips: ['查看課程網站或 Canvas 上是否有更新的作業說明', '聯繫助教或老師確認作業內容'],
+        estimatedHours: 0,
+      };
+      const analysis = data.analysis || {};
+      analysis[assignmentId] = { timestamp: new Date().toISOString(), model: 'none', result: shortResult };
+      await chrome.storage.local.set({ analysis });
+      sendResponse({ success: true, result: shortResult, model: 'none' });
+      return;
+    }
 
     const systemPrompt =
       'Return ONLY valid JSON with no markdown fences: { "summary": string, "requirements": string[], ' +
@@ -117,7 +179,6 @@ async function handleAnalyze({ assignmentId, courseId }, sendResponse) {
       responseText = await callClaude(parts, systemPrompt, data.claudeApiKey, 'claude-opus-4-6');
     }
 
-    // Parse JSON (strip accidental markdown fences)
     let parsed;
     try {
       const cleaned = responseText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
@@ -126,7 +187,6 @@ async function handleAnalyze({ assignmentId, courseId }, sendResponse) {
       parsed = { summary: responseText, requirements: [], milestones: [], tips: [], estimatedHours: 0 };
     }
 
-    // Cache
     const analysis = data.analysis || {};
     analysis[assignmentId] = { timestamp: new Date().toISOString(), model: aiModel, result: parsed };
     await chrome.storage.local.set({ analysis });
@@ -134,6 +194,106 @@ async function handleAnalyze({ assignmentId, courseId }, sendResponse) {
     sendResponse({ success: true, result: parsed, model: aiModel });
   } catch (err) {
     sendResponse({ success: false, error: err.message });
+  }
+}
+
+// ── Helpers for smart file selection ──
+
+async function fetchJSON(url) {
+  const res = await fetch(url, { credentials: 'include' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function extractCanvasFileIds(html) {
+  const ids = new Set();
+  const re = /\/files\/(\d+)\/(?:download|preview)/g;
+  let m;
+  while ((m = re.exec(html)) !== null) ids.add(parseInt(m[1], 10));
+  return [...ids];
+}
+
+async function selectRelevantFiles(assignment, desc, courseFiles, aiModel, claudeKey, geminiKey, geminiModel) {
+  const fileList = courseFiles
+    .slice(0, 60)
+    .map((f) => `${f.id}: ${f.display_name || f.filename}`)
+    .join('\n');
+
+  const prompt =
+    `Assignment: ${assignment.name}\n` +
+    `Description (excerpt): ${desc.slice(0, 600)}\n\n` +
+    `Course files:\n${fileList}\n\n` +
+    `Return a JSON array of file IDs (integers) most likely needed for this assignment. ` +
+    `Return [] if none are relevant. Return ONLY the JSON array.`;
+
+  try {
+    let raw;
+    if (aiModel === 'gemini') {
+      raw = await callGemini(
+        [{ type: 'text', text: prompt }],
+        'Return only valid JSON, no explanation.',
+        geminiKey, geminiModel
+      );
+    } else {
+      raw = await callClaude(
+        [{ type: 'text', text: prompt }],
+        'Return only valid JSON, no explanation.',
+        claudeKey, 'claude-haiku-4-5'
+      );
+    }
+    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
+    const ids = JSON.parse(cleaned);
+    return Array.isArray(ids) ? ids.filter((x) => Number.isInteger(x)) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+async function selectRelevantAnnouncements(assignment, desc, announcements, aiModel, claudeKey, geminiKey, geminiModel) {
+  const annList = announcements
+    .slice(0, 30)
+    .map((a) => `${a.id}: ${a.title}`)
+    .join('\n');
+
+  const prompt =
+    `Assignment: ${assignment.name}\n` +
+    `Description (excerpt): ${desc.slice(0, 400)}\n\n` +
+    `Course announcements:\n${annList}\n\n` +
+    `Return a JSON array of announcement IDs (integers) that likely contain information relevant to this assignment. ` +
+    `Return [] if none are relevant. Return ONLY the JSON array.`;
+
+  try {
+    let raw;
+    if (aiModel === 'gemini') {
+      raw = await callGemini(
+        [{ type: 'text', text: prompt }],
+        'Return only valid JSON, no explanation.',
+        geminiKey, geminiModel
+      );
+    } else {
+      raw = await callClaude(
+        [{ type: 'text', text: prompt }],
+        'Return only valid JSON, no explanation.',
+        claudeKey, 'claude-haiku-4-5'
+      );
+    }
+    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
+    const ids = JSON.parse(cleaned);
+    return Array.isArray(ids) ? ids.filter((x) => Number.isInteger(x)) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+async function tryFetchPdf(url) {
+  try {
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) return null;
+    const buffer = await res.arrayBuffer();
+    if (buffer.byteLength > 10 * 1024 * 1024) return null;
+    return { type: 'pdf', base64: arrayBufferToBase64(buffer), mimeType: 'application/pdf' };
+  } catch (_) {
+    return null;
   }
 }
 
@@ -151,7 +311,7 @@ async function callGemini(parts, systemPrompt, apiKey, modelId) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
+        ...(systemPrompt ? { systemInstruction: { parts: [{ text: systemPrompt }] } } : {}),
         contents: [{ parts: geminiParts }],
         generationConfig: { maxOutputTokens: 2048 },
       }),
@@ -258,6 +418,18 @@ async function fetchFiles(courseId) {
   }
 }
 
+async function fetchAnnouncements(courseId) {
+  try {
+    return await fetchAllPages(
+      `${BASE_URL}/api/v1/courses/${courseId}/discussion_topics?only_announcements=true&per_page=50`
+    );
+  } catch (err) {
+    if (err.message.includes('403') || err.message.includes('401')) return [];
+    console.warn(`[Canvas Dashboard] 課程 ${courseId} 公告拉取失敗:`, err.message);
+    return [];
+  }
+}
+
 // ── Sync ──
 async function syncAll() {
   console.log('[Canvas Dashboard] 開始同步...');
@@ -275,23 +447,27 @@ async function syncAll() {
   const assignments = {};
   const assignmentGroups = {};
   const files = {};
+  const announcements = {};
 
   await Promise.all(
     courses.map(async (course) => {
       try {
-        const [asgn, groups, courseFiles] = await Promise.all([
+        const [asgn, groups, courseFiles, courseAnnouncements] = await Promise.all([
           fetchAssignments(course.id),
           fetchAssignmentGroups(course.id),
           fetchFiles(course.id),
+          fetchAnnouncements(course.id),
         ]);
         assignments[course.id] = asgn;
         assignmentGroups[course.id] = groups;
         files[course.id] = courseFiles;
+        announcements[course.id] = courseAnnouncements;
       } catch (err) {
         console.error(`[Canvas Dashboard] 課程 ${course.id} 同步失敗:`, err);
         assignments[course.id] = [];
         assignmentGroups[course.id] = [];
         files[course.id] = [];
+        announcements[course.id] = [];
       }
     })
   );
@@ -302,6 +478,7 @@ async function syncAll() {
     assignments,
     assignmentGroups,
     files,
+    announcements,
   });
 
   console.log(`[Canvas Dashboard] 同步完成，共 ${courses.length} 門課程`);

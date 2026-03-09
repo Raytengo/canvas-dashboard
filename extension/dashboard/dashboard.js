@@ -157,7 +157,7 @@ function render(data) {
   if (currentView === 'course') {
     document.getElementById('page-tabs').style.display = 'none';
     document.getElementById('main-section').style.display = 'none';
-    document.getElementById('course-detail-container').style.display = '';
+    document.getElementById('course-detail-container').style.display = 'flex';
     const course = courses.find((c) => c.id === currentCourseId);
     if (course) {
       renderCourseDetailSection(course, assignments[course.id] || [], assignmentGroups[course.id] || [], scores);
@@ -233,23 +233,67 @@ function updateTabs() {
 
 function switchPage(page) {
   if (page === currentPage) return;
+  if (!_currentData.courses) return;
 
   const mainSection = document.getElementById('main-section');
   const direction = (currentPage === 'week' && page === 'courses') ? 'left' : 'right';
 
-  // 添加退出动画
-  mainSection.classList.add(`slide-out-${direction}`);
+  // 1. 保存旧内容
+  const oldContent = mainSection.innerHTML;
 
+  // 2. 渲染新内容到一个临时容器（不触发 loadData）
+  const tempDiv = document.createElement('div');
+  tempDiv.style.display = 'none';
+  document.body.appendChild(tempDiv);
+
+  const { courses = [], assignments = {}, assignmentGroups = {} } = _currentData;
+  const prevPage = currentPage;
+  currentPage = page;
+  updateTabs();
+
+  // 渲染新页面内容到 mainSection（暂时）
+  if (page === 'week') {
+    renderWeekSection(courses, assignments);
+  } else {
+    renderCardGrid(courses, assignments, assignmentGroups);
+  }
+  const newContent = mainSection.innerHTML;
+
+  // 3. 创建并排滑动容器
+  if (direction === 'left') {
+    mainSection.innerHTML = `
+      <div class="page-slider" id="page-slider">
+        <div class="page-slide">${oldContent}</div>
+        <div class="page-slide">${newContent}</div>
+      </div>`;
+  } else {
+    mainSection.innerHTML = `
+      <div class="page-slider" id="page-slider" style="transform: translateX(-50%)">
+        <div class="page-slide">${newContent}</div>
+        <div class="page-slide">${oldContent}</div>
+      </div>`;
+  }
+
+  document.body.removeChild(tempDiv);
+
+  const slider = document.getElementById('page-slider');
+
+  // 4. 触发滑动动画
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      slider.style.transition = 'transform 0.45s cubic-bezier(0.4, 0.0, 0.2, 1)';
+      slider.style.transform = direction === 'left' ? 'translateX(-50%)' : 'translateX(0)';
+    });
+  });
+
+  // 5. 动画结束后恢复正常内容并绑定事件
   setTimeout(() => {
-    currentPage = page;
-    mainSection.classList.remove(`slide-out-left`, `slide-out-right`);
-    mainSection.classList.add(`slide-in-${direction === 'left' ? 'left' : 'right'}`);
-    loadData();
-
-    setTimeout(() => {
-      mainSection.classList.remove(`slide-in-left`, `slide-in-right`);
-    }, 300);
-  }, 300);
+    if (currentPage === 'week') {
+      renderWeekSection(courses, assignments);
+    } else {
+      renderCardGrid(courses, assignments, assignmentGroups);
+    }
+  }, 470);
 }
 
 // ── 本週待辦 ──
@@ -388,12 +432,7 @@ function renderCardGrid(courses, assignments, assignmentGroups) {
       if (e.target.closest('.card-pager-btn')) return;
 
       const courseId = parseInt(card.dataset.courseId, 10);
-      // 添加放大动画
-      card.classList.add('card-clicking');
-
-      setTimeout(() => {
-        showCourseDetail(courseId);
-      }, 150);
+      showCourseDetail(courseId, card);
     });
   });
 
@@ -443,7 +482,7 @@ function renderCourseCardGrid(course, asgns, groups) {
 
 // ── 卡片下半部分（作業列表 + 分頁） ──
 function renderCardBottom(courseId, sorted, pageIdx) {
-  const pageSize = 4;
+  const pageSize = 3;
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const page = Math.min(pageIdx, totalPages - 1);
   const visible = sorted.slice(page * pageSize, (page + 1) * pageSize);
@@ -500,17 +539,129 @@ function updateCardPage(courseId, dir) {
 }
 
 // ── 切換至課程詳細 ──
-function showCourseDetail(courseId) {
-  currentView = 'course';
-  currentCourseId = courseId;
-  loadData();
+function showCourseDetail(courseId, cardEl) {
+  // 没有卡片元素或不支持 View Transitions 时的回退
+  if (!cardEl || !document.startViewTransition) {
+    currentView = 'course';
+    currentCourseId = courseId;
+    loadData();
+    return;
+  }
+
+  // ── FIRST: 在小卡片上标记共享元素 ──
+  cardEl.style.viewTransitionName = 'course-shell';
+  const cCode = cardEl.querySelector('.card-code');
+  const cName = cardEl.querySelector('.card-name');
+  const cBadge = cardEl.querySelector('.card-badge-urgent');
+  const cMeta = cardEl.querySelector('.card-meta');
+  if (cCode) cCode.style.viewTransitionName = 'course-code';
+  if (cName) cName.style.viewTransitionName = 'course-name';
+  if (cBadge) cBadge.style.viewTransitionName = 'course-badge';
+  if (cMeta) cMeta.style.viewTransitionName = 'course-meta';
+
+  // ── 启动 View Transition ──
+  const transition = document.startViewTransition(() => {
+    currentView = 'course';
+    currentCourseId = courseId;
+
+    const detailContainer = document.getElementById('course-detail-container');
+    const pageTabs = document.getElementById('page-tabs');
+    const mainSection = document.getElementById('main-section');
+
+    pageTabs.style.display = 'none';
+    mainSection.style.display = 'none';
+    detailContainer.style.display = 'flex';
+
+    const { courses = [], assignments = {}, assignmentGroups = {}, scores = {} } = _currentData;
+    const course = courses.find((c) => c.id === courseId);
+    if (!course) return;
+
+    renderNav(courses, assignments);
+    renderCourseDetailSection(course, assignments[course.id] || [], assignmentGroups[course.id] || [], scores);
+
+    // ── LAST: 在详情视图上标记对应的共享元素 ──
+    const detailCard = detailContainer.querySelector('.course-detail-view');
+    if (detailCard) detailCard.style.viewTransitionName = 'course-shell';
+    const dCode = detailContainer.querySelector('.detail-code');
+    const dName = detailContainer.querySelector('.detail-name');
+    const dBadge = detailContainer.querySelector('.card-badge-urgent');
+    const dMeta = detailContainer.querySelector('.detail-meta');
+    if (dCode) dCode.style.viewTransitionName = 'course-code';
+    if (dName) dName.style.viewTransitionName = 'course-name';
+    if (dBadge) dBadge.style.viewTransitionName = 'course-badge';
+    if (dMeta) dMeta.style.viewTransitionName = 'course-meta';
+  });
+
+  // 动画完成后清理 view-transition-name
+  transition.finished.then(() => {
+    document.querySelectorAll('[style*="view-transition-name"]').forEach((el) => {
+      el.style.viewTransitionName = '';
+    });
+  });
 }
 
 // ── 返回格狀視圖 ──
 function showGridView() {
-  currentView = 'grid';
-  currentCourseId = null;
-  loadData();
+  const prevCourseId = currentCourseId;
+
+  if (!document.startViewTransition) {
+    currentView = 'grid';
+    currentCourseId = null;
+    currentPage = 'courses';
+    loadData();
+    return;
+  }
+
+  // ── FIRST: 在详情视图上标记共享元素 ──
+  const detailContainer = document.getElementById('course-detail-container');
+  const detailCard = detailContainer.querySelector('.course-detail-view');
+  if (detailCard) detailCard.style.viewTransitionName = 'course-shell';
+  const dCode = detailContainer.querySelector('.detail-code');
+  const dName = detailContainer.querySelector('.detail-name');
+  const dBadge = detailContainer.querySelector('.card-badge-urgent');
+  const dMeta = detailContainer.querySelector('.detail-meta');
+  if (dCode) dCode.style.viewTransitionName = 'course-code';
+  if (dName) dName.style.viewTransitionName = 'course-name';
+  if (dBadge) dBadge.style.viewTransitionName = 'course-badge';
+  if (dMeta) dMeta.style.viewTransitionName = 'course-meta';
+
+  const transition = document.startViewTransition(() => {
+    currentView = 'grid';
+    currentCourseId = null;
+    currentPage = 'courses';
+
+    const pageTabs = document.getElementById('page-tabs');
+    const mainSection = document.getElementById('main-section');
+
+    pageTabs.style.display = '';
+    mainSection.style.display = '';
+    detailContainer.style.display = 'none';
+
+    const { courses = [], assignments = {}, assignmentGroups = {} } = _currentData;
+    updateTabs();
+    renderNav(courses, assignments);
+    renderCardGrid(courses, assignments, assignmentGroups);
+
+    // ── LAST: 在小卡片上标记对应的共享元素 ──
+    const card = document.querySelector(`.course-card-grid[data-course-id="${prevCourseId}"]`);
+    if (card) {
+      card.style.viewTransitionName = 'course-shell';
+      const cCode = card.querySelector('.card-code');
+      const cName = card.querySelector('.card-name');
+      const cBadge = card.querySelector('.card-badge-urgent');
+      const cMeta = card.querySelector('.card-meta');
+      if (cCode) cCode.style.viewTransitionName = 'course-code';
+      if (cName) cName.style.viewTransitionName = 'course-name';
+      if (cBadge) cBadge.style.viewTransitionName = 'course-badge';
+      if (cMeta) cMeta.style.viewTransitionName = 'course-meta';
+    }
+  });
+
+  transition.finished.then(() => {
+    document.querySelectorAll('[style*="view-transition-name"]').forEach((el) => {
+      el.style.viewTransitionName = '';
+    });
+  });
 }
 
 // ── 課程詳細視圖 ──
@@ -524,27 +675,41 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     return new Date(a.due_at) - new Date(b.due_at);
   });
 
+  const urgentCount = filtered.filter((a) => {
+    if (!a.due_at) return false;
+    const diff = new Date(a.due_at) - Date.now();
+    return diff > 0 && diff <= 7 * 86400000;
+  }).length;
+
+  const pendingCount = filtered.length;
+  const metaParts = [];
+  if (pendingCount) metaParts.push(`${pendingCount} 件待繳`);
+
   const weightPieHtml = renderWeightPie(groups);
-  const weightHtml = renderWeightBar(groups);
   const gradeCalcHtml = renderGradeCalculator(course, asgns, groups, scores);
   const assignmentRows = filtered.map((a) => renderAssignmentRow(a, groups, course.id)).join('');
 
   el.innerHTML = `
+    <button class="detail-back" id="detail-back-btn">← 返回</button>
     <div class="course-detail-view">
-      <button class="detail-back" id="detail-back-btn">← 返回</button>
-      <div class="detail-hero">
-        ${course.course_code ? `<div class="detail-hero-code">${esc(course.course_code)}</div>` : ''}
-        <div class="detail-hero-name">${esc(course.name)}</div>
+      <div class="detail-card-top">
+        <div class="detail-top-row">
+          <div class="detail-code">${esc(course.course_code || '')}</div>
+          ${urgentCount ? `<div class="card-badge-urgent">${urgentCount} 件緊急</div>` : ''}
+        </div>
+        <div class="detail-name">${esc(course.name)}</div>
+        ${metaParts.length ? `<div class="detail-meta">${metaParts.join(' · ')}</div>` : ''}
       </div>
-      <div class="detail-header-content">
-        ${weightPieHtml}
-        <div class="detail-header-right">
-          ${weightHtml}
+      <div class="detail-card-bottom">
+        <div class="detail-left-panel">
+          ${weightPieHtml}
+        </div>
+        <div class="detail-right-panel">
           ${gradeCalcHtml}
+          <div class="detail-assignments-label">作業清單</div>
+          ${assignmentRows || '<div style="padding:12px 0;color:var(--mid);font-size:13px;">無作業</div>'}
         </div>
       </div>
-      <div class="detail-assignments-label">作業清單</div>
-      ${assignmentRows || '<div style="padding:12px 0;color:var(--mid);font-size:13px;">無作業</div>'}
     </div>`;
 
   document.getElementById('detail-back-btn').addEventListener('click', showGridView);
@@ -821,7 +986,7 @@ function renderAssignmentRow(a, groups, courseId) {
   return `
     <div class="assignment-item${submitted ? ' submitted' : ''}">
       <div class="assignment-left">
-        <div class="assignment-title assignment-title-link" data-assignment-id="${a.id}" data-course-id="${courseId}">${esc(a.name)}</div>
+        <div class="assignment-title"><span class="assignment-title-link" data-assignment-id="${a.id}" data-course-id="${courseId}">${esc(a.name)}</span></div>
         ${groupName ? `<div class="assignment-group">${esc(groupName)}</div>` : ''}
       </div>
       <div class="assignment-right">

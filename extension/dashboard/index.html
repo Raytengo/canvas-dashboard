@@ -65,6 +65,7 @@
       background: var(--surface);
       display: flex;
       flex-direction: column;
+      view-transition-name: sidebar;
     }
 
     .sidebar-inner {
@@ -321,41 +322,19 @@
       position: relative;
     }
 
-    /* ── Page Transition Animations ── */
-    @keyframes slideOutLeft {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(-30px); opacity: 0; }
+    /* ── Page Transition ── */
+    .page-slider {
+      display: flex;
+      width: 200%;
+      height: 100%;
     }
 
-    @keyframes slideOutRight {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(30px); opacity: 0; }
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(30px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideInRight {
-      from { transform: translateX(-30px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    #main-section.slide-out-left {
-      animation: slideOutLeft 0.3s ease-out forwards;
-    }
-
-    #main-section.slide-out-right {
-      animation: slideOutRight 0.3s ease-out forwards;
-    }
-
-    #main-section.slide-in-left {
-      animation: slideInLeft 0.3s ease-out forwards;
-    }
-
-    #main-section.slide-in-right {
-      animation: slideInRight 0.3s ease-out forwards;
+    .page-slide {
+      width: 50%;
+      flex-shrink: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── Week Page ── */
@@ -526,6 +505,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 18px;
+      padding: 4px;
     }
 
     /* ── Section Label ── */
@@ -700,6 +680,7 @@
     }
 
     .assignment-title-link {
+      display: inline;
       cursor: pointer;
       transition: color 0.15s;
     }
@@ -1188,23 +1169,13 @@
       flex-direction: column;
       min-height: 0;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
 
     .course-card-grid:hover {
       border-color: var(--orange);
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       transform: translateY(-2px);
-    }
-
-    @keyframes cardClick {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1.1); opacity: 0; }
-    }
-
-    .course-card-grid.card-clicking {
-      animation: cardClick 0.15s ease-out forwards;
     }
 
     .card-top {
@@ -1347,6 +1318,26 @@
     }
 
     /* ── Course Detail View ── */
+    #course-detail-container {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      padding: 4px 40px 16px;
+      flex-direction: column;
+    }
+
+    .course-detail-view {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
     .detail-back {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
@@ -1357,7 +1348,8 @@
       color: var(--muted);
       cursor: pointer;
       padding: 0;
-      margin-bottom: 28px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -1366,33 +1358,61 @@
 
     .detail-back:hover { color: var(--orange); }
 
-    .detail-hero {
-      margin-bottom: 24px;
+    /* Detail Top — mirrors .card-top */
+    .detail-card-top {
+      padding: 20px 28px 16px;
+      flex-shrink: 0;
     }
 
-    .detail-hero-code {
+    .detail-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .detail-code {
       font-family: 'DM Mono', monospace;
-      font-size: 11px;
+      font-size: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       color: var(--muted);
-      margin-bottom: 6px;
     }
 
-    .detail-hero-name {
+    .detail-name {
       font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 400;
       color: var(--dark);
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
-    /* ── Detail Header Content (Pie + Weight Bar) ── */
-    .detail-header-content {
+    .detail-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--mid);
+      margin-top: 8px;
+    }
+
+    /* Detail Bottom — mirrors .card-bottom layout */
+    .detail-card-bottom {
+      border-top: 1px solid var(--border);
+      padding: 20px 28px;
+      background: var(--bg);
+      flex: 1;
+      min-height: 0;
       display: flex;
       gap: 32px;
-      margin-bottom: 24px;
-      align-items: flex-start;
+      overflow: hidden;
+    }
+
+    .detail-left-panel {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
     }
 
     .detail-weight-pie-container {
@@ -1450,9 +1470,29 @@
       font-weight: 500;
     }
 
-    .detail-header-right {
+    .detail-right-panel {
       flex: 1;
       min-width: 0;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .detail-right-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .detail-right-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .detail-right-panel::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .detail-right-panel::-webkit-scrollbar-thumb:hover {
+      background: var(--mid);
     }
 
     .detail-assignments-label {
@@ -1462,6 +1502,58 @@
       letter-spacing: 0.1em;
       color: var(--muted);
       margin: 24px 0 10px;
+    }
+
+    /* ── View Transitions — Card ↔ Detail Morph ── */
+    ::view-transition-group(course-shell),
+    ::view-transition-group(course-code),
+    ::view-transition-group(course-name),
+    ::view-transition-group(course-badge),
+    ::view-transition-group(course-meta) {
+      animation-duration: 0.28s;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    ::view-transition-old(course-shell),
+    ::view-transition-new(course-shell) {
+      animation-duration: 0.22s;
+    }
+
+    ::view-transition-old(course-code),
+    ::view-transition-old(course-name),
+    ::view-transition-old(course-badge),
+    ::view-transition-old(course-meta),
+    ::view-transition-new(course-code),
+    ::view-transition-new(course-name),
+    ::view-transition-new(course-badge),
+    ::view-transition-new(course-meta) {
+      animation-duration: 0.18s;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Sidebar: 不参与动画，保持静止 */
+    ::view-transition-group(sidebar) {
+      animation: none;
+    }
+    ::view-transition-old(sidebar),
+    ::view-transition-new(sidebar) {
+      animation: none;
+    }
+
+    /* 页面其余部分：快速切换，不干扰 morph 动画 */
+    ::view-transition-old(root) {
+      animation: vt-root-out 0.08s ease forwards;
+    }
+    ::view-transition-new(root) {
+      animation: vt-root-in 0.1s ease 0.05s both;
+    }
+
+    @keyframes vt-root-out {
+      to { opacity: 0; }
+    }
+    @keyframes vt-root-in {
+      from { opacity: 0; }
     }
   </style>
 </head>
