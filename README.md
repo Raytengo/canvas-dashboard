@@ -36,7 +36,7 @@ HKUST(GZ) does not allow students to generate Personal Access Tokens for the Can
 2. Open Chrome and go to `chrome://extensions`
 3. Enable **Developer mode** (top right)
 4. Click **Load unpacked** and select the `extension/` folder
-5. Log in to [canvas.hkust-gz.edu.hk](https://hkust-gz.instructure.com) — the extension will sync automatically on your next visit
+5. Log in to canvas — the extension will sync automatically on your next visit
 6. Click the extension icon → **Open Dashboard**
 
 ---
