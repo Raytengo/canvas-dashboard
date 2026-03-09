@@ -45,41 +45,13 @@
       margin: 0;
     }
 
-    .header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 2px;
-    }
-
-    h1 {
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-weight: 400;
-      font-size: 17px;
-    }
-
-    .sync-time {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--mid);
-    }
-
-    .subtitle {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--mid);
-      margin-bottom: 14px;
-    }
-
     .section-label {
       font-family: 'DM Mono', monospace;
       font-size: 10px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .task-list {
@@ -118,7 +90,8 @@
     .task-body { flex: 1; min-width: 0; }
 
     .task-name {
-      font-size: 12.5px;
+      font-size: 14px;
+      font-weight: 400;
       color: var(--dark);
       white-space: nowrap;
       overflow: hidden;
@@ -126,16 +99,27 @@
       line-height: 1.4;
     }
 
+    .task-name.clickable {
+      cursor: pointer;
+    }
+
+    .task-name.clickable:hover {
+      color: var(--orange);
+      text-decoration: underline;
+    }
+
     .task-meta {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 12px;
+      font-weight: 400;
       color: var(--muted);
       margin-top: 1px;
     }
 
     .task-due {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 12px;
+      font-weight: 400;      
       flex-shrink: 0;
       margin-top: 4px;
     }
@@ -180,13 +164,7 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Due</h1>
-    <span class="sync-time" id="sync-time">—</span>
-  </div>
-  <div class="subtitle" id="popup-subtitle">HKUST(GZ) · 七天待辦</div>
-
-  <div class="section-label" id="task-label">載入中...</div>
+  <div class="section-label" id="task-label">NEXT 7-DAY TASKS</div>
   <ul class="task-list" id="task-list"></ul>
 
   <hr class="divider" />

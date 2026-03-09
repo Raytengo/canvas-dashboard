@@ -84,7 +84,7 @@
     .sidebar-brand h1 {
       font-family: 'Source Serif 4', Georgia, serif;
       font-weight: 400;
-      font-size: 36px;
+      font-size: 44px;
       letter-spacing: -0.02em;
       line-height: 1.1;
       margin-bottom: 6px;
@@ -92,11 +92,13 @@
 
     .sidebar-brand .meta {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--mid);
       line-height: 1.5;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     /* Sidebar section */
@@ -106,7 +108,7 @@
 
     .sidebar-label {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--mid);
@@ -125,7 +127,7 @@
       align-items: center;
       gap: 6px;
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--muted);
@@ -144,10 +146,10 @@
 
     .pill {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      padding: 4px 11px;
+      padding: 5px 13px;
       border: 1px solid var(--border);
       border-radius: 4px;
       background: transparent;
@@ -185,6 +187,11 @@
       width: 100%;
       text-align: left;
       transition: background 0.12s;
+      position: relative;
+    }
+
+    .nav-course-item + .nav-course-item::before {
+      display: none;
     }
 
     .nav-course-item:hover {
@@ -198,7 +205,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 400;
     }
 

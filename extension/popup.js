@@ -1,37 +1,38 @@
-const ATTENDANCE_KEYWORDS = ['attendance', '簽到', 'check-in', 'checkin', 'sign in', 'sign-in'];
+const ATTENDANCE_KEYWORDS = [
+  'attendance',
+  '\u7C3D\u5230',
+  'check-in',
+  'checkin',
+  'sign in',
+  'sign-in',
+];
+
 let _uiLanguage = 'zh-TW';
-let _schoolName = 'Canvas';
 
 const I18N = {
   'zh-TW': {
-    subtitle: (school) => `${school} · 七天待辦`,
-    loading: '載入中...',
-    emptyLabel: '七天內無待辦',
-    emptyState: '七天內沒有待繳作業',
-    dueCount: (n) => `七天內 · ${n} 件待辦`,
-    dashboard: '開啟 Dashboard',
-    unsynced: '未同步',
-    justNow: '剛才',
+    taskHeading: 'NEXT 7-DAY TASKS',
+    emptyState: '\u4E03\u5929\u5167\u6C92\u6709\u5F85\u7E73\u4F5C\u696D',
+    dashboard: '\u958B\u555F Dashboard',
+    today: '\u4ECA\u5929',
+    tomorrow: '\u660E\u5929',
+    daysLater: (n) => `${n}\u5929\u5F8C`,
   },
   'zh-CN': {
-    subtitle: (school) => `${school} · 七天待办`,
-    loading: '加载中...',
-    emptyLabel: '七天内无待办',
-    emptyState: '七天内没有待缴作业',
-    dueCount: (n) => `七天内 · ${n} 件待办`,
-    dashboard: '打开 Dashboard',
-    unsynced: '未同步',
-    justNow: '刚才',
+    taskHeading: 'NEXT 7-DAY TASKS',
+    emptyState: '\u4E03\u5929\u5185\u6CA1\u6709\u5F85\u7F34\u4F5C\u4E1A',
+    dashboard: '\u6253\u5F00 Dashboard',
+    today: '\u4ECA\u5929',
+    tomorrow: '\u660E\u5929',
+    daysLater: (n) => `${n}\u5929\u540E`,
   },
   en: {
-    subtitle: (school) => `${school} · 7-Day Tasks`,
-    loading: 'Loading...',
-    emptyLabel: 'No tasks in 7 days',
+    taskHeading: 'NEXT 7-DAY TASKS',
     emptyState: 'No pending tasks in the next 7 days',
-    dueCount: (n) => `Next 7 days · ${n} tasks`,
     dashboard: 'Open Dashboard',
-    unsynced: 'Not synced',
-    justNow: 'Just now',
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    daysLater: (n) => `${n}d`,
   },
 };
 
@@ -44,35 +45,25 @@ function applyTheme(dark) {
 }
 
 function applyUILanguage() {
-  const subtitle = document.getElementById('popup-subtitle');
-  if (subtitle) subtitle.textContent = tr('subtitle')(_schoolName);
   const taskLabel = document.getElementById('task-label');
-  if (taskLabel && taskLabel.textContent === '載入中...') {
-    taskLabel.textContent = tr('loading');
-  }
+  if (taskLabel) taskLabel.textContent = tr('taskHeading');
+
   const btn = document.getElementById('dashboard-btn');
   if (btn) btn.textContent = tr('dashboard');
 }
 
 function isAttendance(name) {
   const lower = (name || '').toLowerCase();
-  return ATTENDANCE_KEYWORDS.some(k => lower.includes(k));
+  return ATTENDANCE_KEYWORDS.some((k) => lower.includes(k));
 }
 
 function isExam(name) {
   const lower = (name || '').toLowerCase();
-  return /\b(exam|quiz|midterm|final|test)\b/.test(lower) || lower.includes('考試') || lower.includes('測驗');
-}
-
-function formatRelativeSync(isoString) {
-  if (!isoString) return tr('unsynced');
-  const diff = Date.now() - new Date(isoString).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return tr('justNow');
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  return /\b(exam|quiz|midterm|final|test)\b/.test(lower)
+    || lower.includes('\u8003\u8A66')
+    || lower.includes('\u8003\u8BD5')
+    || lower.includes('\u6E2C\u9A57')
+    || lower.includes('\u6D4B\u9A8C');
 }
 
 function formatDueShort(isoString) {
@@ -82,16 +73,18 @@ function formatDueShort(isoString) {
   const diffHours = Math.ceil(diffMs / 3600000);
   const diffDays = Math.ceil(diffMs / 86400000);
 
-  if (diffHours <= 0) return '今天';
+  if (diffHours <= 0) return tr('today');
   if (diffHours <= 24) return `${diffHours}h`;
-  if (diffDays <= 1) return '明天';
-  return `${diffDays}天後`;
+  if (diffDays <= 1) return tr('tomorrow');
+
+  const daysLater = tr('daysLater');
+  return typeof daysLater === 'function' ? daysLater(diffDays) : `${diffDays}d`;
 }
 
 function urgencyClass(isoString) {
   const diff = new Date(isoString) - new Date();
   const days = diff / 86400000;
-  if (days <= 2) return 'urgent';
+  if (days <= 3) return 'urgent';
   if (days <= 7) return 'soon';
   return 'later';
 }
@@ -127,6 +120,7 @@ function getUpcomingTasks(assignments, courseMap) {
         due_at: a.due_at,
         course: courseMap[courseId],
         exam: isExam(a.name),
+        html_url: a.html_url || null,
       });
     }
   }
@@ -137,16 +131,12 @@ function getUpcomingTasks(assignments, courseMap) {
 
 function renderTasks(tasks, courseNames) {
   const list = document.getElementById('task-list');
-  const label = document.getElementById('task-label');
   list.innerHTML = '';
 
   if (tasks.length === 0) {
-    label.textContent = tr('emptyLabel');
     list.innerHTML = `<li class="empty-state">${tr('emptyState')}</li>`;
     return;
   }
-
-  label.textContent = tr('dueCount')(tasks.length);
 
   for (const task of tasks) {
     const cls = task.exam ? 'exam' : urgencyClass(task.due_at);
@@ -158,19 +148,22 @@ function renderTasks(tasks, courseNames) {
     li.innerHTML = `
       <span class="task-dot ${cls}"></span>
       <div class="task-body">
-        <div class="task-name">${task.name}</div>
+        <div class="task-name${task.html_url ? ' clickable' : ''}">${task.name}</div>
         <div class="task-meta">${displayName}</div>
       </div>
       <span class="task-due ${cls}">${dueStr}</span>
     `;
+    if (task.html_url && /^https?:\/\/.+\/courses\/\d+\/(assignments|quizzes|discussion_topics)\/\d+/.test(task.html_url)) {
+      li.querySelector('.task-name').addEventListener('click', () => {
+        chrome.tabs.create({ url: task.html_url });
+      });
+    }
     list.appendChild(li);
   }
 }
 
 function loadData() {
-  chrome.storage.local.get(['lastSync', 'courses', 'assignments', 'courseNames'], (data) => {
-    document.getElementById('sync-time').textContent = formatRelativeSync(data.lastSync);
-
+  chrome.storage.local.get(['courses', 'assignments', 'courseNames'], (data) => {
     const courseMap = buildCourseMap(data.courses);
     const tasks = getUpcomingTasks(data.assignments || {}, courseMap);
     renderTasks(tasks, data.courseNames || {});
@@ -182,9 +175,8 @@ document.getElementById('dashboard-btn').addEventListener('click', () => {
   chrome.tabs.create({ url });
 });
 
-chrome.storage.local.get(['darkMode', 'uiLanguage', 'schoolName'], (data) => {
+chrome.storage.local.get(['darkMode', 'uiLanguage'], (data) => {
   _uiLanguage = data.uiLanguage || 'zh-TW';
-  _schoolName = data.schoolName || 'Canvas';
   applyTheme(!!data.darkMode);
   applyUILanguage();
   loadData();

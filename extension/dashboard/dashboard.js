@@ -533,6 +533,17 @@ function getCourseName(course) {
   return custom || course.name || '';
 }
 
+function fitMetaText() {
+  const el = document.getElementById('header-meta');
+  if (!el) return;
+  let size = 13;
+  el.style.fontSize = size + 'px';
+  while (el.scrollWidth > el.clientWidth && size > 8) {
+    size -= 0.5;
+    el.style.fontSize = size + 'px';
+  }
+}
+
 // ── 主要渲染 ──
 function render(data) {
   _currentData = data;
@@ -540,6 +551,7 @@ function render(data) {
 
   document.getElementById('header-meta').textContent =
     `${schoolName} · ${courses.length} ${tr('courseCountSuffix')} · ${formatLastSync(lastSync)}`;
+  fitMetaText();
 
   renderNav(courses, assignments);
 
@@ -1815,6 +1827,7 @@ function loadData() {
         currentView = 'grid';
         currentCourseId = null;
         document.getElementById('header-meta').textContent = tr('noDataMeta');
+        fitMetaText();
         document.getElementById('course-nav').innerHTML = '';
         document.getElementById('week-section').style.display = '';
         document.getElementById('week-section').innerHTML = '';
