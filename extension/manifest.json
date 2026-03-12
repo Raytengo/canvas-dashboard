@@ -24,7 +24,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["settings.html", "settings.js"],
+      "resources": ["settings.html", "settings.js", "icons/pin_guide.png"],
       "matches": ["<all_urls>"]
     }
   ],

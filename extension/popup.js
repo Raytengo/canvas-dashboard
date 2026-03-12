@@ -110,7 +110,11 @@ function getUpcomingTasks(assignments, courseMap) {
     for (const a of assignments[courseId]) {
       if (!a.due_at) continue;
       if (isAttendance(a.name)) continue;
-      if (a.submission && a.submission.workflow_state === 'submitted') continue;
+      if (a.submission && (
+        a.submission.workflow_state === 'submitted' ||
+        a.submission.workflow_state === 'graded' ||
+        a.submission.score != null
+      )) continue;
 
       const due = new Date(a.due_at);
       if (due <= now || due > sevenDays) continue;

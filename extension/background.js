@@ -1,5 +1,12 @@
 const BASE_URL = 'https://hkust-gz.instructure.com';
 
+// 首次安裝時開啟教學頁面
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/index.html?welcome=1') });
+  }
+});
+
 // 監聽造訪 Canvas 頁面，自動觸發同步
 chrome.webNavigation
   ? chrome.webNavigation.onCompleted.addListener(

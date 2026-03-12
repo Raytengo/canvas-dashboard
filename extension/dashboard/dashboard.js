@@ -1,4 +1,4 @@
-﻿// ── 顏色池（評分比重分組用） ──
+// ── 顏色池（評分比重分組用） ──
 const GROUP_COLORS = [
   '#d97757', '#6a9bcc', '#788c5d', '#b09050',
   '#a86070', '#7a9ba8', '#b08060', '#6a7c5d',
@@ -284,7 +284,6 @@ function applyUILanguage() {
   setText('label-filter', 'filter');
   setText('filter-assignment', 'assignment');
   setText('filter-exam', 'exam');
-  setText('filter-all', 'all');
   setText('label-hide-done', 'hideSubmitted');
   setText('label-courses', 'courses');
   setText('sync-btn', 'sync');
@@ -1874,6 +1873,7 @@ const settingsMenuBtn = document.getElementById('settings-menu-btn');
 const settingsMenu = document.getElementById('settings-menu');
 const menuThemeToggle = document.getElementById('menu-theme-toggle');
 const menuOpenApiSettings = document.getElementById('menu-open-api-settings');
+const menuOpenTutorial = document.getElementById('menu-open-tutorial');
 
 if (settingsMenuBtn && settingsMenu) {
   settingsMenuBtn.addEventListener('click', (e) => {
@@ -1918,6 +1918,103 @@ if (menuOpenApiSettings) {
     const menuLanguageLabel = document.getElementById('menu-language-label');
     if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
   });
+}
+
+if (menuOpenTutorial) {
+  menuOpenTutorial.addEventListener('click', () => {
+    openWelcomeModal();
+    if (settingsMenu) settingsMenu.classList.remove('open');
+    if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
+    const menuLanguageLabel = document.getElementById('menu-language-label');
+    if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
+  });
+}
+
+// ── Welcome Modal ──
+let _welcomeStep = 1;
+
+function _welcomeUpdateDots(n) {
+  document.querySelectorAll('.welcome-dot[data-wstep]').forEach(d => {
+    d.classList.toggle('active', +d.dataset.wstep === n);
+  });
+}
+
+function _welcomeUpdateButtons(n) {
+  const btnRow = document.getElementById('welcome-btn-row');
+  if (!btnRow) return;
+
+  let html = '';
+  if (n === 1) {
+    html = `<button class="welcome-btn" data-wgo="2">開始設定</button>`;
+  } else if (n === 5) {
+    html = `
+      <button class="welcome-btn sec" data-wgo="4">上一步</button>
+      <button class="welcome-btn ora" id="welcome-done-btn">開始使用</button>
+    `;
+  } else {
+    html = `
+      <button class="welcome-btn sec" data-wgo="${n - 1}">上一步</button>
+      <button class="welcome-btn" data-wgo="${n + 1}">下一步</button>
+    `;
+  }
+  btnRow.innerHTML = html;
+
+  // Re-bind the done button since it's dynamic
+  document.getElementById('welcome-done-btn')?.addEventListener('click', closeWelcomeModal);
+}
+
+function openWelcomeModal() {
+  _welcomeStep = 1;
+  const track = document.getElementById('welcome-track');
+  if (track) track.style.transition = 'none';
+  if (track) track.style.transform = 'translateX(0)';
+  _welcomeUpdateDots(1);
+  _welcomeUpdateButtons(1);
+  const overlay = document.getElementById('welcome-overlay');
+  if (overlay) overlay.classList.add('open');
+  // re-enable transition after reset
+  requestAnimationFrame(() => {
+    if (track) track.style.transition = '';
+  });
+}
+
+function closeWelcomeModal() {
+  const overlay = document.getElementById('welcome-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function welcomeGoStep(n) {
+  if (n === _welcomeStep) return;
+  _welcomeStep = n;
+  const track = document.getElementById('welcome-track');
+  if (track) track.style.transform = `translateX(-${(n - 1) * 20}%)`;
+  _welcomeUpdateDots(n);
+  _welcomeUpdateButtons(n);
+}
+
+document.getElementById('welcome-close')?.addEventListener('click', closeWelcomeModal);
+document.getElementById('welcome-done-btn')?.addEventListener('click', closeWelcomeModal);
+document.getElementById('welcome-api-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: chrome.runtime.getURL('settings.html') });
+});
+document.getElementById('welcome-canvas-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: 'https://hkust-gz.instructure.com' });
+});
+
+// Delegate: overlay background click to close, data-wgo step nav, dot clicks
+document.getElementById('welcome-overlay')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('welcome-overlay')) { closeWelcomeModal(); return; }
+  const btn = e.target.closest('[data-wgo]');
+  if (btn) { welcomeGoStep(+btn.dataset.wgo); return; }
+  const dot = e.target.closest('.welcome-dot[data-wstep]');
+  if (dot) welcomeGoStep(+dot.dataset.wstep);
+});
+
+// Open on first install (URL param ?welcome=1)
+if (new URLSearchParams(location.search).get('welcome') === '1') {
+  openWelcomeModal();
 }
 
 loadData();

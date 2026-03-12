@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,38 +8,47 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <style>
     :root {
-      --bg:      #faf9f5;
+      --bg: #faf9f5;
       --surface: #f2f0e8;
-      --dark:    #141413;
-      --mid:     #9a9890;
-      --muted:   #7c7a72;
-      --border:  #dedad0;
-      --orange:  #d97757;
-      --blue:    #6a9bcc;
-      --green:   #788c5d;
-      --warm:    #b09050;
-      --purple:  #a86070;
+      --dark: #141413;
+      --mid: #9a9890;
+      --muted: #7c7a72;
+      --border: #dedad0;
+      --orange: #d97757;
+      --blue: #6a9bcc;
+      --green: #788c5d;
+      --warm: #b09050;
+      --purple: #a86070;
     }
 
     html[data-theme="dark"] {
-      --bg:      #121316;
+      --bg: #121316;
       --surface: #1b1d22;
-      --dark:    #eceff4;
-      --mid:     #9aa3b2;
-      --muted:   #7f8897;
-      --border:  #343843;
+      --dark: #eceff4;
+      --mid: #9aa3b2;
+      --muted: #7f8897;
+      --border: #343843;
     }
 
-    html[data-theme="dark"] .course-header:hover { background: #23262d; }
-    html[data-theme="dark"] .nav-course-item:hover { background: #23262d; }
+    html[data-theme="dark"] .course-header:hover {
+      background: #23262d;
+    }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html[data-theme="dark"] .nav-course-item:hover {
+      background: #23262d;
+    }
 
-    html, body {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
       height: 100%;
       overflow: hidden;
       background: var(--bg);
@@ -190,7 +200,7 @@
       position: relative;
     }
 
-    .nav-course-item + .nav-course-item::before {
+    .nav-course-item+.nav-course-item::before {
       display: none;
     }
 
@@ -511,7 +521,7 @@
       width: 140px;
       height: 140px;
       border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .week-legend {
@@ -585,9 +595,17 @@
       font-weight: 400;
     }
 
-    .week-group-title.color-urgent { color: var(--orange); }
-    .week-group-title.color-soon { color: var(--warm); }
-    .week-group-title.color-later { color: var(--blue); }
+    .week-group-title.color-urgent {
+      color: var(--orange);
+    }
+
+    .week-group-title.color-soon {
+      color: var(--warm);
+    }
+
+    .week-group-title.color-later {
+      color: var(--blue);
+    }
 
     .week-divider {
       height: 1px;
@@ -661,7 +679,9 @@
     }
 
     /* ── Course Cards ── */
-    .courses-section .section-label { margin-bottom: 16px; }
+    .courses-section .section-label {
+      margin-bottom: 16px;
+    }
 
     .course-card {
       border: 1px solid var(--border);
@@ -682,7 +702,9 @@
       user-select: none;
     }
 
-    .course-header:hover { background: #ede9df; }
+    .course-header:hover {
+      background: #ede9df;
+    }
 
     .course-header-left {
       display: flex;
@@ -716,7 +738,9 @@
       color: var(--muted);
     }
 
-    .course-badge.urgent { color: var(--orange); }
+    .course-badge.urgent {
+      color: var(--orange);
+    }
 
     .chevron {
       font-size: 12px;
@@ -724,7 +748,9 @@
       transition: transform 0.2s;
     }
 
-    .course-card.open .chevron { transform: rotate(180deg); }
+    .course-card.open .chevron {
+      transform: rotate(180deg);
+    }
 
     /* ── Course Body ── */
     .course-body {
@@ -734,7 +760,9 @@
       background: var(--bg);
     }
 
-    .course-card.open .course-body { display: block; }
+    .course-card.open .course-body {
+      display: block;
+    }
 
     /* Weight Bar */
     .weight-section {
@@ -801,9 +829,13 @@
       line-height: 1.8;
     }
 
-    .assignment-item:last-child { border-bottom: none; }
+    .assignment-item:last-child {
+      border-bottom: none;
+    }
 
-    .assignment-item.submitted { opacity: 0.45; }
+    .assignment-item.submitted {
+      opacity: 0.45;
+    }
 
     .assignment-left {
       display: flex;
@@ -880,22 +912,44 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .assignment-desc.open { display: block; }
+    .assignment-desc.open {
+      display: block;
+    }
 
     .assignment-desc-inner {
       max-height: 240px;
       overflow-y: auto;
     }
 
-    .assignment-desc-inner * { max-width: 100%; }
+    .assignment-desc-inner * {
+      max-width: 100%;
+    }
 
     /* ── Colours by urgency ── */
-    .due-urgent  { color: var(--orange); }
-    .due-soon    { color: var(--warm); }
-    .due-later   { color: var(--blue); }
-    .due-past    { color: var(--mid); opacity: 0.4; }
-    .due-exam    { color: var(--purple); }
-    .due-none    { color: var(--mid); }
+    .due-urgent {
+      color: var(--orange);
+    }
+
+    .due-soon {
+      color: var(--warm);
+    }
+
+    .due-later {
+      color: var(--blue);
+    }
+
+    .due-past {
+      color: var(--mid);
+      opacity: 0.4;
+    }
+
+    .due-exam {
+      color: var(--purple);
+    }
+
+    .due-none {
+      color: var(--mid);
+    }
 
     /* ── Loading / Empty state ── */
     .state-msg {
@@ -954,13 +1008,17 @@
       padding: 14px 16px;
     }
 
-    .grade-calc.open .grade-calc-body { display: block; }
+    .grade-calc.open .grade-calc-body {
+      display: block;
+    }
 
     .grade-calc-group {
       margin-bottom: 16px;
     }
 
-    .grade-calc-group:last-child { margin-bottom: 0; }
+    .grade-calc-group:last-child {
+      margin-bottom: 0;
+    }
 
     .grade-calc-group-header {
       display: flex;
@@ -1022,7 +1080,9 @@
       transition: border-color 0.12s;
     }
 
-    .grade-calc-pts input:focus { border-color: var(--orange); }
+    .grade-calc-pts input:focus {
+      border-color: var(--orange);
+    }
 
     .grade-calc-possible {
       font-family: 'DM Mono', monospace;
@@ -1053,6 +1113,673 @@
       color: var(--blue);
     }
 
+    /* ── Welcome Modal ── */
+    .welcome-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 20, 19, 0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      backdrop-filter: blur(2px);
+    }
+
+    .welcome-overlay.open {
+      display: flex;
+    }
+
+    .welcome-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 680px;
+      height: 480px;
+      max-height: calc(100vh - 64px);
+      position: relative;
+      box-shadow: 0 24px 64px rgba(20, 20, 19, 0.18);
+      animation: welcomeIn 0.28s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .welcome-main-area {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @keyframes welcomeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .welcome-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--mid);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      z-index: 2;
+    }
+
+    .welcome-close:hover {
+      background: var(--surface);
+      color: var(--dark);
+    }
+
+    .welcome-track {
+      display: flex;
+      width: 500%;
+      height: 100%;
+      transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .welcome-step {
+      width: 20%;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 40px 0;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .welcome-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--orange);
+    }
+
+    .welcome-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .welcome-icon.green {
+      color: var(--green);
+    }
+
+    .welcome-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+
+    .welcome-title {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 1.2;
+      color: var(--dark);
+      margin-bottom: 14px;
+    }
+
+    .welcome-body {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .welcome-body.split {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .welcome-body-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .welcome-body strong {
+      color: var(--dark);
+      font-weight: 400;
+    }
+
+    .welcome-inst-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .welcome-inst-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .welcome-inst-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--bg);
+      background: var(--dark);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .welcome-inst-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .welcome-inst-text strong {
+      color: var(--dark);
+      font-weight: 400;
+    }
+
+    .welcome-feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 16px;
+    }
+
+    .welcome-feature-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 44px;
+    }
+
+    .welcome-feature-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--mid);
+      white-space: nowrap;
+    }
+
+    .welcome-feature-desc {
+      font-size: 13px;
+      color: var(--dark);
+      line-height: 1;
+      font-weight: 300;
+      white-space: nowrap;
+    }
+
+    .welcome-preview {
+      flex: 1;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-top: 16px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .welcome-preview.square {
+      flex: 0 0 220px;
+      width: 220px;
+      height: 220px;
+      margin-top: 0;
+    }
+
+    .welcome-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      border-radius: 10px;
+      object-fit: contain;
+    }
+
+    .welcome-ai-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 12px;
+      max-width: 100%;
+    }
+
+    .welcome-ai-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--mid);
+      background: var(--surface);
+    }
+
+    .welcome-btn-row {
+      display: flex;
+      gap: 8px;
+      padding-bottom: 24px;
+      padding-right: 40px;
+    }
+
+    .welcome-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding-bottom: 24px;
+      padding-left: 40px;
+    }
+
+    .welcome-shared-footer {
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .welcome-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 0 20px 0;
+    }
+
+    .welcome-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .welcome-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.2s, width 0.2s;
+      cursor: pointer;
+    }
+
+    .welcome-dot.active {
+      background: var(--dark);
+      width: 16px;
+      border-radius: 3px;
+    }
+
+    .welcome-btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid var(--dark);
+      background: var(--dark);
+      color: var(--bg);
+      white-space: nowrap;
+    }
+
+    .welcome-btn:hover {
+      background: #2a2a27;
+      border-color: #2a2a27;
+    }
+
+    .welcome-btn.sec {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    .welcome-btn.sec:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .welcome-btn.ora {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    .welcome-btn.ora:hover {
+      background: #c4683f;
+      border-color: #c4683f;
+    }
+
+    /* ── Welcome feature item: allow text wrap ── */
+    .welcome-feature-item {
+      height: auto;
+      align-items: flex-start;
+      padding: 10px 14px;
+    }
+
+    .welcome-feature-desc {
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    /* ── Welcome inline link ── */
+    .welcome-inline-link {
+      color: var(--orange);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .welcome-inline-link:hover {
+      border-bottom-color: var(--orange);
+    }
+
+    /* ── Welcome AI mock ── */
+    .welcome-ai-mock {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .welcome-ai-mock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .welcome-ai-mock-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--mid);
+    }
+
+    .welcome-ai-mock-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: var(--orange);
+      color: #fff;
+    }
+
+    .welcome-ai-mock-body {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .welcome-ai-mock-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .welcome-ai-mock-key {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--mid);
+      width: 48px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    .welcome-ai-mock-val {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .welcome-ai-mock-milestones {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .welcome-ai-mock-ms {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .welcome-ai-mock-ms::before {
+      content: '';
+      width: 11px;
+      height: 11px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+
+    .welcome-ai-mock-footer {
+      padding: 7px 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .welcome-ai-mock-hours-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--mid);
+    }
+
+    .welcome-ai-mock-hours-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--orange);
+    }
+
+    /* ── Welcome Dash Mock ── */
+    .welcome-dash-mock {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .welcome-dash-mock-header {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .welcome-dash-mock-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--mid);
+    }
+
+    .welcome-dash-mock-body {
+      padding: 10px;
+      display: flex;
+      gap: 12px;
+      background: var(--surface);
+      flex: 1;
+    }
+
+    .welcome-dash-mock-chart {
+      flex: 0 0 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .welcome-dash-mock-pie {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange) 0% 35%, var(--warm) 35% 60%, var(--blue) 60% 100%);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .welcome-dash-mock-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 8px;
+      color: var(--muted);
+      width: 100%;
+    }
+
+    .welcome-dash-mock-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .welcome-dash-mock-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .welcome-dash-mock-cards {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .welcome-dash-mock-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 8px;
+    }
+
+    .welcome-dash-mock-card-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 7px;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 2px;
+    }
+
+    .welcome-dash-mock-card-title {
+      font-size: 10px;
+      color: var(--dark);
+      font-weight: bold;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+
+    .welcome-dash-mock-card-date {
+      font-size: 8px;
+      color: var(--orange);
+    }
+
+    /* ── Welcome done checklist ── */
+    .welcome-done-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-top: 18px;
+    }
+
+    .welcome-done-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--dark);
+    }
+
+    .welcome-done-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .welcome-done-check svg {
+      width: 10px;
+      height: 10px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* ── Analysis Side Panel ── */
     .analysis-backdrop {
       display: none;
@@ -1062,7 +1789,9 @@
       z-index: 100;
     }
 
-    .analysis-backdrop.open { display: block; }
+    .analysis-backdrop.open {
+      display: block;
+    }
 
     .analysis-panel {
       position: fixed;
@@ -1080,7 +1809,9 @@
       overflow: hidden;
     }
 
-    .analysis-panel.open { transform: translateX(0); }
+    .analysis-panel.open {
+      transform: translateX(0);
+    }
 
     .analysis-panel-header {
       display: flex;
@@ -1168,7 +1899,9 @@
       gap: 8px;
     }
 
-    .analysis-list li:last-child { border-bottom: none; }
+    .analysis-list li:last-child {
+      border-bottom: none;
+    }
 
     .analysis-list li::before {
       content: '·';
@@ -1188,7 +1921,9 @@
       align-items: flex-start;
     }
 
-    .milestone-item.checked { opacity: 0.5; }
+    .milestone-item.checked {
+      opacity: 0.5;
+    }
 
     .milestone-check {
       width: 16px;
@@ -1220,7 +1955,10 @@
       transform: translate(-50%, -50%);
     }
 
-    .milestone-info { flex: 1; min-width: 0; }
+    .milestone-info {
+      flex: 1;
+      min-width: 0;
+    }
 
     .milestone-title {
       font-size: 13px;
@@ -1272,7 +2010,9 @@
       text-decoration: none;
     }
 
-    .analysis-error a:hover { text-decoration: underline; }
+    .analysis-error a:hover {
+      text-decoration: underline;
+    }
 
     .analysis-cached-note {
       font-family: 'DM Mono', monospace;
@@ -1299,7 +2039,10 @@
       transition: all 0.12s;
     }
 
-    .btn-reanalyze:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-reanalyze:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
 
     /* ── Card Grid ── */
     .course-card-grid {
@@ -1321,7 +2064,7 @@
 
     .course-card-grid:hover {
       border-color: var(--orange);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       transform: translateY(-2px);
     }
 
@@ -1379,6 +2122,7 @@
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
     }
 
@@ -1413,7 +2157,9 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .card-row:last-of-type { border-bottom: none; }
+    .card-row:last-of-type {
+      border-bottom: none;
+    }
 
     .card-row-title {
       font-size: 14px;
@@ -1464,8 +2210,15 @@
       transition: all 0.1s;
     }
 
-    .card-pager-btn:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); }
-    .card-pager-btn:disabled { opacity: 0.3; cursor: default; }
+    .card-pager-btn:hover:not(:disabled) {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .card-pager-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
 
     .card-pager-info {
       font-family: 'DM Mono', monospace;
@@ -1491,7 +2244,7 @@
       border-radius: 8px;
       background: var(--surface);
       overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     }
 
     html[data-theme="dark"] .course-detail-view {
@@ -1517,7 +2270,9 @@
       transition: color 0.12s;
     }
 
-    .detail-back:hover { color: var(--orange); }
+    .detail-back:hover {
+      color: var(--orange);
+    }
 
     /* Detail Top — mirrors .card-top */
     .detail-card-top {
@@ -1565,8 +2320,14 @@
       opacity: 0;
       transition: opacity 0.15s, color 0.15s;
     }
-    .detail-name:hover .btn-rename-course { opacity: 1; }
-    .btn-rename-course:hover { color: var(--dark); }
+
+    .detail-name:hover .btn-rename-course {
+      opacity: 1;
+    }
+
+    .btn-rename-course:hover {
+      color: var(--dark);
+    }
 
     .course-rename-input {
       font-family: 'Source Serif 4', Georgia, serif;
@@ -1622,7 +2383,7 @@
       width: 160px;
       height: 160px;
       border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .detail-pie-label {
@@ -1687,7 +2448,9 @@
       transition: border-color 0.15s;
     }
 
-    .btn-syllabus-analyze:hover { border-color: var(--orange); }
+    .btn-syllabus-analyze:hover {
+      border-color: var(--orange);
+    }
 
     .btn-syllabus-reanalyze {
       font-size: 11px;
@@ -1696,7 +2459,12 @@
       color: var(--muted);
     }
 
-    .syllabus-components { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .syllabus-components {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
 
     .syllabus-row {
       display: flex;
@@ -1705,7 +2473,11 @@
       gap: 8px;
     }
 
-    .syllabus-name { font-size: 12px; color: var(--dark); flex: 1; }
+    .syllabus-name {
+      font-size: 12px;
+      color: var(--dark);
+      flex: 1;
+    }
 
     .syllabus-weight {
       font-family: 'DM Mono', monospace;
@@ -1768,8 +2540,13 @@
     }
 
     @keyframes loading-dots {
-      from { width: 0; }
-      to { width: 1.4em; }
+      from {
+        width: 0;
+      }
+
+      to {
+        width: 1.4em;
+      }
     }
 
     .detail-right-panel {
@@ -1838,6 +2615,7 @@
     ::view-transition-group(sidebar) {
       animation: none;
     }
+
     ::view-transition-old(sidebar),
     ::view-transition-new(sidebar) {
       animation: none;
@@ -1847,18 +2625,25 @@
     ::view-transition-old(root) {
       animation: vt-root-out 0.08s ease forwards;
     }
+
     ::view-transition-new(root) {
       animation: vt-root-in 0.1s ease 0.05s both;
     }
 
     @keyframes vt-root-out {
-      to { opacity: 0; }
+      to {
+        opacity: 0;
+      }
     }
+
     @keyframes vt-root-in {
-      from { opacity: 0; }
+      from {
+        opacity: 0;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="layout">
 
@@ -1876,7 +2661,6 @@
           <div class="filter-bar">
             <button class="pill active" data-filter="assignment" id="filter-assignment">作業</button>
             <button class="pill" data-filter="exam" id="filter-exam">考試</button>
-            <button class="pill" data-filter="all" id="filter-all">全部</button>
           </div>
           <label class="hide-done-label">
             <input type="checkbox" id="hide-done-cb">
@@ -1906,6 +2690,7 @@
                   </div>
                 </div>
                 <button class="settings-menu-item" id="menu-open-api-settings">API 設定 <span>↗</span></button>
+                <button class="settings-menu-item" id="menu-open-tutorial">使用教學 <span>↗</span></button>
               </div>
             </div>
           </div>
@@ -1926,7 +2711,238 @@
 
   </div>
 
-  <!-- Analysis side panel -->
+  <!-- Welcome Modal -->
+  <div class="welcome-overlay" id="welcome-overlay">
+    <div class="welcome-card">
+      <button class="welcome-close" id="welcome-close">✕</button>
+
+      <div class="welcome-main-area">
+        <div class="welcome-track" id="welcome-track">
+
+          <!-- Step 1: Welcome -->
+          <div class="welcome-step" id="wstep-1">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+              </svg>
+            </div>
+            <div class="welcome-eyebrow">1 / 5</div>
+            <div class="welcome-title">歡迎使用 Due</div>
+            <div class="welcome-body split" style="flex:1; padding-top: 8px;">
+              <div class="welcome-body-text">
+                Due ， 提醒你該做的事 ⚡️
+                <div
+                  style="margin-top: 40px; font-style: italic; color: var(--muted); line-height: 1.7; font-size: 14px;">
+                  「Canvas 很靠北，找個作業要翻半天，要是還要整理當週的待辦就真的會很那個」- 有人
+                  <div style="margin-top: 15px;">
+                    「蛤?明天要交Lab喔」- 另外一個人
+                  </div>
+                </div>
+              </div>
+
+              <div class="welcome-dash-mock" style="flex:0 0 280px; margin-top:0; align-self: center;">
+                <div class="welcome-dash-mock-header">
+                  <span class="welcome-dash-mock-title">Dashboard 概覽</span>
+                  <span class="welcome-ai-mock-badge" style="font-size: 8px;">示例</span>
+                </div>
+                <div class="welcome-dash-mock-body">
+                  <div class="welcome-dash-mock-chart">
+                    <div class="welcome-dash-mock-pie"></div>
+                    <div class="welcome-dash-mock-legend">
+                      <div class="welcome-dash-mock-legend-item">
+                        <div class="welcome-dash-mock-dot" style="background: var(--orange)"></div> 7天內 (3)
+                      </div>
+                      <div class="welcome-dash-mock-legend-item">
+                        <div class="welcome-dash-mock-dot" style="background: var(--warm)"></div> 8-30天 (2)
+                      </div>
+                      <div class="welcome-dash-mock-legend-item">
+                        <div class="welcome-dash-mock-dot" style="background: var(--blue)"></div> 30天+ (4)
+                      </div>
+                    </div>
+                  </div>
+                  <div class="welcome-dash-mock-cards">
+                    <div style="color: var(--orange); font-size: 8px; font-weight: bold; margin-bottom: 2px;">7天內 (3)
+                    </div>
+                    <div class="welcome-dash-mock-card">
+                      <div class="welcome-dash-mock-card-tag">CHINESE</div>
+                      <div class="welcome-dash-mock-card-title">期中小組報告大綱</div>
+                      <div class="welcome-dash-mock-card-date">3月15日 (3 天後)</div>
+                    </div>
+                    <div class="welcome-dash-mock-card">
+                      <div class="welcome-dash-mock-card-tag">MATH</div>
+                      <div class="welcome-dash-mock-card-title">Group Project Progress...</div>
+                      <div class="welcome-dash-mock-card-date">3月15日 (3 天後)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2:釘選 Due 到工具列 -->
+          <div class="welcome-step" id="wstep-2">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 2C9.2 2 7 4.2 7 7c0 1.9 1 3.5 2.5 4.3V13l-1.3 1.3c-.3.3-.3.7 0 1L9.5 16.5c.3.3.7.3 1 0L12 15l1.5 1.5c.3.3.7.3 1 0l1.3-1.3c.3-.3.3-.7 0-1L14.5 13v-1.7C16 10.5 17 8.9 17 7c0-2.8-2.2-5-5-5z" />
+                <line x1="12" y1="16" x2="12" y2="22" />
+              </svg>
+            </div>
+            <div class="welcome-eyebrow">2 / 5</div>
+            <div class="welcome-title">釘選 Due 到工具列</div>
+            <div class="welcome-body split" style="flex:1">
+              <div class="welcome-body-text">
+                釘選後點一下圖示就能查看 7 天待辦 (煮菠愛用😋)
+                <ul class="welcome-inst-list">
+                  <div style="margin-bottom: 15px;"></div>
+                  <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text">點擊瀏覽器右上角的
+                      <strong>拼圖圖示</strong>（擴充功能）</span></li>
+                  <li><span class="welcome-inst-num">2</span><span class="welcome-inst-text">找到
+                      <strong>Due</strong>，點擊旁邊的<strong>釘選圖示</strong></span></li>
+                  <li><span class="welcome-inst-num">3</span><span class="welcome-inst-text">工具列出現 Due 圖示後即完成</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="welcome-preview square" style="align-self: center;">
+                <img src="../icons/pin_guide.png" alt="釘選 Due 示意圖"
+                  onerror="this.closest('.welcome-preview').style.display='none'" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Canvas Login -->
+          <div class="welcome-step" id="wstep-3">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </div>
+            <div class="welcome-eyebrow">3 / 5</div>
+            <div class="welcome-title">登入 Canvas</div>
+            <div class="welcome-body" style="flex:1">
+              Due 透過你的 Canvas 登入狀態同步資料，不需要額外設定或 Token。
+              <ul class="welcome-inst-list">
+                <div style="margin-bottom: 10px;"></div>
+                <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text">登入 <a
+                      class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>
+                    (基本上所有人應該都是登入的，如果沒有你可能沒在上課😭)</span></li>
+                <li><span class="welcome-inst-num">2</span><span class="welcome-inst-text">登入後，Due
+                    會<strong>在你每次打開Canvas時自動同步</strong>你的所有課程與作業</span></li>
+                <li><span class="welcome-inst-num">3</span><span class="welcome-inst-text">點擊工具列或進入 Dashboard
+                    都可以看到你的作業</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Step 4: AI Setup -->
+          <div class="welcome-step" id="wstep-4">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="welcome-eyebrow">4 / 5</div>
+            <div class="welcome-title">AI 分析（可選）</div>
+            <div class="welcome-body split" style="flex:1; padding-top: 8px;">
+              <div class="welcome-body-text">
+                <div><a class="welcome-inline-link" id="welcome-api-link">添加API Key</a> 後 Due 就能分析作業 🦔</div>
+                <div style="margin-top: 50px; font-size: 14px; color: var(--muted);">
+                  💡 不加 API 功能不變但可能抓不到課程評分
+                  <div style="margin-top: 15px;">
+                    💡 如果你不知道API是什麼，可以跳過這頁
+                  </div>
+                </div>
+              </div>
+              <div class="welcome-ai-mock" style="flex:0 0 280px; margin-top:0; font-size: 11px; align-self: center;">
+                <div class="welcome-ai-mock-header">
+                  <span class="welcome-ai-mock-title">AI 分析結果（範例）</span>
+                  <span class="welcome-ai-mock-badge">Preview</span>
+                </div>
+                <div class="welcome-ai-mock-body" style="padding: 12px;">
+                  <div class="welcome-ai-mock-row">
+                    <span class="welcome-ai-mock-key">摘要</span>
+                    <span class="welcome-ai-mock-val" style="font-size: 11px;">需完成一份量化分析報告，包含數據收集、統計分析與結論。</span>
+                  </div>
+                  <div class="welcome-ai-mock-row">
+                    <span class="welcome-ai-mock-key">里程碑</span>
+                    <div class="welcome-ai-mock-milestones">
+                      <div class="welcome-ai-mock-ms" style="font-size: 11px;">閱讀參考資料</div>
+                      <div class="welcome-ai-mock-ms" style="font-size: 11px;">完成數據分析</div>
+                      <div class="welcome-ai-mock-ms" style="font-size: 11px;">撰寫並修改報告</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="welcome-ai-mock-footer">
+                  <span class="welcome-ai-mock-hours-label">預計時數</span>
+                  <span class="welcome-ai-mock-hours-val">6h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Done -->
+          <div class="welcome-step" id="wstep-5">
+            <div class="welcome-icon green">
+              <svg viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="welcome-eyebrow">5 / 5</div>
+            <div class="welcome-title">一切就緒</div>
+            <div class="welcome-body" style="flex:1">
+              設定完成。登入 Canvas 後資料會自動同步，可隨時在設定中調整 AI 服務。
+              <div class="welcome-done-list">
+                <div class="welcome-done-item">
+                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
+                      <polyline points="10 3 5 9 2 6" />
+                    </svg></div>
+                  <span>Due 已釘選到瀏覽器工具列</span>
+                </div>
+                <div class="welcome-done-item">
+                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
+                      <polyline points="10 3 5 9 2 6" />
+                    </svg></div>
+                  <span>Canvas 登入狀態已確認</span>
+                </div>
+                <div class="welcome-done-item">
+                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
+                      <polyline points="10 3 5 9 2 6" />
+                    </svg></div>
+                  <span>AI 分析功能已了解（可隨時在設定中配置）</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared Footer -->
+      <div class="welcome-shared-footer">
+        <div class="welcome-divider"></div>
+        <div class="welcome-footer">
+          <div class="welcome-dots" id="welcome-dots">
+            <div class="welcome-dot active" data-wstep="1"></div>
+            <div class="welcome-dot" data-wstep="2"></div>
+            <div class="welcome-dot" data-wstep="3"></div>
+            <div class="welcome-dot" data-wstep="4"></div>
+            <div class="welcome-dot" data-wstep="5"></div>
+          </div>
+          <div class="welcome-btn-row" id="welcome-btn-row">
+            <!-- Buttons injected by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
   <div class="analysis-backdrop" id="analysis-backdrop"></div>
   <div class="analysis-panel" id="analysis-panel">
     <div class="analysis-panel-header">
@@ -1943,4 +2959,5 @@
 
   <script src="dashboard.js"></script>
 </body>
+
 </html>
