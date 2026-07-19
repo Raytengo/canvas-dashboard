@@ -87,6 +87,8 @@ const I18N = {
     // assignment row
     noDesc: '（無描述）',
     submittedBadge: '已繳',
+    markDone: '標記完成',
+    markUndone: '取消完成',
     analyzeBtn: 'AI 分析',
     // analysis panel
     analyzing: '正在分析中...',
@@ -225,6 +227,8 @@ const I18N = {
     gradeCalcTitle: '成绩计算器',
     noDesc: '（无描述）',
     submittedBadge: '已交',
+    markDone: '标记完成',
+    markUndone: '取消完成',
     analyzeBtn: 'AI 分析',
     analyzing: '正在分析中...',
     reanalyzing: '正在重新分析...',
@@ -358,6 +362,8 @@ const I18N = {
     gradeCalcTitle: 'Grade Calculator',
     noDesc: '(No description)',
     submittedBadge: 'Done',
+    markDone: 'Mark done',
+    markUndone: 'Mark undone',
     analyzeBtn: 'AI Analyze',
     analyzing: 'Analyzing...',
     reanalyzing: 'Re-analyzing...',
@@ -652,12 +658,14 @@ function isAttendance(assignment) {
   );
 }
 
+// 委派 DueCompletion.isSubmitted（單一真相來源，見 completion.js）
 function isSubmitted(a) {
-  return a.submission && (
-    a.submission.submitted_at ||
-    a.submission.workflow_state === 'submitted' ||
-    a.submission.workflow_state === 'graded'
-  );
+  return DueCompletion.isSubmitted(a);
+}
+
+// 綜合完成判斷：Canvas 已繳「或」手動完成（比照 getCourseName 讀 _currentData）
+function isDone(a) {
+  return DueCompletion.isDone(a, _currentData.manualDone || {});
 }
 
 function esc(str) {
@@ -712,11 +720,11 @@ function applyFilters(asgns) {
   // 永久排除簽到/出勤/參與類，以及考試類
   let result = asgns.filter((a) => !isAttendance(a) && !isExam(a));
 
-  // 默認隱藏已繳交；勾選「查看已繳交」後改為只顯示已繳交
+  // 默認隱藏已完成（含手動）；勾選「查看已繳交」後改為只顯示已完成
   if (showSubmitted) {
-    result = result.filter((a) => isSubmitted(a));
+    result = result.filter((a) => isDone(a));
   } else {
-    result = result.filter((a) => !isSubmitted(a));
+    result = result.filter((a) => !isDone(a));
   }
 
   return result;
@@ -1532,6 +1540,24 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     });
   });
 
+  el.querySelectorAll('.assignment-check').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // 不觸發整列展開或作業名稱跳轉
+      if (btn.dataset.locked === 'true') return; // Canvas 已繳，維持語意不可取消
+      const id = String(btn.dataset.assignmentId);
+      const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id);
+      _currentData.manualDone = next; // 就地更新，避免閃白
+      chrome.storage.local.set({ manualDone: next });
+      // 用 _currentData 重繪目前課程詳情（不呼叫 loadData），讓已完成作業滑出待辦
+      const cid = parseInt(btn.dataset.courseId, 10);
+      const { courses = [], assignments = {}, assignmentGroups = {}, scores = {} } = _currentData;
+      const course = courses.find((c) => c.id === cid);
+      if (course) renderCourseDetailSection(course, assignments[cid] || [], assignmentGroups[cid] || [], scores);
+      // 完成狀態會改變待辦件數，同步刷新左欄緊急 badge
+      renderNav(courses, assignments);
+    });
+  });
+
   el.querySelectorAll('.assignment-title-link').forEach((title) => {
     title.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1868,6 +1894,12 @@ function renderAssignmentRow(a, groups, courseId) {
     : `<span class="assignment-title-link" data-assignment-id="${a.id}" data-course-id="${courseId}">${esc(a.name)}</span>`;
   const customLabel = isCustom ? `<div class="custom-assignment-label">${tr('customAssignment')}</div>` : '';
 
+  // ── 完成勾選圈：Canvas 已繳為 locked（不可取消），手動完成可切換 ──
+  const submittedByCanvas = submitted;
+  const done = submittedByCanvas || DueCompletion.isManualDone(_currentData.manualDone || {}, a.id);
+  const checkLabel = submittedByCanvas ? tr('submittedBadge') : (done ? tr('markUndone') : tr('markDone'));
+  const checkHtml = `<button class="assignment-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}" data-done="${done ? 'true' : 'false'}" data-locked="${submittedByCanvas ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"${submittedByCanvas ? ` title="${esc(tr('submittedBadge'))}"` : ''}></button>`;
+
   // 考試成績顯示
   let gradeHtml = '';
   if (examFlag && submitted && a.submission) {
@@ -1881,6 +1913,7 @@ function renderAssignmentRow(a, groups, courseId) {
 
   return `
     <div class="assignment-item${submitted ? ' submitted' : ''}${isCustom ? ' custom-assignment' : ''}">
+      ${checkHtml}
       <div class="assignment-left">
         <div class="assignment-title">${titleHtml}</div>
         ${customLabel}
@@ -1939,7 +1972,7 @@ document.getElementById('sync-btn').addEventListener('click', () => {
 // ── 讀取資料 ──
 function loadData() {
   chrome.storage.local.get(
-    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights'],
+    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights', 'manualDone'],
     (data) => {
       if (!data.courses || !data.courses.length) {
         currentView = 'grid';
@@ -1967,6 +2000,7 @@ function loadData() {
         syllabusAnalysis: data.syllabusAnalysis || {},
         courseNames: data.courseNames || {},
         customAssignments: data.customAssignments || {},
+        manualDone: data.manualDone || {},
       });
     }
   );

@@ -959,6 +959,47 @@
       opacity: 0.45;
     }
 
+    /* 完成勾選圈：未完成空心 / 完成實心綠勾 / Canvas 已繳 locked */
+    .assignment-check {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 4px;
+      margin-right: 12px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .assignment-check:hover {
+      border-color: var(--green);
+    }
+
+    .assignment-check[data-done="true"] {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .assignment-check[data-done="true"]::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .assignment-check[data-locked="true"] {
+      cursor: default;
+    }
+
     .assignment-left {
       display: flex;
       flex-direction: column;
@@ -3517,6 +3558,7 @@
   </div>
 
   <script src="customAssignments.js"></script>
+  <script src="completion.js"></script>
   <script src="dashboard.js"></script>
 </body>
 
