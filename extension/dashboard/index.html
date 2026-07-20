@@ -1000,6 +1000,39 @@
       cursor: default;
     }
 
+    /* 完成過渡：3 秒撤銷窗口後「碎點爆」 */
+    @keyframes complete-burst {
+      from { opacity: 1; transform: scale(1); }
+      to   { opacity: 0; transform: scale(1.32); }
+    }
+    @keyframes complete-dot {
+      to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+    }
+    .assignment-item.completing { position: relative; }
+    .assignment-item.bursting {
+      animation: complete-burst 0.45s ease-out forwards;
+      transform-origin: center;
+    }
+    .complete-undo-hint {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--orange);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 4px;
+    }
+    .complete-burst-dot {
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: complete-dot 0.5s ease-out forwards;
+    }
+
     .assignment-left {
       display: flex;
       flex-direction: column;
