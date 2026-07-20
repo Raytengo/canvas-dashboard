@@ -1299,28 +1299,6 @@
       min-width: 44px;
     }
 
-    /* ── Analysis button ── */
-    .btn-analyze {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 3px 9px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: transparent;
-      color: var(--mid);
-      cursor: pointer;
-      transition: all 0.12s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .btn-analyze:hover {
-      border-color: var(--blue);
-      color: var(--blue);
-    }
-
     .btn-delete-custom-assignment {
       width: 26px;
       height: 26px;
@@ -1756,33 +1734,8 @@
       border-bottom-color: var(--orange);
     }
 
-    /* ── Welcome AI mock ── */
-    .welcome-ai-mock {
-      margin-top: 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--surface);
-      flex-shrink: 0;
-    }
-
-    .welcome-ai-mock-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .welcome-ai-mock-title {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--mid);
-    }
-
-    .welcome-ai-mock-badge {
+    /* ── Welcome mock badge ── */
+    .welcome-mock-badge {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
       text-transform: uppercase;
@@ -1791,82 +1744,6 @@
       border-radius: 3px;
       background: var(--orange);
       color: #fff;
-    }
-
-    .welcome-ai-mock-body {
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .welcome-ai-mock-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .welcome-ai-mock-key {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--mid);
-      width: 48px;
-      flex-shrink: 0;
-      padding-top: 1px;
-    }
-
-    .welcome-ai-mock-val {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .welcome-ai-mock-milestones {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .welcome-ai-mock-ms {
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .welcome-ai-mock-ms::before {
-      content: '';
-      width: 11px;
-      height: 11px;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      flex-shrink: 0;
-      background: var(--bg);
-    }
-
-    .welcome-ai-mock-footer {
-      padding: 7px 12px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .welcome-ai-mock-hours-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--mid);
-    }
-
-    .welcome-ai-mock-hours-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--orange);
     }
 
     /* ── Welcome Dash Mock ── */
@@ -2019,39 +1896,6 @@
       stroke-linejoin: round;
     }
 
-    /* ── Analysis Side Panel ── */
-    .analysis-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 20, 19, 0.25);
-      z-index: 100;
-    }
-
-    .analysis-backdrop.open {
-      display: block;
-    }
-
-    .analysis-panel {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 440px;
-      background: var(--bg);
-      border-left: 1px solid var(--border);
-      z-index: 101;
-      transform: translateX(100%);
-      transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .analysis-panel.open {
-      transform: translateX(0);
-    }
-
     .custom-assignment-overlay {
       position: fixed;
       inset: 0;
@@ -2184,237 +2028,6 @@
       border: 1px solid var(--orange);
       background: var(--orange);
       color: var(--bg);
-    }
-
-    .analysis-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 22px 26px 18px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .analysis-panel-title {
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 18px;
-      font-weight: 400;
-    }
-
-    .analysis-panel-subtitle {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--mid);
-      margin-top: 3px;
-    }
-
-    .analysis-panel-close {
-      width: 30px;
-      height: 30px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      background: transparent;
-      color: var(--mid);
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.12s;
-      flex-shrink: 0;
-    }
-
-    .analysis-panel-close:hover {
-      border-color: var(--orange);
-      color: var(--orange);
-    }
-
-    .analysis-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 22px 26px 36px;
-    }
-
-    .analysis-section {
-      margin-bottom: 26px;
-    }
-
-    .analysis-section-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--mid);
-      margin-bottom: 10px;
-    }
-
-    .analysis-summary {
-      font-size: 13px;
-      color: var(--dark);
-      line-height: 1.75;
-    }
-
-    .analysis-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .analysis-list li {
-      font-size: 13px;
-      color: var(--dark);
-      padding: 6px 0;
-      border-bottom: 1px solid var(--border);
-      line-height: 1.65;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .analysis-list li:last-child {
-      border-bottom: none;
-    }
-
-    .analysis-list li::before {
-      content: '·';
-      color: var(--mid);
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .milestone-item {
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 8px;
-      background: var(--surface);
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .milestone-item.checked {
-      opacity: 0.5;
-    }
-
-    .milestone-check {
-      width: 16px;
-      height: 16px;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      background: var(--bg);
-      cursor: pointer;
-      flex-shrink: 0;
-      margin-top: 3px;
-      appearance: none;
-      -webkit-appearance: none;
-      position: relative;
-      transition: all 0.12s;
-    }
-
-    .milestone-check:checked {
-      background: var(--green);
-      border-color: var(--green);
-    }
-
-    .milestone-check:checked::after {
-      content: '✓';
-      position: absolute;
-      color: white;
-      font-size: 10px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .milestone-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .milestone-title {
-      font-size: 13px;
-      color: var(--dark);
-      font-weight: 400;
-      margin-bottom: 3px;
-    }
-
-    .milestone-desc {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .milestone-date {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--mid);
-      margin-top: 5px;
-    }
-
-    .analysis-hours {
-      font-family: 'DM Mono', monospace;
-      font-size: 22px;
-      color: var(--orange);
-    }
-
-    .analysis-loading {
-      text-align: center;
-      padding: 48px 0;
-      color: var(--mid);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .analysis-error {
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .analysis-error a {
-      color: var(--orange);
-      text-decoration: none;
-    }
-
-    .analysis-error a:hover {
-      text-decoration: underline;
-    }
-
-    .analysis-cached-note {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--mid);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .btn-reanalyze {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 4px 10px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: transparent;
-      color: var(--mid);
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-
-    .btn-reanalyze:hover {
-      border-color: var(--orange);
-      color: var(--orange);
     }
 
     /* ── Card Grid ── */
@@ -2827,129 +2440,6 @@
       color: var(--orange);
     }
 
-    /* ── Syllabus Section ── */
-    .syllabus-section {
-      margin-top: 10px;
-      width: 100%;
-    }
-
-    .btn-syllabus-analyze {
-      display: block;
-      width: 100%;
-      padding: 7px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--surface);
-      color: var(--dark);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 300;
-      cursor: pointer;
-      text-align: center;
-      transition: border-color 0.15s;
-    }
-
-    .btn-syllabus-analyze:hover {
-      border-color: var(--orange);
-    }
-
-    .btn-syllabus-reanalyze {
-      font-size: 11px;
-      padding: 4px 8px;
-      width: auto;
-      color: var(--muted);
-    }
-
-    .syllabus-components {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-
-    .syllabus-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
-
-    .syllabus-name {
-      font-size: 12px;
-      color: var(--dark);
-      flex: 1;
-    }
-
-    .syllabus-weight {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--orange);
-      flex-shrink: 0;
-    }
-
-    .syllabus-desc {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      padding-left: 2px;
-    }
-
-    .syllabus-notes {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 6px;
-      border-top: 1px solid var(--border);
-      padding-top: 6px;
-    }
-
-    .syllabus-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      gap: 8px;
-    }
-
-    .syllabus-source {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--mid);
-    }
-
-    .syllabus-empty {
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      padding: 8px 0;
-    }
-
-    .syllabus-loading {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--orange);
-      text-align: center;
-      padding: 12px 0;
-    }
-
-    .syllabus-loading::after {
-      content: '...';
-      display: inline-block;
-      width: 0;
-      overflow: hidden;
-      vertical-align: bottom;
-      animation: loading-dots 1.2s steps(4, end) infinite;
-    }
-
-    @keyframes loading-dots {
-      from {
-        width: 0;
-      }
-
-      to {
-        width: 1.4em;
-      }
-    }
-
     .detail-right-panel {
       flex: 1;
       min-width: 0;
@@ -3082,33 +2572,6 @@
       font-family: 'Source Serif 4', Georgia, serif;
       font-size: 18px;
       color: var(--dark);
-    }
-
-    .weight-edit-ai-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--border);
-      background: none;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      padding: 5px 12px;
-      border-radius: 6px;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
-    }
-
-    .weight-edit-ai-btn:hover {
-      border-color: var(--orange);
-      color: var(--orange);
-    }
-
-    .weight-edit-ai-btn.loading {
-      opacity: 0.6;
-      pointer-events: none;
     }
 
     .weight-edit-list {
@@ -3274,7 +2737,6 @@
                     <button id="menu-language-en">English</button>
                   </div>
                 </div>
-                <button class="settings-menu-item" id="menu-open-api-settings">API 設定 <span>↗</span></button>
                 <button class="settings-menu-item" id="menu-open-tutorial">使用教學 <span>↗</span></button>
               </div>
             </div>
@@ -3333,7 +2795,7 @@
               <div class="welcome-dash-mock" style="flex:0 0 280px; margin-top:0; align-self: center; position: relative; top: -30px;">
                 <div class="welcome-dash-mock-header">
                   <span class="welcome-dash-mock-title">Dashboard 概覽</span>
-                  <span class="welcome-ai-mock-badge" style="font-size: 8px;">示例</span>
+                  <span class="welcome-mock-badge" style="font-size: 8px;">示例</span>
                 </div>
                 <div class="welcome-dash-mock-body">
                   <div class="welcome-dash-mock-chart">
@@ -3428,24 +2890,24 @@
               </svg>
             </div>
             <div class="welcome-eyebrow">4 / 5</div>
-            <div class="welcome-title" id="wstep-4-title">AI 評分權重分析（可選）</div>
+            <div class="welcome-title" id="wstep-4-title">評分比重（可選）</div>
             <div class="welcome-body split" style="flex:1; padding-top: 8px;">
               <div class="welcome-body-text">
-                <div><a class="welcome-inline-link" id="welcome-api-link">添加 API Key</a> <span id="wstep-4-body-a">後，Due 可自動讀取課程 Syllabus，找出各項目的評分比重。</span></div>
+                <div><span id="wstep-4-body-a">在課程詳情頁可以查看每個評分項目所占的比重。</span></div>
                 <div style="margin-top: 12px; font-size: 14px; color: var(--muted);">
-                  💡 <span id="wstep-4-body-b">進入課程詳情頁，點擊「分析權重」即可執行</span>
+                  💡 <span id="wstep-4-body-b">Canvas 有提供評分比重時會自動顯示圓餅圖</span>
                   <div style="margin-top: 6px;">
-                    💡 <span id="wstep-4-body-c">不加 API 也可以手動在課程頁編輯評分比重</span>
+                    💡 <span id="wstep-4-body-c">也可以點「編輯」手動輸入各項目的比重</span>
                   </div>
                   <div style="margin-top: 6px;">
-                    💡 <span id="wstep-4-body-d">如果你不知道 API 是什麼，可以跳過這頁</span>
+                    💡 <span id="wstep-4-body-d">這頁純屬選用，可以直接跳過</span>
                   </div>
                 </div>
               </div>
               <div class="welcome-dash-mock" style="flex:0 0 240px; margin-top:0; align-self: center; position: relative; top: -25px;">
                 <div class="welcome-dash-mock-header">
                   <span class="welcome-dash-mock-title">評分比重（範例）</span>
-                  <span class="welcome-ai-mock-badge" style="font-size: 8px;">示例</span>
+                  <span class="welcome-mock-badge" style="font-size: 8px;">示例</span>
                 </div>
                 <div style="padding: 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
                   <div style="
@@ -3503,7 +2965,7 @@
             <div class="welcome-eyebrow">5 / 5</div>
             <div class="welcome-title" id="wstep-5-title">一切就緒</div>
             <div class="welcome-body" style="flex:1">
-              <span id="wstep-5-body">設定完成。登入 Canvas 後資料會自動同步，可隨時在設定中調整 AI 服務。</span>
+              <span id="wstep-5-body">設定完成。登入 Canvas 後資料會自動同步。</span>
               <div class="welcome-done-list">
                 <div class="welcome-done-item">
                   <div class="welcome-done-check"><svg viewBox="0 0 12 12">
@@ -3521,7 +2983,7 @@
                   <div class="welcome-done-check"><svg viewBox="0 0 12 12">
                       <polyline points="10 3 5 9 2 6" />
                     </svg></div>
-                  <span id="wstep-5-done3">AI 分析功能已了解（可隨時在設定中配置）</span>
+                  <span id="wstep-5-done3">評分比重可在課程頁查看或編輯</span>
                 </div>
               </div>
             </div>
@@ -3588,10 +3050,6 @@
     <div class="weight-edit-modal">
       <div class="weight-edit-header">
         <span class="weight-edit-title" id="weight-edit-title">編輯評分權重</span>
-        <button class="weight-edit-ai-btn" id="weight-edit-ai-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18 2v4h4"/></svg>
-          AI 分析
-        </button>
       </div>
       <div class="weight-edit-list" id="weight-edit-list"></div>
       <button class="weight-edit-add" id="weight-edit-add">+ 新增項目</button>

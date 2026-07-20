@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Due",
   "version": "1.5.0",
-  "description": "Canvas LMS Dashboard - Auto-sync assignments, deadlines, and AI analysis for any Canvas school",
+  "description": "Canvas LMS Dashboard - auto-sync assignments and deadlines for any Canvas school",
   "permissions": [
     "storage",
     "tabs",
@@ -11,11 +11,7 @@
   ],
   "host_permissions": [
     "https://*.instructure.com/*",
-    "https://*.canvas-user-content.com/*",
-    "https://claude.ai/*",
-    "https://generativelanguage.googleapis.com/*",
-    "https://dashscope.aliyuncs.com/*",
-    "https://api.deepseek.com/*"
+    "https://claude.ai/*"
   ],
   "content_scripts": [
     {
