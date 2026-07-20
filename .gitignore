@@ -1,0 +1,2 @@
+# 打包產物（release zip），不進版控
+*.zip
