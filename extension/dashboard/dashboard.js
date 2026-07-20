@@ -87,6 +87,9 @@ const I18N = {
     // assignment row
     noDesc: '（無描述）',
     submittedBadge: '已繳',
+    markDone: '標記完成',
+    markUndone: '取消完成',
+    undoComplete: '撤銷',
     analyzeBtn: 'AI 分析',
     // analysis panel
     analyzing: '正在分析中...',
@@ -225,6 +228,9 @@ const I18N = {
     gradeCalcTitle: '成绩计算器',
     noDesc: '（无描述）',
     submittedBadge: '已交',
+    markDone: '标记完成',
+    markUndone: '取消完成',
+    undoComplete: '撤销',
     analyzeBtn: 'AI 分析',
     analyzing: '正在分析中...',
     reanalyzing: '正在重新分析...',
@@ -358,6 +364,9 @@ const I18N = {
     gradeCalcTitle: 'Grade Calculator',
     noDesc: '(No description)',
     submittedBadge: 'Done',
+    markDone: 'Mark done',
+    markUndone: 'Mark undone',
+    undoComplete: 'Undo',
     analyzeBtn: 'AI Analyze',
     analyzing: 'Analyzing...',
     reanalyzing: 'Re-analyzing...',
@@ -652,12 +661,14 @@ function isAttendance(assignment) {
   );
 }
 
+// 委派 DueCompletion.isSubmitted（單一真相來源，見 completion.js）
 function isSubmitted(a) {
-  return a.submission && (
-    a.submission.submitted_at ||
-    a.submission.workflow_state === 'submitted' ||
-    a.submission.workflow_state === 'graded'
-  );
+  return DueCompletion.isSubmitted(a);
+}
+
+// 綜合完成判斷：Canvas 已繳「或」手動完成（比照 getCourseName 讀 _currentData）
+function isDone(a) {
+  return DueCompletion.isDone(a, _currentData.manualDone || {});
 }
 
 function esc(str) {
@@ -693,6 +704,10 @@ function findGroup(assignment, groups) {
 
 let showSubmitted = false;
 
+// ── 完成過渡動畫（碎點爆）狀態 ──
+const COMPLETE_DELAY_MS = 3000;       // 勾選後的撤銷窗口（毫秒）
+const _completeTimers = {};           // assignmentId -> setTimeout id
+
 // ── View 狀態 ──
 let currentView = 'grid';      // 'grid' | 'course'
 let currentCourseId = null;
@@ -712,11 +727,11 @@ function applyFilters(asgns) {
   // 永久排除簽到/出勤/參與類，以及考試類
   let result = asgns.filter((a) => !isAttendance(a) && !isExam(a));
 
-  // 默認隱藏已繳交；勾選「查看已繳交」後改為只顯示已繳交
+  // 默認隱藏已完成（含手動）；勾選「查看已繳交」後改為只顯示已完成
   if (showSubmitted) {
-    result = result.filter((a) => isSubmitted(a));
+    result = result.filter((a) => isDone(a));
   } else {
-    result = result.filter((a) => !isSubmitted(a));
+    result = result.filter((a) => !isDone(a));
   }
 
   return result;
@@ -1448,9 +1463,80 @@ function startCourseRename(courseId) {
   input.addEventListener('blur', commit);
 }
 
+// ── 完成過渡動畫：3 秒撤銷窗口 → 碎點爆 ──
+function rerenderDetailAndNav(cid) {
+  const { courses = [], assignments = {}, assignmentGroups = {}, scores = {} } = _currentData;
+  const course = courses.find((c) => c.id === cid);
+  if (course) renderCourseDetailSection(course, assignments[cid] || [], assignmentGroups[cid] || [], scores);
+  renderNav(courses, assignments);
+}
+
+function beginComplete(item, id, cid) {
+  const chk = item.querySelector('.assignment-check');
+  if (chk) { chk.dataset.done = 'true'; chk.setAttribute('aria-label', tr('markUndone')); } // 不重繪，手動點綠
+  item.classList.add('completing');
+  const right = item.querySelector('.assignment-right');
+  if (right && !right.querySelector('.complete-undo-hint')) {
+    const hint = document.createElement('div');
+    hint.className = 'complete-undo-hint';
+    hint.textContent = '↩ ' + tr('undoComplete');
+    right.insertBefore(hint, right.firstChild);
+  }
+  // 底部撤銷倒數條：3 秒縮短歸零 → 觸發爆開（時長依 COMPLETE_DELAY_MS）
+  if (!item.querySelector('.complete-countdown')) {
+    const bar = document.createElement('div');
+    bar.className = 'complete-countdown';
+    bar.style.animation = `complete-countdown ${COMPLETE_DELAY_MS / 1000}s linear forwards`;
+    item.appendChild(bar);
+  }
+  _completeTimers[id] = setTimeout(() => {
+    delete _completeTimers[id];
+    finishComplete(item, id, cid);
+  }, COMPLETE_DELAY_MS);
+}
+
+function finishComplete(item, id, cid) {
+  spawnBurstDots(item);
+  item.classList.add('bursting');
+  // 略長於 .45s 爆開動畫，結束後重繪：已完成的會被濾掉、計數/圓餅/側欄一起更新
+  setTimeout(() => rerenderDetailAndNav(cid), 480);
+}
+
+function cancelComplete(item, id, cid) {
+  if (_completeTimers[id]) { clearTimeout(_completeTimers[id]); delete _completeTimers[id]; }
+  const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id, false);
+  _currentData.manualDone = next;
+  chrome.storage.local.set({ manualDone: next });
+  // 就地還原（不整段重繪，避免影響其他進行中的動畫）
+  item.classList.remove('completing');
+  const hint = item.querySelector('.complete-undo-hint');
+  if (hint) hint.remove();
+  const bar = item.querySelector('.complete-countdown');
+  if (bar) bar.remove();
+  const chk = item.querySelector('.assignment-check');
+  if (chk) { chk.dataset.done = 'false'; chk.setAttribute('aria-label', tr('markDone')); }
+}
+
+function spawnBurstDots(item) {
+  const n = 10;
+  for (let i = 0; i < n; i++) {
+    const dot = document.createElement('span');
+    const ang = (Math.PI * 2 * i) / n;
+    const dist = 42 + ((i * 13) % 18);
+    dot.className = 'complete-burst-dot';
+    dot.style.setProperty('--dx', `${Math.round(Math.cos(ang) * dist)}px`);
+    dot.style.setProperty('--dy', `${Math.round(Math.sin(ang) * dist)}px`);
+    dot.style.background = i % 2 ? 'var(--green)' : 'var(--orange)';
+    item.appendChild(dot);
+  }
+}
+
 // ── 課程詳細視圖 ──
 function renderCourseDetailSection(course, asgns, groups, scores) {
   const el = document.getElementById('course-detail-container');
+
+  // 重繪前清掉殘留的完成計時器（導覽離開 / 切換篩選時避免 stray callback）
+  Object.keys(_completeTimers).forEach((k) => { clearTimeout(_completeTimers[k]); delete _completeTimers[k]; });
 
   const filtered = applyFilters(asgns).sort((a, b) => {
     if (!a.due_at && !b.due_at) return 0;
@@ -1514,6 +1600,12 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
 
   el.querySelectorAll('.assignment-item').forEach((item) => {
     item.addEventListener('click', () => {
+      if (item.classList.contains('bursting')) return;      // 爆開中不互動
+      if (item.classList.contains('completing')) {           // 撤銷窗口內 → 點列取消
+        const chk = item.querySelector('.assignment-check');
+        if (chk) cancelComplete(item, String(chk.dataset.assignmentId), parseInt(chk.dataset.courseId, 10));
+        return;
+      }
       const desc = item.nextElementSibling;
       if (desc && desc.classList.contains('assignment-desc')) {
         desc.classList.toggle('open');
@@ -1529,6 +1621,32 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       deleteCustomAssignment(btn.dataset.courseId, btn.dataset.assignmentId);
+    });
+  });
+
+  el.querySelectorAll('.assignment-check').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // 不觸發整列展開或作業名稱跳轉
+      if (btn.dataset.locked === 'true') return; // Canvas 已繳，維持語意不可取消
+      const item = btn.closest('.assignment-item');
+      const id = String(btn.dataset.assignmentId);
+      const cid = parseInt(btn.dataset.courseId, 10);
+      if (item && item.classList.contains('bursting')) return;   // 爆開中不互動
+      if (item && item.classList.contains('completing')) {        // 撤銷窗口內 → 取消
+        cancelComplete(item, id, cid);
+        return;
+      }
+      const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id);
+      const nowDone = DueCompletion.isManualDone(next, id);
+      _currentData.manualDone = next; // 就地更新，避免閃白
+      chrome.storage.local.set({ manualDone: next });
+      if (nowDone && !showSubmitted && item) {
+        // 待辦視圖勾選完成 → 3 秒撤銷窗口 → 碎點爆 → 移除
+        beginComplete(item, id, cid);
+      } else {
+        // 取消完成（→未完成）：直接重繪跳回，跟現在一樣
+        rerenderDetailAndNav(cid);
+      }
     });
   });
 
@@ -1868,6 +1986,12 @@ function renderAssignmentRow(a, groups, courseId) {
     : `<span class="assignment-title-link" data-assignment-id="${a.id}" data-course-id="${courseId}">${esc(a.name)}</span>`;
   const customLabel = isCustom ? `<div class="custom-assignment-label">${tr('customAssignment')}</div>` : '';
 
+  // ── 完成勾選圈：Canvas 已繳為 locked（不可取消），手動完成可切換 ──
+  const submittedByCanvas = submitted;
+  const done = submittedByCanvas || DueCompletion.isManualDone(_currentData.manualDone || {}, a.id);
+  const checkLabel = submittedByCanvas ? tr('submittedBadge') : (done ? tr('markUndone') : tr('markDone'));
+  const checkHtml = `<button class="assignment-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}" data-done="${done ? 'true' : 'false'}" data-locked="${submittedByCanvas ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"${submittedByCanvas ? ` title="${esc(tr('submittedBadge'))}"` : ''}></button>`;
+
   // 考試成績顯示
   let gradeHtml = '';
   if (examFlag && submitted && a.submission) {
@@ -1881,6 +2005,7 @@ function renderAssignmentRow(a, groups, courseId) {
 
   return `
     <div class="assignment-item${submitted ? ' submitted' : ''}${isCustom ? ' custom-assignment' : ''}">
+      ${checkHtml}
       <div class="assignment-left">
         <div class="assignment-title">${titleHtml}</div>
         ${customLabel}
@@ -1939,7 +2064,7 @@ document.getElementById('sync-btn').addEventListener('click', () => {
 // ── 讀取資料 ──
 function loadData() {
   chrome.storage.local.get(
-    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights'],
+    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights', 'manualDone'],
     (data) => {
       if (!data.courses || !data.courses.length) {
         currentView = 'grid';
@@ -1967,6 +2092,7 @@ function loadData() {
         syllabusAnalysis: data.syllabusAnalysis || {},
         courseNames: data.courseNames || {},
         customAssignments: data.customAssignments || {},
+        manualDone: data.manualDone || {},
       });
     }
   );

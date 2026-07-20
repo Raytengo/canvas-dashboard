@@ -959,6 +959,92 @@
       opacity: 0.45;
     }
 
+    /* 完成勾選圈：未完成空心 / 完成實心綠勾 / Canvas 已繳 locked */
+    .assignment-check {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 4px;
+      margin-right: 12px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .assignment-check:hover {
+      border-color: var(--green);
+    }
+
+    .assignment-check[data-done="true"] {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .assignment-check[data-done="true"]::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .assignment-check[data-locked="true"] {
+      cursor: default;
+    }
+
+    /* 完成過渡：底部撤銷倒數條歸零後「原地碎點爆」（不放大不縮小） */
+    @keyframes complete-burst {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    @keyframes complete-dot {
+      to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+    }
+    @keyframes complete-countdown {
+      from { transform: scaleX(1); }
+      to   { transform: scaleX(0); }
+    }
+    .assignment-item.completing { position: relative; }
+    .assignment-item.bursting {
+      animation: complete-burst 0.4s ease-out forwards;
+    }
+    .complete-countdown {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 100%;
+      background: var(--orange);
+      transform-origin: left;
+    }
+    .complete-undo-hint {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--orange);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 4px;
+    }
+    .complete-burst-dot {
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: complete-dot 0.5s ease-out forwards;
+    }
+
     .assignment-left {
       display: flex;
       flex-direction: column;
@@ -3517,6 +3603,7 @@
   </div>
 
   <script src="customAssignments.js"></script>
+  <script src="completion.js"></script>
   <script src="dashboard.js"></script>
 </body>
 

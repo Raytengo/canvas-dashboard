@@ -185,7 +185,7 @@ function setClaudeRefreshBusy(busy) {
   btn.textContent = busy ? '...' : '\u21bb';
 }
 
-function getUpcomingTasks(assignments, courseMap) {
+function getUpcomingTasks(assignments, courseMap, manualDone) {
   const now = new Date();
   const sevenDays = new Date(now.getTime() + 7 * 86400000);
   const tasks = [];
@@ -200,6 +200,7 @@ function getUpcomingTasks(assignments, courseMap) {
         a.submission.workflow_state === 'graded' ||
         a.submission.score != null
       )) continue;
+      if (manualDone && manualDone[String(a.id)]) continue; // 手動標記完成也排除
 
       const due = new Date(a.due_at);
       if (due <= now || due > sevenDays) continue;
@@ -323,9 +324,9 @@ function applyClaudeRefreshCopy() {
 }
 
 function loadData() {
-  chrome.storage.local.get(['courses', 'assignments', 'courseNames', 'claudeUsage'], (data) => {
+  chrome.storage.local.get(['courses', 'assignments', 'courseNames', 'claudeUsage', 'manualDone'], (data) => {
     const courseMap = buildCourseMap(data.courses);
-    const tasks = getUpcomingTasks(data.assignments || {}, courseMap);
+    const tasks = getUpcomingTasks(data.assignments || {}, courseMap, data.manualDone || {});
     renderTasks(tasks, data.courseNames || {});
     renderClaudeUsage(data.claudeUsage || null);
   });
