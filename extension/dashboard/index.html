@@ -1000,18 +1000,30 @@
       cursor: default;
     }
 
-    /* 完成過渡：3 秒撤銷窗口後「碎點爆」 */
+    /* 完成過渡：底部撤銷倒數條歸零後「原地碎點爆」（不放大不縮小） */
     @keyframes complete-burst {
-      from { opacity: 1; transform: scale(1); }
-      to   { opacity: 0; transform: scale(1.32); }
+      from { opacity: 1; }
+      to   { opacity: 0; }
     }
     @keyframes complete-dot {
       to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
     }
+    @keyframes complete-countdown {
+      from { transform: scaleX(1); }
+      to   { transform: scaleX(0); }
+    }
     .assignment-item.completing { position: relative; }
     .assignment-item.bursting {
-      animation: complete-burst 0.45s ease-out forwards;
-      transform-origin: center;
+      animation: complete-burst 0.4s ease-out forwards;
+    }
+    .complete-countdown {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 100%;
+      background: var(--orange);
+      transform-origin: left;
     }
     .complete-undo-hint {
       font-family: 'DM Mono', monospace;

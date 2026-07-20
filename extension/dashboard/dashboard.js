@@ -1482,6 +1482,13 @@ function beginComplete(item, id, cid) {
     hint.textContent = '↩ ' + tr('undoComplete');
     right.insertBefore(hint, right.firstChild);
   }
+  // 底部撤銷倒數條：3 秒縮短歸零 → 觸發爆開（時長依 COMPLETE_DELAY_MS）
+  if (!item.querySelector('.complete-countdown')) {
+    const bar = document.createElement('div');
+    bar.className = 'complete-countdown';
+    bar.style.animation = `complete-countdown ${COMPLETE_DELAY_MS / 1000}s linear forwards`;
+    item.appendChild(bar);
+  }
   _completeTimers[id] = setTimeout(() => {
     delete _completeTimers[id];
     finishComplete(item, id, cid);
@@ -1504,6 +1511,8 @@ function cancelComplete(item, id, cid) {
   item.classList.remove('completing');
   const hint = item.querySelector('.complete-undo-hint');
   if (hint) hint.remove();
+  const bar = item.querySelector('.complete-countdown');
+  if (bar) bar.remove();
   const chk = item.querySelector('.assignment-check');
   if (chk) { chk.dataset.done = 'false'; chk.setAttribute('aria-label', tr('markDone')); }
 }

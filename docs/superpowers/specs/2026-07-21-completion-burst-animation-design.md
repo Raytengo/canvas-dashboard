@@ -12,10 +12,10 @@
 時間到後以「**碎點爆**」動畫向外爆開消失。過程中可及時取消。
 
 使用者明確定案（demo 迭代結果）：
-- **不縮小**：不是被吸走 / scale 到 0，而是**往外爆開**（scale 放大 + 淡出）。
+- **不放大也不縮小**：那一列不做 scale 變化，原地淡出；「爆」的感覺全由碎點四散呈現。
 - **碎點爆**：爆開同時噴出約 10 顆小碎點向四周擴散（最有泡泡破掉感）。
 - **窗口 3 秒**（原本提的 5 秒改短）。
-- **窗口內維持原尺寸**：3 秒間該列正常顯示，只有勾變綠 + 「↩ 撤銷」提示；時間到才爆。
+- **窗口內維持原尺寸**：3 秒間該列正常顯示，勾變綠 + 「↩ 撤銷」提示 + 底部橘色**撤銷倒數條**（隨 3 秒縮短）；倒數條歸零才爆。
 
 ---
 
@@ -74,14 +74,17 @@ const _completeTimers = {}; // id -> timeoutId
 ## 5. CSS（index.html，接在 `.assignment-check` 規則後）
 
 ```css
-@keyframes complete-burst { from { opacity:1; transform:scale(1); } to { opacity:0; transform:scale(1.32); } }
+@keyframes complete-burst { from { opacity:1; } to { opacity:0; } }
 @keyframes complete-dot   { to { opacity:0; transform:translate(var(--dx),var(--dy)) scale(.3); } }
 .assignment-item.completing { position: relative; }
-.assignment-item.bursting   { animation: complete-burst .45s ease-out forwards; transform-origin: center; }
+.assignment-item.bursting   { animation: complete-burst .4s ease-out forwards; }
 .complete-undo-hint { font-family:'DM Mono',monospace; font-size:12px; color:var(--orange);
   background:var(--surface); border-radius:999px; padding:2px 10px; margin-bottom:4px; }
 .complete-burst-dot { position:absolute; left:26px; top:50%; width:7px; height:7px;
   border-radius:50%; pointer-events:none; animation: complete-dot .5s ease-out forwards; }
+@keyframes complete-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.complete-countdown { position:absolute; left:0; bottom:0; height:3px; width:100%;
+  background:var(--orange); transform-origin:left; } /* 動畫時長由 JS 依 COMPLETE_DELAY_MS 設定 */
 ```
 - 撤銷提示插入 `.assignment-right`（column、右對齊）第一個子元素 → 顯示在到期標籤上方。
 - 碎點以 `.assignment-item.completing`（`position:relative`）為定位基準；`.bursting` 不移除 `.completing`，故 burst 期間定位仍有效。
