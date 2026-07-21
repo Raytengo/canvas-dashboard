@@ -5,6 +5,7 @@ const GROUP_COLORS = [
 ];
 
 let _uiLanguage = 'zh-TW';
+let _showClaudeUsage = true;
 const I18N = {
   'zh-TW': {
     filter: '篩選',
@@ -36,6 +37,8 @@ const I18N = {
     langZhCn: '简体中文',
     langEn: 'English',
     menuTutorial: '使用教學',
+    menuUsageShow: '顯示 Popup Claude 用量',
+    menuUsageHide: '隱藏 Popup Claude 用量',
     // formatDue
     noDueDate: '無截止日期',
     overdue: '已過期',
@@ -156,6 +159,8 @@ const I18N = {
     langZhCn: '简体中文',
     langEn: 'English',
     menuTutorial: '使用教程',
+    menuUsageShow: '显示 Popup Claude 用量',
+    menuUsageHide: '隐藏 Popup Claude 用量',
     noDueDate: '无截止日期',
     overdue: '已过期',
     today: '今天',
@@ -262,6 +267,8 @@ const I18N = {
     langZhCn: 'Simplified Chinese',
     langEn: 'English',
     menuTutorial: 'Tutorial',
+    menuUsageShow: 'Show Claude usage in popup',
+    menuUsageHide: 'Hide Claude usage in popup',
     noDueDate: 'No due date',
     overdue: 'Overdue',
     today: 'Today',
@@ -458,6 +465,7 @@ function bindLanguageMenuActions() {
     chrome.storage.local.set({ uiLanguage: lang });
     applyUILanguage();
     updateThemeMenuLabel();
+    updateClaudeUsageMenuLabel();
     loadData();
     if (settingsMenu) settingsMenu.classList.remove('open');
     if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
@@ -1941,16 +1949,25 @@ function updateThemeMenuLabel() {
   btn.textContent = isDark ? tr('themeLight') : tr('themeDark');
 }
 
-chrome.storage.local.get(['darkMode', 'uiLanguage'], (data) => {
+function updateClaudeUsageMenuLabel() {
+  const btn = document.getElementById('menu-claude-usage-toggle');
+  if (!btn) return;
+  btn.textContent = _showClaudeUsage ? tr('menuUsageHide') : tr('menuUsageShow');
+}
+
+chrome.storage.local.get(['darkMode', 'uiLanguage', 'showClaudeUsageInPopup'], (data) => {
   _uiLanguage = data.uiLanguage || 'zh-TW';
+  _showClaudeUsage = data.showClaudeUsageInPopup !== false;
   applyTheme(!!data.darkMode);
   applyUILanguage();
   updateThemeMenuLabel();
+  updateClaudeUsageMenuLabel();
 });
 
 const settingsMenuBtn = document.getElementById('settings-menu-btn');
 const settingsMenu = document.getElementById('settings-menu');
 const menuThemeToggle = document.getElementById('menu-theme-toggle');
+const menuClaudeUsageToggle = document.getElementById('menu-claude-usage-toggle');
 const menuOpenTutorial = document.getElementById('menu-open-tutorial');
 
 if (settingsMenuBtn && settingsMenu) {
@@ -1980,6 +1997,18 @@ if (menuThemeToggle) {
     applyTheme(!isDark);
     chrome.storage.local.set({ darkMode: !isDark });
     updateThemeMenuLabel();
+    if (settingsMenu) settingsMenu.classList.remove('open');
+    if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
+    const menuLanguageLabel = document.getElementById('menu-language-label');
+    if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
+  });
+}
+
+if (menuClaudeUsageToggle) {
+  menuClaudeUsageToggle.addEventListener('click', () => {
+    _showClaudeUsage = !_showClaudeUsage;
+    chrome.storage.local.set({ showClaudeUsageInPopup: _showClaudeUsage });
+    updateClaudeUsageMenuLabel();
     if (settingsMenu) settingsMenu.classList.remove('open');
     if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
     const menuLanguageLabel = document.getElementById('menu-language-label');
