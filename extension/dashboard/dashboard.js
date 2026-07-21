@@ -5,6 +5,7 @@ const GROUP_COLORS = [
 ];
 
 let _uiLanguage = 'zh-TW';
+let _showClaudeUsage = true;
 const I18N = {
   'zh-TW': {
     filter: '篩選',
@@ -35,8 +36,9 @@ const I18N = {
     langZhTw: '繁體中文',
     langZhCn: '简体中文',
     langEn: 'English',
-    apiSettings: 'API 設定',
     menuTutorial: '使用教學',
+    menuUsageShow: '顯示 Popup Claude 用量',
+    menuUsageHide: '隱藏 Popup Claude 用量',
     // formatDue
     noDueDate: '無截止日期',
     overdue: '已過期',
@@ -74,14 +76,8 @@ const I18N = {
     noAll: '無項目',
     // weight pie
     noGradeInfo: '沒有評分資訊',
-    // syllabus
-    analyzeWeight: '分析權重',
-    updateWeight: '更新權重',
-    weightNotFound: '未找到評分資訊',
     renameCourse: '重命名',
     weightItemName: '項目名稱',
-    coursePdf: '課程 PDF',
-    aiSelectedPdf: 'AI 選取 PDF',
     // grade calculator
     gradeCalcTitle: '成績計算器',
     // assignment row
@@ -90,37 +86,12 @@ const I18N = {
     markDone: '標記完成',
     markUndone: '取消完成',
     undoComplete: '撤銷',
-    analyzeBtn: 'AI 分析',
-    // analysis panel
-    analyzing: '正在分析中...',
-    reanalyzing: '正在重新分析...',
-    analyzingShort: '分析中',
-    commError: '通訊失敗，請重試',
-    noModelIdMsg: '尚未設定模型 ID',
-    noApiKeyMsg: '尚未設定 AI API 金鑰',
-    settingsPage: '設定頁面',
-    pleaseGoTo: '請先前往',
-    andConfigure: '選擇模型並輸入 API 金鑰',
-    reanalyze: '重新分析',
-    summaryLabel: '摘要',
-    estimatedHoursLabel: '預估作業時間',
-    requirementsLabel: '作業要求',
-    milestonesLabel: '里程碑規劃',
-    tipsLabel: '建議',
-    daysBeforeDuePrefix: '截止前 ',
-    daysBeforeDueSuffix: ' 天',
-    // analysis errors
-    noApiKeyShort: '請先設定 API 金鑰',
-    noModelIdShort: '請先設定模型 ID',
-    analysisError: '分析失敗，請稍後再試',
-    retry: '重試',
     // week section
     within7Days: '7天內',
     within30Days: '8-30天',
     beyond30Days: '30天以上',
     beyond30DaysShort: '30天+',
     noTasks: '無待辦事項',
-    analysisTitle: '作業分析',
     // ui widgets
     editWeight: '編輯',
     weightEditTitle: '編輯評分權重',
@@ -143,21 +114,20 @@ const I18N = {
     wStep3Li1: '點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）',
     wStep3Li2: '找到 <strong>Due</strong>，點擊旁邊的<strong>釘選圖示</strong>',
     wStep3Li3: '工具列出現 Due 圖示後即完成',
-    wTitle4: 'AI 評分權重分析（可選）',
-    wBody4a: '添加 API Key 後，Due 可自動讀取課程 Syllabus，找出各項目的評分比重。',
-    wBody4b: '進入課程詳情頁，點擊「分析權重」即可執行',
-    wBody4c: '不加 API 也可以手動在課程頁編輯評分比重',
-    wBody4d: '如果你不知道 API 是什麼，可以跳過這頁',
+    wTitle4: '評分比重（可選）',
+    wBody4a: '在課程詳情頁可以查看每個評分項目所占的比重。',
+    wBody4b: 'Canvas 有提供評分比重時會自動顯示圓餅圖',
+    wBody4c: '也可以點「編輯」手動輸入各項目的比重',
+    wBody4d: '這頁純屬選用，可以直接跳過',
     wTitle5: '一切就緒',
-    wBody5: '設定完成。登入 Canvas 後資料會自動同步，可隨時在設定中調整 AI 服務。',
+    wBody5: '設定完成。登入 Canvas 後資料會自動同步。',
     wDone1: 'Due 已釘選到瀏覽器工具列',
     wDone2: 'Canvas 登入狀態已確認',
-    wDone3: 'AI 分析功能已了解（可隨時在設定中配置）',
+    wDone3: '評分比重可在課程頁查看或編輯',
     wBtnStart: '開始設定',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
     wBtnDone: '開始使用',
-    wApiLink: '添加 API Key',
   },
   'zh-CN': {
     filter: '筛选',
@@ -188,8 +158,9 @@ const I18N = {
     langZhTw: '繁體中文',
     langZhCn: '简体中文',
     langEn: 'English',
-    apiSettings: 'API 设置',
     menuTutorial: '使用教程',
+    menuUsageShow: '显示 Popup Claude 用量',
+    menuUsageHide: '隐藏 Popup Claude 用量',
     noDueDate: '无截止日期',
     overdue: '已过期',
     today: '今天',
@@ -218,47 +189,19 @@ const I18N = {
     noExam: '无考试',
     noAll: '无项目',
     noGradeInfo: '没有评分信息',
-    analyzeWeight: '分析权重',
-    updateWeight: '更新权重',
-    weightNotFound: '未找到评分信息',
     renameCourse: '重命名',
     weightItemName: '项目名称',
-    coursePdf: '课程 PDF',
-    aiSelectedPdf: 'AI 选取 PDF',
     gradeCalcTitle: '成绩计算器',
     noDesc: '（无描述）',
     submittedBadge: '已交',
     markDone: '标记完成',
     markUndone: '取消完成',
     undoComplete: '撤销',
-    analyzeBtn: 'AI 分析',
-    analyzing: '正在分析中...',
-    reanalyzing: '正在重新分析...',
-    analyzingShort: '分析中',
-    commError: '通信失败，请重试',
-    noModelIdMsg: '尚未设置模型 ID',
-    noApiKeyMsg: '尚未设置 AI API 密钥',
-    settingsPage: '设置页面',
-    pleaseGoTo: '请先前往',
-    andConfigure: '选择模型并输入 API 密钥',
-    reanalyze: '重新分析',
-    summaryLabel: '摘要',
-    estimatedHoursLabel: '预估作业时间',
-    requirementsLabel: '作业要求',
-    milestonesLabel: '里程碑规划',
-    tipsLabel: '建议',
-    daysBeforeDuePrefix: '截止前 ',
-    daysBeforeDueSuffix: ' 天',
-    noApiKeyShort: '请先设置 API 密钥',
-    noModelIdShort: '请先设置模型 ID',
-    analysisError: '分析失败，请稍后再试',
-    retry: '重试',
     within7Days: '7天内',
     within30Days: '8-30天',
     beyond30Days: '30天以上',
     beyond30DaysShort: '30天+',
     noTasks: '无待办事项',
-    analysisTitle: '作业分析',
     editWeight: '编辑',
     weightEditTitle: '编辑评分权重',
     weightAddItem: '+ 新增项目',
@@ -279,21 +222,20 @@ const I18N = {
     wStep3Li1: '点击浏览器右上角的<strong>拼图图标</strong>（扩展程序）',
     wStep3Li2: '找到 <strong>Due</strong>，点击旁边的<strong>固定图标</strong>',
     wStep3Li3: '工具栏出现 Due 图标后即完成',
-    wTitle4: 'AI 评分权重分析（可选）',
-    wBody4a: '添加 API Key 后，Due 可自动读取课程 Syllabus，找出各项目的评分比重。',
-    wBody4b: '进入课程详情页，点击「分析权重」即可执行',
-    wBody4c: '不加 API 也可以在课程页手动编辑评分比重',
-    wBody4d: '如果你不知道 API 是什么，可以跳过这页',
+    wTitle4: '评分比重（可选）',
+    wBody4a: '在课程详情页可以查看每个评分项目所占的比重。',
+    wBody4b: 'Canvas 提供评分比重时会自动显示饼图',
+    wBody4c: '也可以点「编辑」手动输入各项目的比重',
+    wBody4d: '这页纯属可选，可以直接跳过',
     wTitle5: '一切就绪',
-    wBody5: '设置完成。登录 Canvas 后数据将自动同步，可随时在设置中调整 AI 服务。',
+    wBody5: '设置完成。登录 Canvas 后数据将自动同步。',
     wDone1: 'Due 已固定到浏览器工具栏',
     wDone2: 'Canvas 登录状态已确认',
-    wDone3: '已了解 AI 分析功能（可随时在设置中配置）',
+    wDone3: '评分比重可在课程页查看或编辑',
     wBtnStart: '开始设置',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
     wBtnDone: '开始使用',
-    wApiLink: '添加 API Key',
   },
   en: {
     filter: 'Filter',
@@ -324,8 +266,9 @@ const I18N = {
     langZhTw: 'Traditional Chinese',
     langZhCn: 'Simplified Chinese',
     langEn: 'English',
-    apiSettings: 'API Settings',
     menuTutorial: 'Tutorial',
+    menuUsageShow: 'Show Claude usage in popup',
+    menuUsageHide: 'Hide Claude usage in popup',
     noDueDate: 'No due date',
     overdue: 'Overdue',
     today: 'Today',
@@ -354,47 +297,19 @@ const I18N = {
     noExam: 'No exams',
     noAll: 'No items',
     noGradeInfo: 'No grade info',
-    analyzeWeight: 'Analyze Grades',
-    updateWeight: 'Update',
-    weightNotFound: 'Grade info not found',
     renameCourse: 'Rename',
     weightItemName: 'Item name',
-    coursePdf: 'Course PDF',
-    aiSelectedPdf: 'AI-selected PDF',
     gradeCalcTitle: 'Grade Calculator',
     noDesc: '(No description)',
     submittedBadge: 'Done',
     markDone: 'Mark done',
     markUndone: 'Mark undone',
     undoComplete: 'Undo',
-    analyzeBtn: 'AI Analyze',
-    analyzing: 'Analyzing...',
-    reanalyzing: 'Re-analyzing...',
-    analyzingShort: 'Analyzing',
-    commError: 'Connection error, try again',
-    noModelIdMsg: 'Model ID not configured',
-    noApiKeyMsg: 'AI API key not set',
-    settingsPage: 'Settings',
-    pleaseGoTo: 'Go to',
-    andConfigure: 'to select a model and enter your API key',
-    reanalyze: 'Re-analyze',
-    summaryLabel: 'Summary',
-    estimatedHoursLabel: 'Est. Time',
-    requirementsLabel: 'Requirements',
-    milestonesLabel: 'Milestones',
-    tipsLabel: 'Tips',
-    daysBeforeDuePrefix: '',
-    daysBeforeDueSuffix: ' days before due',
-    noApiKeyShort: 'Please configure API key',
-    noModelIdShort: 'Please configure model ID',
-    analysisError: 'Analysis failed, try again',
-    retry: 'Retry',
     within7Days: 'Due ≤ 7d',
     within30Days: '8-30 days',
     beyond30Days: 'Later (30d+)',
     beyond30DaysShort: '30 d+',
     noTasks: 'No pending tasks',
-    analysisTitle: 'Assignment Analysis',
     editWeight: 'Edit',
     weightEditTitle: 'Edit Grade Weights',
     weightAddItem: '+ Add Item',
@@ -415,21 +330,20 @@ const I18N = {
     wStep3Li1: 'Click the <strong>puzzle icon</strong> (Extensions) in the top-right of your browser',
     wStep3Li2: 'Find <strong>Due</strong> and click the <strong>pin icon</strong> next to it',
     wStep3Li3: 'Done when the Due icon appears in your toolbar',
-    wTitle4: 'AI Grade Weights (Optional)',
-    wBody4a: 'Add an API Key and Due will auto-detect grade weights from your course Syllabus.',
-    wBody4b: 'Open a course, then click "Analyze Weights" to run it',
-    wBody4c: 'You can also edit weights manually — no API key needed',
-    wBody4d: 'Not sure what an API is? Skip this step',
+    wTitle4: 'Grade Weights (Optional)',
+    wBody4a: 'Open a course to see how much each grading item is worth.',
+    wBody4b: 'When Canvas provides weights, the pie chart shows automatically',
+    wBody4c: 'You can also click Edit to enter the weights manually',
+    wBody4d: 'This step is optional — feel free to skip it',
     wTitle5: 'All Set!',
-    wBody5: 'Setup complete. Data syncs automatically after you log in to Canvas. Adjust AI settings anytime.',
+    wBody5: 'Setup complete. Data syncs automatically after you log in to Canvas.',
     wDone1: 'Due pinned to browser toolbar',
     wDone2: 'Canvas login confirmed',
-    wDone3: 'AI analysis feature noted (configure in Settings anytime)',
+    wDone3: 'Grade weights available on each course page',
     wBtnStart: 'Get Started',
     wBtnPrev: 'Back',
     wBtnNext: 'Next',
     wBtnDone: 'Start Using Due',
-    wApiLink: 'Add an API Key',
   },
 };
 
@@ -461,7 +375,6 @@ function applyWelcomeTranslations() {
   setHTML('wstep-3-li2', 'wStep3Li2');
   setText('wstep-3-li3', 'wStep3Li3');
   setText('wstep-4-title', 'wTitle4');
-  setText('welcome-api-link', 'wApiLink');
   setText('wstep-4-body-a', 'wBody4a');
   setText('wstep-4-body-b', 'wBody4b');
   setText('wstep-4-body-c', 'wBody4c');
@@ -497,16 +410,7 @@ function applyUILanguage() {
   setText('weight-edit-title', 'weightEditTitle');
   setText('weight-edit-add', 'weightAddItem');
   setText('weight-edit-save', 'customSave');
-  const weightAiBtn = document.getElementById('weight-edit-ai-btn');
-  if (weightAiBtn) {
-    const svg = weightAiBtn.querySelector('svg');
-    weightAiBtn.innerHTML = '';
-    if (svg) weightAiBtn.appendChild(svg);
-    weightAiBtn.appendChild(document.createTextNode(' ' + tr('analyzeBtn')));
-  }
   applyWelcomeTranslations();
-  const apiSettingsBtn = document.getElementById('menu-open-api-settings');
-  if (apiSettingsBtn) apiSettingsBtn.innerHTML = `${tr('apiSettings')} <span>↗</span>`;
   const tutorialBtn = document.getElementById('menu-open-tutorial');
   if (tutorialBtn) tutorialBtn.innerHTML = `${tr('menuTutorial')} <span>↗</span>`;
   const menuLanguageLabel = document.getElementById('menu-language-label');
@@ -561,6 +465,7 @@ function bindLanguageMenuActions() {
     chrome.storage.local.set({ uiLanguage: lang });
     applyUILanguage();
     updateThemeMenuLabel();
+    updateClaudeUsageMenuLabel();
     loadData();
     if (settingsMenu) settingsMenu.classList.remove('open');
     if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
@@ -1564,8 +1469,7 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     ? `<div class="card-badge-urgent">${urgentCount}${tr('urgentItems')}</div>`
     : `<div class="card-badge-urgent is-placeholder" aria-hidden="true">0${tr('urgentItems')}</div>`;
 
-  const syllabusData = (_currentData.syllabusAnalysis || {})[course.id] || null;
-  const weightPieHtml = renderWeightPie(groups, syllabusData, course.id);
+  const weightPieHtml = renderWeightPie(groups, course.id);
   const gradeCalcHtml = renderGradeCalculator(course, asgns, groups, scores);
   const assignmentRows = filtered.map((a) => renderAssignmentRow(a, groups, course.id)).join('');
 
@@ -1585,7 +1489,6 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
       <div class="detail-card-bottom">
         <div class="detail-left-panel">
           ${weightPieHtml}
-          ${renderSyllabusSection(course.id)}
         </div>
         <div class="detail-right-panel">
           ${gradeCalcHtml}
@@ -1688,32 +1591,6 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     });
   });
 
-  el.querySelectorAll('.btn-syllabus-analyze').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const cid = parseInt(btn.dataset.courseId, 10);
-      const force = btn.dataset.force === 'true';
-      const section = document.getElementById(`syllabus-section-${cid}`);
-      if (section) section.innerHTML = `<div class="syllabus-loading">${tr('analyzingShort')}</div>`;
-      chrome.runtime.sendMessage({ type: 'ANALYZE_SYLLABUS', courseId: cid, force }, (res) => {
-        if (res && res.success) {
-          if (!_currentData.syllabusAnalysis) _currentData.syllabusAnalysis = {};
-          _currentData.syllabusAnalysis[cid] = { timestamp: new Date().toISOString(), ...res.result };
-          // Re-render entire detail section so pie chart updates
-          const { courses = [], assignments = {}, assignmentGroups = {}, scores = {} } = _currentData;
-          const course = courses.find((c) => c.id === cid);
-          if (course) renderCourseDetailSection(course, assignments[cid] || [], assignmentGroups[cid] || [], scores);
-        } else {
-          const msg = res && res.error === 'NO_API_KEY'
-            ? tr('noApiKeyShort')
-            : res && res.error === 'NO_MODEL_ID'
-              ? tr('noModelIdShort')
-              : tr('analysisError');
-          if (section) section.innerHTML = `<div class="syllabus-empty">${msg}</div><button class="btn-syllabus-analyze" data-course-id="${cid}">${tr('retry')}</button>`;
-        }
-      });
-    });
-  });
-
   el.querySelectorAll('.btn-edit-weights').forEach((btn) => {
     btn.addEventListener('click', () => {
       openWeightEditModal(parseInt(btn.dataset.courseId, 10));
@@ -1729,7 +1606,7 @@ const EDIT_WEIGHT_BTN = (courseId) => `
     ${tr('editWeight')}
   </button>`;
 
-function renderWeightPie(groups, syllabusData, courseId) {
+function renderWeightPie(groups, courseId) {
   // Prioritize custom weights
   const customWeights = courseId && (_currentData.customWeights || {})[courseId];
   if (customWeights && customWeights.length > 0) {
@@ -1785,35 +1662,6 @@ function renderWeightPie(groups, syllabusData, courseId) {
       </div>`;
   }
 
-  // Fallback: use syllabus analysis components
-  if (syllabusData && syllabusData.found && syllabusData.components && syllabusData.components.length > 0) {
-    const components = syllabusData.components.filter((c) => c.weight != null && c.weight > 0);
-    if (components.length > 0) {
-      const syllabusTotal = components.reduce((s, c) => s + c.weight, 0);
-      let currentPct = 0;
-      const gradientParts = components.map((c, i) => {
-        const pct = (c.weight / syllabusTotal) * 100;
-        const startPct = currentPct;
-        currentPct += pct;
-        return `${GROUP_COLORS[i % GROUP_COLORS.length]} ${startPct}% ${currentPct}%`;
-      }).join(', ');
-
-      const legend = components.map((c, i) => `
-        <div class="detail-pie-legend-item">
-          <div class="detail-pie-legend-dot" style="background:${GROUP_COLORS[i % GROUP_COLORS.length]}"></div>
-          <span class="detail-pie-legend-text">${esc(c.name)}</span>
-          <span class="detail-pie-legend-weight">${c.weight}%</span>
-        </div>`).join('');
-
-      return `
-        <div class="detail-weight-pie-container">
-          <div class="detail-pie" style="background: conic-gradient(${gradientParts});"></div>
-          <div class="detail-pie-legend">${legend}</div>
-          ${courseId ? EDIT_WEIGHT_BTN(courseId) : ''}
-        </div>`;
-    }
-  }
-
   // No data
   return `
     <div class="detail-weight-pie-container">
@@ -1821,11 +1669,6 @@ function renderWeightPie(groups, syllabusData, courseId) {
       <div class="detail-pie-label">${tr('noGradeInfo')}</div>
       ${courseId ? EDIT_WEIGHT_BTN(courseId) : ''}
     </div>`;
-}
-
-// ── Syllabus Section ──
-function renderSyllabusSection(courseId) {
-  return `<div class="syllabus-section" id="syllabus-section-${courseId}"></div>`;
 }
 
 // ── Weight Bar ──
@@ -2077,7 +1920,7 @@ document.getElementById('sync-btn').addEventListener('click', () => {
 // ── 讀取資料 ──
 function loadData() {
   chrome.storage.local.get(
-    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights', 'manualDone', 'manualUndone'],
+    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'courseNames', 'customWeights', 'manualDone', 'manualUndone'],
     (data) => {
       if (!data.courses || !data.courses.length) {
         currentView = 'grid';
@@ -2099,10 +1942,6 @@ function loadData() {
       render({
         ...data,
         scores: data.scores || {},
-        files: data.files || {},
-        analysis: data.analysis || {},
-        milestoneChecks: data.milestoneChecks || {},
-        syllabusAnalysis: data.syllabusAnalysis || {},
         courseNames: data.courseNames || {},
         customAssignments: data.customAssignments || {},
         manualDone: data.manualDone || {},
@@ -2124,17 +1963,25 @@ function updateThemeMenuLabel() {
   btn.textContent = isDark ? tr('themeLight') : tr('themeDark');
 }
 
-chrome.storage.local.get(['darkMode', 'uiLanguage'], (data) => {
+function updateClaudeUsageMenuLabel() {
+  const btn = document.getElementById('menu-claude-usage-toggle');
+  if (!btn) return;
+  btn.textContent = _showClaudeUsage ? tr('menuUsageHide') : tr('menuUsageShow');
+}
+
+chrome.storage.local.get(['darkMode', 'uiLanguage', 'showClaudeUsageInPopup'], (data) => {
   _uiLanguage = data.uiLanguage || 'zh-TW';
+  _showClaudeUsage = data.showClaudeUsageInPopup !== false;
   applyTheme(!!data.darkMode);
   applyUILanguage();
   updateThemeMenuLabel();
+  updateClaudeUsageMenuLabel();
 });
 
 const settingsMenuBtn = document.getElementById('settings-menu-btn');
 const settingsMenu = document.getElementById('settings-menu');
 const menuThemeToggle = document.getElementById('menu-theme-toggle');
-const menuOpenApiSettings = document.getElementById('menu-open-api-settings');
+const menuClaudeUsageToggle = document.getElementById('menu-claude-usage-toggle');
 const menuOpenTutorial = document.getElementById('menu-open-tutorial');
 
 if (settingsMenuBtn && settingsMenu) {
@@ -2171,10 +2018,11 @@ if (menuThemeToggle) {
   });
 }
 
-if (menuOpenApiSettings) {
-  menuOpenApiSettings.addEventListener('click', () => {
-    const url = chrome.runtime.getURL('settings.html');
-    chrome.tabs.create({ url });
+if (menuClaudeUsageToggle) {
+  menuClaudeUsageToggle.addEventListener('click', () => {
+    _showClaudeUsage = !_showClaudeUsage;
+    chrome.storage.local.set({ showClaudeUsageInPopup: _showClaudeUsage });
+    updateClaudeUsageMenuLabel();
     if (settingsMenu) settingsMenu.classList.remove('open');
     if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
     const menuLanguageLabel = document.getElementById('menu-language-label');
@@ -2256,10 +2104,6 @@ function welcomeGoStep(n) {
 
 document.getElementById('welcome-close')?.addEventListener('click', closeWelcomeModal);
 document.getElementById('welcome-done-btn')?.addEventListener('click', closeWelcomeModal);
-document.getElementById('welcome-api-link')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  chrome.tabs.create({ url: chrome.runtime.getURL('settings.html') });
-});
 document.getElementById('welcome-canvas-link')?.addEventListener('click', (e) => {
   e.preventDefault();
   const base = _currentData.canvasBaseUrl || '';
@@ -2290,15 +2134,12 @@ function openWeightEditModal(courseId) {
 
   const custom = (_currentData.customWeights || {})[courseId];
   const groups = (_currentData.assignmentGroups || {})[courseId] || [];
-  const syllabus = (_currentData.syllabusAnalysis || {})[courseId];
 
   let items = [];
   if (custom && custom.length > 0) {
     items = custom.map((c) => ({ name: c.name, weight: c.weight }));
   } else if (groups.some((g) => g.group_weight)) {
     items = groups.filter((g) => g.group_weight).map((g) => ({ name: g.name, weight: g.group_weight }));
-  } else if (syllabus && syllabus.found && syllabus.components) {
-    items = syllabus.components.map((c) => ({ name: c.name, weight: c.weight }));
   }
 
   renderWeightEditList(items);
@@ -2388,24 +2229,6 @@ document.getElementById('weight-edit-save').addEventListener('click', () => {
   const { courses = [], assignments = {}, assignmentGroups = {}, scores = {} } = _currentData;
   const course = courses.find((c) => c.id === _weightEditCourseId);
   if (course) renderCourseDetailSection(course, assignments[course.id] || [], assignmentGroups[course.id] || [], scores);
-});
-
-document.getElementById('weight-edit-ai-btn').addEventListener('click', () => {
-  const btn = document.getElementById('weight-edit-ai-btn');
-  btn.classList.add('loading');
-  btn.innerHTML = `<span class="sync-dots"><span></span><span></span><span></span></span> ${tr('analyzeBtn')}`;
-
-  chrome.runtime.sendMessage({ type: 'ANALYZE_SYLLABUS', courseId: _weightEditCourseId, force: true }, (res) => {
-    btn.classList.remove('loading');
-    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18 2v4h4"/></svg> ${tr('analyzeBtn')}`;
-
-    if (res && res.success && res.result && res.result.components) {
-      if (!_currentData.syllabusAnalysis) _currentData.syllabusAnalysis = {};
-      _currentData.syllabusAnalysis[_weightEditCourseId] = { timestamp: new Date().toISOString(), ...res.result };
-      const items = res.result.components.map((c) => ({ name: c.name, weight: c.weight }));
-      renderWeightEditList(items);
-    }
-  });
 });
 
 document.getElementById('weight-edit-overlay').addEventListener('click', (e) => {

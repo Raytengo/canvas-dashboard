@@ -3,7 +3,7 @@
 ## 項目概述
 
 這是一個 Chrome 擴充功能，幫助 HKUST(GZ) 的學生從 Canvas LMS 自動拉取課程資料，
-並在一個美觀的 Dashboard 上顯示所有作業、截止日期、評分比重和 AI 分析。
+並在一個美觀的 Dashboard 上顯示所有作業、截止日期和評分比重。
 
 目標是讓學生不需要打開 Canvas，就能知道「現在該做什麼、怎麼做、什麼時候要做完」。
 
@@ -24,7 +24,7 @@ cc/
 ├── CLAUDE.md
 └── extension/
     ├── manifest.json              ← 擴充功能設定（Manifest V3）
-    ├── background.js              ← Service worker：Canvas API 同步 + AI 分析
+    ├── background.js              ← Service worker：Canvas API 同步 + Claude 用量
     ├── popup.html                 ← 點擊擴充功能圖示的小視窗
     ├── popup.js                   ← popup 的邏輯
     └── dashboard/
@@ -39,8 +39,8 @@ cc/
 ### Chrome 擴充功能
 
 - **Manifest Version**：3（必須用 V3）
-- **Permissions**：`storage`、`activeTab`、`scripting`、`webNavigation`
-- **Host Permissions**：`https://hkust-gz.instructure.com/*`、`https://generativelanguage.googleapis.com/*`、`https://api.anthropic.com/*`
+- **Permissions**：`storage`、`tabs`、`webNavigation`、`scripting`
+- **Host Permissions**：`https://*.instructure.com/*`、`https://claude.ai/*`（後者供 popup 的 Claude 用量顯示與 content script）
 - **背景執行**：Service Worker（background.js），不能用 `window` 或 `document`
 
 ### Canvas API 端點
@@ -54,12 +54,6 @@ GET /api/v1/courses/:id/assignments?per_page=50&include[]=submission
 
 GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_weight
 → 拿評分比重分組
-
-GET /api/v1/courses/:id/files?per_page=50&content_types[]=application/pdf
-→ 拿課程 PDF 檔案（403/401 靜默回傳 []）
-
-GET /api/v1/courses/:id/discussion_topics?only_announcements=true&per_page=50
-→ 拿課程公告（403/401 靜默回傳 []）
 ```
 
 注意：Canvas API 有分頁，需要處理 `Link` header 的 `rel="next"`。
@@ -74,18 +68,15 @@ GET /api/v1/courses/:id/discussion_topics?only_announcements=true&per_page=50
   "courses": [...],
   "assignments": { "courseId": [...] },
   "assignmentGroups": { "courseId": [...] },
-  "files": { "courseId": [...] },
-  "announcements": { "courseId": [...] },
   "scores": { "assignmentId": 85.5 },
-  "analysis": { "assignmentId": { "timestamp": "...", "model": "...", "result": {...} } },
-  "milestoneChecks": { "assignmentId_0": true },
   "manualDone": { "assignmentId": true },
   "manualUndone": { "assignmentId": true },
+  "customWeights": { "courseId": [{ "name": "Homework", "weight": 30 }] },
+  "courseNames": { "courseId": "自訂名稱" },
   "darkMode": false,
-  "aiModel": "gemini",
-  "geminiApiKey": "...",
-  "geminiModel": "gemini-2.0-flash-lite",
-  "claudeApiKey": "..."
+  "uiLanguage": "zh-TW",
+  "showClaudeUsageInPopup": true,
+  "claudeUsage": { "usedPercent": 0, "resetAt": "..." }
 }
 ```
 
@@ -149,35 +140,12 @@ GET /api/v1/courses/:id/discussion_topics?only_announcements=true&per_page=50
 ### background.js
 
 - 監聽 `webNavigation.onCompleted` — 使用者造訪 Canvas 時自動觸發同步
-- 響應訊息：`SYNC`、`GET_STATUS`、`FETCH_PDF`、`ANALYZE_ASSIGNMENT`、`GET_ANALYSIS`、`ANALYZE_SYLLABUS`
-- `syncAll()`：並行拉取所有課程的作業、評分分組、PDF 檔案、公告
+- 響應訊息：`SYNC`、`GET_STATUS`、`SYNC_CLAUDE_USAGE`
+- `syncAll()`：並行拉取所有課程的作業與評分分組（courses / assignments / assignmentGroups）
 - `fetchSchoolName()`：自動偵測學校名稱（優先 Canvas API → hostname 解析）
-- `handleAnalyze()`：AI 分析流程
-  1. 拉取完整作業資訊（含 PDF 附件）
-  2. 從作業描述 HTML 中解析 Canvas file ID
-  3. 讓 AI 從課程檔案清單中選出相關 PDF（最多 60 個）
-  4. 讓 AI 從公告中選出相關內容（最多 30 個）
-  5. 組裝 prompt 呼叫 AI，回傳 JSON：`{ summary, requirements, milestones, tips, estimatedHours }`
-  6. 快取分析結果到 `chrome.storage.local`
-- `handleSyllabusAnalyze()`：Syllabus 評分比重分析流程
-  1. 先從 API `syllabus_body` 抓取 HTML；若無則 fetch 實際 Syllabus 網頁
-  2. 用 `/\/files\/(\d+)/g` 正則從 HTML 提取所有 file ID，逐一嘗試下載 PDF
-  3. 若 Syllabus 無 PDF，改用關鍵字比對課程檔案清單，再讓 AI 選取（temperature: 0）
-  4. 回傳 JSON：`{ found, components: [{ name, weight }], notes }`
-  5. 快取到 `chrome.storage.local.syllabusAnalysis`
+- `fetchClaudeUsageDirect()`：popup 的 Claude 用量 chip — 找開著的 `claude.ai` 分頁，借該分頁登入狀態讀 `/api/organizations/:id/usage`，**不呼叫任何 LLM**；結果存 `claudeUsage`。搭配注入 claude.ai 的 `claude_injected.js` / `claude_content.js`
 
-**支援的 AI 後端：**
-
-| 後端 | 分析模型 | 選取子任務模型 |
-|------|----------|----------------|
-| Gemini（預設） | 可設定（預設 `gemini-2.0-flash-lite`） | 同模型 |
-| Claude | `claude-opus-4-6` | `claude-haiku-4-5` |
-| OpenAI | 可設定 | 同模型 |
-| DeepSeek | 可設定 | 同模型 |
-| Qwen (通義千問) | 可設定 | 同模型 |
-| Moonshot (Kimi) | 可設定 | 同模型 |
-| Zhipu (智譜) | 可設定 | 同模型 |
-| MiniMax | 可設定 | 同模型 |
+> 註：逐作業 AI 分析與 syllabus 評分比重 AI 分析已於 2026-07 移除（見 `docs/superpowers/specs/2026-07-21-remove-ai-analysis-design.md`）。
 
 ### popup.html / popup.js
 
@@ -197,7 +165,7 @@ sidebar（300px）+ main-content（flex:1）
 │  篩選 pills     │  #main-section（目前頁面）
 │  作業/考試/全部  │  #course-detail-container（課程詳情）
 │  查看已繳交     │
-│  課程導航列     │  + 右側 analysis-panel（440px 滑入）
+│  課程導航列     │
 │  同步/設定      │
 ```
 
@@ -213,13 +181,11 @@ sidebar（300px）+ main-content（flex:1）
 
 **課程詳情頁（Course Detail）：**
 - 上半：課程代碼、名稱（含鉛筆圖示可 inline 重命名）、緊急 badge
-- 左下：評分比重圓餅圖 + 圖例；若 Canvas 無分組資料則顯示 Syllabus 分析結果
-- Syllabus 分析按鈕：AI 自動分析評分比重，結果快取
+- 左下：評分比重圓餅圖 + 圖例；資料來源優先序：手動輸入權重（`customWeights`）→ Canvas 分組權重（`group_weight`）→ 皆無則顯示「無評分資訊」
 - 右下：成績計算器（accordion）+ 作業清單
   - 成績計算器：輸入分數即時計算加權總分
   - 作業列表：點擊行展開描述，點擊作業名稱文字開新分頁跳轉 Canvas
-  - 完成勾選圈：所有作業可雙向切換完成/未完成。未繳者翻轉 `manualDone`；Canvas 已繳者翻轉 `manualUndone` 覆蓋（標回未完成會回到待辦，「已繳交」badge 仍顯示 Canvas 事實）。判斷公式 `isDone = (isSubmitted && !manualUndone[id]) || manualDone[id]`，單一真相來源在 `completion.js`（見 docs/superpowers/specs/2026-07-21-bidirectional-completion-toggle-design.md）
-  - 作業列：AI 分析按鈕 → 滑入右側分析面板
+  - 作業列最左有完成勾選圈（見下方「完成標記」）
 
 **課程自訂名稱：**
 - 課程詳情頁的課程名稱旁有鉛筆圖示（hover 顯示）
@@ -227,9 +193,12 @@ sidebar（300px）+ main-content（flex:1）
 - 自訂名稱儲存在 `chrome.storage.local.courseNames`，不影響 Canvas API 資料
 - 自訂名稱同步顯示於：sidebar 導航、週待辦卡片、課程 grid 卡片、popup
 
-**分析面板：**
-- 顯示 AI 生成的作業摘要、預計時數、需求清單、里程碑 checklist（可勾選並持久化）、建議貼士
-- 可重新分析；分析結果快取在 storage 中
+**完成標記（手動，雙向）：**
+- 每個作業列最左有一個勾選圈，所有作業皆可雙向切換完成/未完成，獨立於 Canvas 繳交狀態
+- 判斷公式 `isDone = (isSubmitted && !manualUndone[id]) || manualDone[id]`，單一真相來源在 `dashboard/completion.js`（含單元測試）
+- 未繳者翻轉 `manualDone`；Canvas 已繳者翻轉 `manualUndone` 覆蓋——標回未完成會回到待辦清單（popup 同步），「已繳交」badge 仍顯示 Canvas 事實；再點一次移除覆蓋、回歸 Canvas 判定
+- 待辦視圖勾選完成 → 該列維持原尺寸 3 秒（底部橘色撤銷倒數條），期間點該列可取消；時間到「碎點爆」後移除、清單收合
+- 兩個 map 同步皆不覆蓋；髒資料兩者同時存在時 `manualDone` 勝出（見 docs/superpowers/specs/2026-07-21-bidirectional-completion-toggle-design.md）
 
 **多語言支援（i18n）：**
 - 支援：繁體中文（預設）、简体中文、English
@@ -240,7 +209,7 @@ sidebar（300px）+ main-content（flex:1）
 **全域篩選邏輯（`applyFilters`）：**
 - 永遠排除 attendance/簽到類作業（自動偵測關鍵字）
 - 按類型篩選：`作業` / `考試` / `全部`
-- 按繳交狀態篩選：隱藏/顯示已繳
+- 按完成狀態篩選：隱藏/顯示已完成（Canvas 已繳 + 手動標記完成，見 completion.js 的 isDone）
 
 **頁面切換動畫：**
 - 學期待辦 ↔ 課程：水平 slide（`.page-slider` translateX，470ms）
@@ -252,31 +221,8 @@ sidebar（300px）+ main-content（flex:1）
 
 ## 資料儲存
 
-用 `chrome.storage.local` 存所有資料，格式如下：
-
-```json
-{
-  "lastSync": "2026-03-06T10:00:00Z",
-  "courses": [...],
-  "assignments": { "courseId": [...] },
-  "assignmentGroups": { "courseId": [...] },
-  "files": { "courseId": [...] },
-  "announcements": { "courseId": [...] },
-  "scores": { "assignmentId": 85.5 },
-  "analysis": { "assignmentId": { "timestamp": "...", "model": "...", "result": {...} } },
-  "syllabusAnalysis": { "courseId": { "found": true, "components": [...], "source": "syllabus_page_pdf" } },
-  "milestoneChecks": { "assignmentId_0": true },
-  "manualDone": { "assignmentId": true },
-  "manualUndone": { "assignmentId": true },
-  "courseNames": { "courseId": "自訂名稱" },
-  "darkMode": false,
-  "uiLanguage": "zh-TW",
-  "aiModel": "gemini",
-  "geminiApiKey": "...",
-  "geminiModel": "gemini-2.0-flash-lite",
-  "claudeApiKey": "..."
-}
-```
+見上方「技術規格 → 資料儲存」的 `chrome.storage.local` 格式。
+（AI 相關 key：`analysis`、`syllabusAnalysis`、`milestoneChecks`、`aiModel`、`geminiApiKey`、`geminiModel`、`claudeApiKey` 已隨 AI 分析移除；舊資料殘留無害，不主動清除。）
 
 ---
 
@@ -288,17 +234,14 @@ sidebar（300px）+ main-content（flex:1）
 4. 有些作業沒有截止日期（`due_at` 為 null），`urgencyClass` 和 `formatDue` 都已處理
 5. View Transitions API 是 Chrome 111+ 的功能，`showCourseDetail` 有 fallback 處理
 6. `_currentData` 是全域快取；頁面切換時用 `_currentData` 同步渲染，不要再呼叫 `loadData()`（避免空白閃爍）
-7. AI 分析若沒有 API Key 會回傳 `NO_API_KEY`，dashboard 會顯示設定連結
-8. PDF 超過 10MB 會被跳過不上傳給 AI
-9. Syllabus PDF 下載優先用 `/courses/:id/files/:id/download?download_frd=1`（帶 cookie），若 404 則 fallback 到 `/api/v1/files/:id` 取最新 signed URL
-10. `courseNames` 只影響顯示層，Canvas API 呼叫仍使用原始 `course.id`，不受自訂名稱影響
-11. `field-sizing: content`（Chrome 123+）用於 inline 重命名輸入框自動縮放
+7. `courseNames` 只影響顯示層，Canvas API 呼叫仍使用原始 `course.id`，不受自訂名稱影響
+8. `field-sizing: content`（Chrome 123+）用於 inline 重命名輸入框自動縮放
+9. 完成標記動畫：勾選後不立即重繪，該列跑 3 秒撤銷窗口＋碎點爆才移除；`dashboard.js` 無 `storage.onChanged` 監聽器，故寫入 `manualDone` 不會打斷動畫（見 `completion.js`）
 
 ---
 
 ## 待開發功能
 
-- PDF 自動下載並在 AI 分析中使用（pipeline 已有，但部分課程 403）
-- 公告內容整合進 AI 分析（infrastructure 已完成）
 - 成績計算器顯示優化（目前 accordion 折疊）
 - 多學期 / 歸檔課程過濾
+- 完成標記動畫延伸到週待辦卡片（目前僅課程詳情列）
