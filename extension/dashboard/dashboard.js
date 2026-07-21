@@ -114,13 +114,8 @@ const I18N = {
     wStep3Li1: '點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）',
     wStep3Li2: '找到 <strong>Due</strong>，點擊旁邊的<strong>釘選圖示</strong>',
     wStep3Li3: '工具列出現 Due 圖示後即完成',
-    wTitle4: '評分比重（可選）',
-    wBody4a: '在課程詳情頁可以查看每個評分項目所占的比重。',
-    wBody4b: 'Canvas 有提供評分比重時會自動顯示圓餅圖',
-    wBody4c: '也可以點「編輯」手動輸入各項目的比重',
-    wBody4d: '這頁純屬選用，可以直接跳過',
-    wTitle5: '一切就緒',
-    wBody5: '設定完成。登入 Canvas 後資料會自動同步。',
+    wTitle4: '一切就緒',
+    wBody4: '設定完成。登入 Canvas 後資料會自動同步。',
     wDone1: 'Due 已釘選到瀏覽器工具列',
     wDone2: 'Canvas 登入狀態已確認',
     wDone3: '評分比重可在課程頁查看或編輯',
@@ -222,13 +217,8 @@ const I18N = {
     wStep3Li1: '点击浏览器右上角的<strong>拼图图标</strong>（扩展程序）',
     wStep3Li2: '找到 <strong>Due</strong>，点击旁边的<strong>固定图标</strong>',
     wStep3Li3: '工具栏出现 Due 图标后即完成',
-    wTitle4: '评分比重（可选）',
-    wBody4a: '在课程详情页可以查看每个评分项目所占的比重。',
-    wBody4b: 'Canvas 提供评分比重时会自动显示饼图',
-    wBody4c: '也可以点「编辑」手动输入各项目的比重',
-    wBody4d: '这页纯属可选，可以直接跳过',
-    wTitle5: '一切就绪',
-    wBody5: '设置完成。登录 Canvas 后数据将自动同步。',
+    wTitle4: '一切就绪',
+    wBody4: '设置完成。登录 Canvas 后数据将自动同步。',
     wDone1: 'Due 已固定到浏览器工具栏',
     wDone2: 'Canvas 登录状态已确认',
     wDone3: '评分比重可在课程页查看或编辑',
@@ -330,13 +320,8 @@ const I18N = {
     wStep3Li1: 'Click the <strong>puzzle icon</strong> (Extensions) in the top-right of your browser',
     wStep3Li2: 'Find <strong>Due</strong> and click the <strong>pin icon</strong> next to it',
     wStep3Li3: 'Done when the Due icon appears in your toolbar',
-    wTitle4: 'Grade Weights (Optional)',
-    wBody4a: 'Open a course to see how much each grading item is worth.',
-    wBody4b: 'When Canvas provides weights, the pie chart shows automatically',
-    wBody4c: 'You can also click Edit to enter the weights manually',
-    wBody4d: 'This step is optional — feel free to skip it',
-    wTitle5: 'All Set!',
-    wBody5: 'Setup complete. Data syncs automatically after you log in to Canvas.',
+    wTitle4: 'All Set!',
+    wBody4: 'Setup complete. Data syncs automatically after you log in to Canvas.',
     wDone1: 'Due pinned to browser toolbar',
     wDone2: 'Canvas login confirmed',
     wDone3: 'Grade weights available on each course page',
@@ -375,15 +360,10 @@ function applyWelcomeTranslations() {
   setHTML('wstep-3-li2', 'wStep3Li2');
   setText('wstep-3-li3', 'wStep3Li3');
   setText('wstep-4-title', 'wTitle4');
-  setText('wstep-4-body-a', 'wBody4a');
-  setText('wstep-4-body-b', 'wBody4b');
-  setText('wstep-4-body-c', 'wBody4c');
-  setText('wstep-4-body-d', 'wBody4d');
-  setText('wstep-5-title', 'wTitle5');
-  setText('wstep-5-body', 'wBody5');
-  setText('wstep-5-done1', 'wDone1');
-  setText('wstep-5-done2', 'wDone2');
-  setText('wstep-5-done3', 'wDone3');
+  setText('wstep-4-body', 'wBody4');
+  setText('wstep-4-done1', 'wDone1');
+  setText('wstep-4-done2', 'wDone2');
+  setText('wstep-4-done3', 'wDone3');
   _welcomeUpdateButtons(_welcomeStep);
 }
 
@@ -2056,9 +2036,9 @@ function _welcomeUpdateButtons(n) {
   let html = '';
   if (n === 1) {
     html = `<button class="welcome-btn" data-wgo="2">${tr('wBtnStart')}</button>`;
-  } else if (n === 5) {
+  } else if (n === 4) {
     html = `
-      <button class="welcome-btn sec" data-wgo="4">${tr('wBtnPrev')}</button>
+      <button class="welcome-btn sec" data-wgo="3">${tr('wBtnPrev')}</button>
       <button class="welcome-btn ora" id="welcome-done-btn">${tr('wBtnDone')}</button>
     `;
   } else {
@@ -2097,7 +2077,7 @@ function welcomeGoStep(n) {
   if (n === _welcomeStep) return;
   _welcomeStep = n;
   const track = document.getElementById('welcome-track');
-  if (track) track.style.transform = `translateX(-${(n - 1) * 20}%)`;
+  if (track) track.style.transform = `translateX(-${(n - 1) * 25}%)`;
   _welcomeUpdateDots(n);
   _welcomeUpdateButtons(n);
 }
