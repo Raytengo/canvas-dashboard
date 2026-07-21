@@ -19,9 +19,17 @@
     return !!(manualDoneMap || {})[String(id)];
   }
 
-  // ── 綜合完成判斷：Canvas 已繳「或」手動完成（加法覆蓋）──
-  function isDone(assignment, manualDoneMap) {
-    return isSubmitted(assignment) || isManualDone(manualDoneMap, assignment && assignment.id);
+  // ── 手動「標回未完成」map 是否標記該 id（鏡像 isManualDone，只對 Canvas 已繳者有意義）──
+  function isManualUndone(manualUndoneMap, id) {
+    return !!(manualUndoneMap || {})[String(id)];
+  }
+
+  // ── 綜合完成判斷：（Canvas 已繳 且 未標回未完成）「或」手動完成 ──
+  //    manualUndoneMap 可省略（省略＝舊行為）；髒資料兩 map 同時有 → manualDone 勝出（仍算完成）
+  function isDone(assignment, manualDoneMap, manualUndoneMap) {
+    const id = assignment && assignment.id;
+    return (isSubmitted(assignment) && !isManualUndone(manualUndoneMap, id))
+      || isManualDone(manualDoneMap, id);
   }
 
   // ── 切換手動完成，回傳「新的」map（immutable，不 mutate 輸入）──
@@ -50,6 +58,7 @@
   return {
     isSubmitted,
     isManualDone,
+    isManualUndone,
     isDone,
     toggleManualDone,
     normalizeManualDone,

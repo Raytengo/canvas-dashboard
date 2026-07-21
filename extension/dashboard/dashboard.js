@@ -666,9 +666,9 @@ function isSubmitted(a) {
   return DueCompletion.isSubmitted(a);
 }
 
-// 綜合完成判斷：Canvas 已繳「或」手動完成（比照 getCourseName 讀 _currentData）
+// 綜合完成判斷：（Canvas 已繳 且 未標回未完成）「或」手動完成（比照 getCourseName 讀 _currentData）
 function isDone(a) {
-  return DueCompletion.isDone(a, _currentData.manualDone || {});
+  return DueCompletion.isDone(a, _currentData.manualDone || {}, _currentData.manualUndone || {});
 }
 
 function esc(str) {
@@ -897,7 +897,7 @@ function renderNav(courses, assignments) {
     const filtered = applyFilters(asgns);
     const pendingCount = filtered.length;
     const urgentCount = filtered.filter((a) => {
-      if (!a.due_at || isSubmitted(a)) return false;
+      if (!a.due_at || isDone(a)) return false;
       const diff = new Date(a.due_at) - Date.now();
       return diff > 0 && diff <= 7 * 86400000;
     }).length;
@@ -1198,7 +1198,7 @@ function renderCardBottom(courseId, sorted, pageIdx) {
 
   const rows = visible.length
     ? visible.map((a) => {
-        const uClass = urgencyClass(a.due_at, isExam(a), isSubmitted(a));
+        const uClass = urgencyClass(a.due_at, isExam(a), isDone(a));
         return `
           <div class="card-row">
             <div class="card-row-title">${esc(a.name)}</div>
@@ -1504,16 +1504,23 @@ function finishComplete(item, id, cid) {
 
 function cancelComplete(item, id, cid) {
   if (_completeTimers[id]) { clearTimeout(_completeTimers[id]); delete _completeTimers[id]; }
-  const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id, false);
-  _currentData.manualDone = next;
-  chrome.storage.local.set({ manualDone: next });
+  // 撤銷要還原到「未完成」：Canvas 已繳者是恢復 manualUndone 覆蓋；未繳者是移除 manualDone
+  const chk = item.querySelector('.assignment-check');
+  if (chk && chk.dataset.submitted === 'true') {
+    const next = DueCompletion.toggleManualDone(_currentData.manualUndone || {}, id, true);
+    _currentData.manualUndone = next;
+    chrome.storage.local.set({ manualUndone: next });
+  } else {
+    const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id, false);
+    _currentData.manualDone = next;
+    chrome.storage.local.set({ manualDone: next });
+  }
   // 就地還原（不整段重繪，避免影響其他進行中的動畫）
   item.classList.remove('completing');
   const hint = item.querySelector('.complete-undo-hint');
   if (hint) hint.remove();
   const bar = item.querySelector('.complete-countdown');
   if (bar) bar.remove();
-  const chk = item.querySelector('.assignment-check');
   if (chk) { chk.dataset.done = 'false'; chk.setAttribute('aria-label', tr('markDone')); }
 }
 
@@ -1627,7 +1634,6 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
   el.querySelectorAll('.assignment-check').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation(); // 不觸發整列展開或作業名稱跳轉
-      if (btn.dataset.locked === 'true') return; // Canvas 已繳，維持語意不可取消
       const item = btn.closest('.assignment-item');
       const id = String(btn.dataset.assignmentId);
       const cid = parseInt(btn.dataset.courseId, 10);
@@ -1636,15 +1642,23 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
         cancelComplete(item, id, cid);
         return;
       }
-      const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id);
-      const nowDone = DueCompletion.isManualDone(next, id);
-      _currentData.manualDone = next; // 就地更新，避免閃白
-      chrome.storage.local.set({ manualDone: next });
+      // 依 Canvas 事實分流：已繳 → 翻轉「標回未完成」覆蓋；未繳 → 翻轉手動完成（就地更新，避免閃白）
+      if (btn.dataset.submitted === 'true') {
+        const next = DueCompletion.toggleManualDone(_currentData.manualUndone || {}, id);
+        _currentData.manualUndone = next;
+        chrome.storage.local.set({ manualUndone: next });
+      } else {
+        const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id);
+        _currentData.manualDone = next;
+        chrome.storage.local.set({ manualDone: next });
+      }
+      const a = ((_currentData.assignments || {})[cid] || []).find((x) => String(x.id) === id);
+      const nowDone = a ? isDone(a) : false;
       if (nowDone && !showSubmitted && item) {
         // 待辦視圖勾選完成 → 3 秒撤銷窗口 → 碎點爆 → 移除
         beginComplete(item, id, cid);
       } else {
-        // 取消完成（→未完成）：直接重繪跳回，跟現在一樣
+        // 標回未完成：直接重繪（待辦視圖跳回清單；已繳視圖離開清單）
         rerenderDetailAndNav(cid);
       }
     });
@@ -1975,9 +1989,10 @@ function recalculateGrades(courseId) {
 
 // ── 作業列 ──
 function renderAssignmentRow(a, groups, courseId) {
-  const submitted = isSubmitted(a);
+  const submitted = isSubmitted(a); // Canvas 事實：badge / 成績顯示
+  const done = isDone(a);           // 顯示狀態：列樣式 / 勾選圈（已繳可被標回未完成）
   const examFlag = isExam(a);
-  const uClass = urgencyClass(a.due_at, examFlag, submitted);
+  const uClass = urgencyClass(a.due_at, examFlag, done);
   const groupName = findGroupName(a, groups);
   const desc = a.description ? stripHtml(a.description) : tr('noDesc');
   const isCustom = !!a._isCustom;
@@ -1986,11 +2001,9 @@ function renderAssignmentRow(a, groups, courseId) {
     : `<span class="assignment-title-link" data-assignment-id="${a.id}" data-course-id="${courseId}">${esc(a.name)}</span>`;
   const customLabel = isCustom ? `<div class="custom-assignment-label">${tr('customAssignment')}</div>` : '';
 
-  // ── 完成勾選圈：Canvas 已繳為 locked（不可取消），手動完成可切換 ──
-  const submittedByCanvas = submitted;
-  const done = submittedByCanvas || DueCompletion.isManualDone(_currentData.manualDone || {}, a.id);
-  const checkLabel = submittedByCanvas ? tr('submittedBadge') : (done ? tr('markUndone') : tr('markDone'));
-  const checkHtml = `<button class="assignment-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}" data-done="${done ? 'true' : 'false'}" data-locked="${submittedByCanvas ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"${submittedByCanvas ? ` title="${esc(tr('submittedBadge'))}"` : ''}></button>`;
+  // ── 完成勾選圈：一律可雙向切換；Canvas 已繳者切的是 manualUndone 覆蓋（見 spec 2026-07-21）──
+  const checkLabel = done ? tr('markUndone') : tr('markDone');
+  const checkHtml = `<button class="assignment-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}" data-done="${done ? 'true' : 'false'}" data-submitted="${submitted ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"${submitted ? ` title="${esc(tr('submittedBadge'))}"` : ''}></button>`;
 
   // 考試成績顯示
   let gradeHtml = '';
@@ -2004,7 +2017,7 @@ function renderAssignmentRow(a, groups, courseId) {
   }
 
   return `
-    <div class="assignment-item${submitted ? ' submitted' : ''}${isCustom ? ' custom-assignment' : ''}">
+    <div class="assignment-item${done ? ' submitted' : ''}${isCustom ? ' custom-assignment' : ''}">
       ${checkHtml}
       <div class="assignment-left">
         <div class="assignment-title">${titleHtml}</div>
@@ -2064,7 +2077,7 @@ document.getElementById('sync-btn').addEventListener('click', () => {
 // ── 讀取資料 ──
 function loadData() {
   chrome.storage.local.get(
-    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights', 'manualDone'],
+    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'files', 'analysis', 'milestoneChecks', 'syllabusAnalysis', 'courseNames', 'customWeights', 'manualDone', 'manualUndone'],
     (data) => {
       if (!data.courses || !data.courses.length) {
         currentView = 'grid';
@@ -2093,6 +2106,7 @@ function loadData() {
         courseNames: data.courseNames || {},
         customAssignments: data.customAssignments || {},
         manualDone: data.manualDone || {},
+        manualUndone: data.manualUndone || {},
       });
     }
   );

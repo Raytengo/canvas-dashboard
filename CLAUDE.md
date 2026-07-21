@@ -80,6 +80,7 @@ GET /api/v1/courses/:id/discussion_topics?only_announcements=true&per_page=50
   "analysis": { "assignmentId": { "timestamp": "...", "model": "...", "result": {...} } },
   "milestoneChecks": { "assignmentId_0": true },
   "manualDone": { "assignmentId": true },
+  "manualUndone": { "assignmentId": true },
   "darkMode": false,
   "aiModel": "gemini",
   "geminiApiKey": "...",
@@ -217,6 +218,7 @@ sidebar（300px）+ main-content（flex:1）
 - 右下：成績計算器（accordion）+ 作業清單
   - 成績計算器：輸入分數即時計算加權總分
   - 作業列表：點擊行展開描述，點擊作業名稱文字開新分頁跳轉 Canvas
+  - 完成勾選圈：所有作業可雙向切換完成/未完成。未繳者翻轉 `manualDone`；Canvas 已繳者翻轉 `manualUndone` 覆蓋（標回未完成會回到待辦，「已繳交」badge 仍顯示 Canvas 事實）。判斷公式 `isDone = (isSubmitted && !manualUndone[id]) || manualDone[id]`，單一真相來源在 `completion.js`（見 docs/superpowers/specs/2026-07-21-bidirectional-completion-toggle-design.md）
   - 作業列：AI 分析按鈕 → 滑入右側分析面板
 
 **課程自訂名稱：**
@@ -265,6 +267,7 @@ sidebar（300px）+ main-content（flex:1）
   "syllabusAnalysis": { "courseId": { "found": true, "components": [...], "source": "syllabus_page_pdf" } },
   "milestoneChecks": { "assignmentId_0": true },
   "manualDone": { "assignmentId": true },
+  "manualUndone": { "assignmentId": true },
   "courseNames": { "courseId": "自訂名稱" },
   "darkMode": false,
   "uiLanguage": "zh-TW",

@@ -185,7 +185,7 @@ function setClaudeRefreshBusy(busy) {
   btn.textContent = busy ? '...' : '\u21bb';
 }
 
-function getUpcomingTasks(assignments, courseMap, manualDone) {
+function getUpcomingTasks(assignments, courseMap, manualDone, manualUndone) {
   const now = new Date();
   const sevenDays = new Date(now.getTime() + 7 * 86400000);
   const tasks = [];
@@ -195,12 +195,8 @@ function getUpcomingTasks(assignments, courseMap, manualDone) {
       if (!a.due_at) continue;
       if (isAttendance(a.name)) continue;
       if (isExam(a.name)) continue;
-      if (a.submission && (
-        a.submission.workflow_state === 'submitted' ||
-        a.submission.workflow_state === 'graded' ||
-        a.submission.score != null
-      )) continue;
-      if (manualDone && manualDone[String(a.id)]) continue; // 手動標記完成也排除
+      // 完成判斷共用 completion.js（Canvas 已繳或手動完成排除；已繳但標回未完成則顯示）
+      if (DueCompletion.isDone(a, manualDone, manualUndone)) continue;
 
       const due = new Date(a.due_at);
       if (due <= now || due > sevenDays) continue;
@@ -324,9 +320,9 @@ function applyClaudeRefreshCopy() {
 }
 
 function loadData() {
-  chrome.storage.local.get(['courses', 'assignments', 'courseNames', 'claudeUsage', 'manualDone'], (data) => {
+  chrome.storage.local.get(['courses', 'assignments', 'courseNames', 'claudeUsage', 'manualDone', 'manualUndone'], (data) => {
     const courseMap = buildCourseMap(data.courses);
-    const tasks = getUpcomingTasks(data.assignments || {}, courseMap, data.manualDone || {});
+    const tasks = getUpcomingTasks(data.assignments || {}, courseMap, data.manualDone || {}, data.manualUndone || {});
     renderTasks(tasks, data.courseNames || {});
     renderClaudeUsage(data.claudeUsage || null);
   });
