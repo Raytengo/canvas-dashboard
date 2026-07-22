@@ -14,6 +14,21 @@
     ));
   }
 
+  // ── taskRules 延遲解析（popup.html 的 script 順序不保證 taskRules 先載；呼叫時才查全域）──
+  function taskRules() {
+    if (typeof module === 'object' && module.exports) return require('./taskRules.js');
+    const root = typeof globalThis !== 'undefined' ? globalThis : this;
+    return root.DueTaskRules || null;
+  }
+
+  // ── 「外部事實」已完成：Canvas 已繳，或考試時間已過（考試不可補繳，見 2026-07-22 決策）──
+  //    與手動標記相對——此類完成可被 manualUndone 覆蓋標回未完成
+  function isExternallyDone(assignment) {
+    if (isSubmitted(assignment)) return true;
+    const rules = taskRules();
+    return !!(rules && rules.isExamConcluded && rules.isExamConcluded(assignment));
+  }
+
   // ── 手動完成 map 是否標記該 id（id 一律 String 正規化）──
   function isManualDone(manualDoneMap, id) {
     return !!(manualDoneMap || {})[String(id)];
@@ -24,11 +39,11 @@
     return !!(manualUndoneMap || {})[String(id)];
   }
 
-  // ── 綜合完成判斷：（Canvas 已繳 且 未標回未完成）「或」手動完成 ──
+  // ── 綜合完成判斷：（外部事實完成〔已繳或考試已結束〕且 未標回未完成）「或」手動完成 ──
   //    manualUndoneMap 可省略（省略＝舊行為）；髒資料兩 map 同時有 → manualDone 勝出（仍算完成）
   function isDone(assignment, manualDoneMap, manualUndoneMap) {
     const id = assignment && assignment.id;
-    return (isSubmitted(assignment) && !isManualUndone(manualUndoneMap, id))
+    return (isExternallyDone(assignment) && !isManualUndone(manualUndoneMap, id))
       || isManualDone(manualDoneMap, id);
   }
 
@@ -57,6 +72,7 @@
 
   return {
     isSubmitted,
+    isExternallyDone,
     isManualDone,
     isManualUndone,
     isDone,

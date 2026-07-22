@@ -194,3 +194,26 @@ test('bidirectional flow: 已繳 → 標回未完成 → 再點回歸 Canvas 事
   assert.deepEqual(undone, {});
   assert.equal(DueCompletion.isDone(a, {}, undone), true);
 });
+
+// ── 考試結束＝已完成桶(2026-07-22 決策:過期考試與已繳考試放一起,不進待辦)──
+const past = (days) => new Date(Date.now() - days * 86400000).toISOString();
+const future = (days) => new Date(Date.now() + days * 86400000).toISOString();
+
+test('isExternallyDone: Canvas 已繳 → true;過期考試未繳 → true;未來考試 → false;過期一般作業 → false', () => {
+  assert.equal(DueCompletion.isExternallyDone({ id: 1, submission: { workflow_state: 'graded' } }), true);
+  assert.equal(DueCompletion.isExternallyDone({ id: 2, name: 'Midterm Exam', due_at: past(3) }), true);
+  assert.equal(DueCompletion.isExternallyDone({ id: 3, name: 'Midterm Exam', due_at: future(3) }), false);
+  assert.equal(DueCompletion.isExternallyDone({ id: 4, name: 'Lab Report', due_at: past(3) }), false);
+});
+
+test('isDone: 過期未繳考試 → 預設完成(視同已繳);可 manualUndone 標回未完成;manualDone 髒資料仍勝出', () => {
+  const exam = { id: 991009, name: 'Paper Reading Quiz 9', due_at: past(5) };
+  assert.equal(DueCompletion.isDone(exam, {}, {}), true);                       // 過期考試=完成
+  assert.equal(DueCompletion.isDone(exam, {}, { '991009': true }), false);      // 手動標回未完成
+  assert.equal(DueCompletion.isDone(exam, { '991009': true }, { '991009': true }), true); // manualDone 勝出
+});
+
+test('isDone: 未來考試未繳 → 未完成(出現在待辦,不亂跳已繳交)', () => {
+  const exam = { id: 991010, name: 'Final Exam', due_at: future(10) };
+  assert.equal(DueCompletion.isDone(exam, {}, {}), false);
+});

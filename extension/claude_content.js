@@ -2,6 +2,7 @@
 window.addEventListener('message', (e) => {
   if (e.source !== window) return;
   if (!e.data) return;
+  if (!chrome.runtime?.id) return;  // 擴充已重載，舊 content script 直接放棄
 
   if (e.data.type === '__DUE_CLAUDE_USAGE__') {
     // Full usage data intercepted

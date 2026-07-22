@@ -5,23 +5,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Due</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400&family=Source+Serif+4:wght@400&display=swap"
-    rel="stylesheet" />
   <style>
+    /* 本地字體：打包於 fonts/，取代 Google Fonts 外部載入（popup 僅用 DM Sans / DM Mono） */
+    @font-face {
+      font-family: 'DM Sans';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: url('fonts/dmsans-300.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'DM Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('fonts/dmsans-400.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'DM Mono';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: url('fonts/dmmono-300.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'DM Mono';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('fonts/dmmono-400.woff2') format('woff2');
+    }
+
     :root {
       --bg: #f2f0e8;
       --surface: #f2f0e8;
       --dark: #141413;
-      --mid: #9a9890;
-      --muted: #7c7a72;
+      --mid: #6c685e;
+      --muted: #63605a;
       --border: #dedad0;
       --orange: #d97757;
       --blue: #6a9bcc;
       --green: #788c5d;
       --warm: #b09050;
       --purple: #a86070;
+      --overdue: #b3452c;
     }
 
     html[data-theme="dark"] {
@@ -29,14 +59,25 @@
       --surface: #23262d;
       --dark: #eceff4;
       --mid: #9aa3b2;
-      --muted: #7f8897;
+      --muted: #8b93a1;
       --border: #343843;
+      --overdue: #e07a5f;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    /* 無障礙：鍵盤聚焦可見外框（僅 :focus-visible，滑鼠點擊不顯示） */
+    .task-check:focus-visible,
+    .task-name.clickable:focus-visible,
+    .usage-chip:focus-visible,
+    .usage-refresh:focus-visible,
+    .btn:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 2px;
     }
 
     body {
@@ -65,7 +106,7 @@
 
     .section-label {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--muted);
@@ -78,7 +119,7 @@
       border-radius: 999px;
       padding: 4px 8px;
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       line-height: 1;
       letter-spacing: 0.04em;
       white-space: nowrap;
@@ -116,7 +157,7 @@
       color: var(--muted);
       border-radius: 999px;
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       line-height: 1;
       cursor: pointer;
       transition: transform 0.15s, border-color 0.15s, color 0.15s;
@@ -133,10 +174,11 @@
       cursor: progress;
     }
 
+    /* 超過約 3 列即內部捲動，避免 popup 過長（≤3 列時自然高度、不出現捲軸）*/
     .task-list {
       list-style: none;
       margin-bottom: 0;
-      max-height: 320px;
+      max-height: 188px;
       overflow-y: auto;
     }
 
@@ -165,27 +207,89 @@
       border-bottom: none;
     }
 
-    .task-dot {
-      width: 9px;
-      height: 9px;
+    /* 可開啟 Canvas 連結的列：整列可點（勾選圈除外），hover 提示。
+       不用負 margin（會撐出水平捲軸）；hover 底色沿列的完整寬度即可。 */
+    .task-item.openable {
+      cursor: pointer;
+    }
+
+    .task-item.openable:hover {
+      background: rgba(217, 119, 87, 0.06);
+    }
+
+    /* 完成過渡：撤銷窗口內內文淡出；收合時整列壓平後移除 */
+    .task-item.completing .task-body {
+      opacity: 0.5;
+    }
+
+    .task-item.collapsing {
+      overflow: hidden;
+      transition: max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
+    }
+
+    /* 分組小標題（比照 .section-label；逾期版用 var(--overdue)）*/
+    .task-group-label {
+      list-style: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 10px 0 5px;
+      border-bottom: none;
+    }
+
+    .task-group-label:first-child {
+      padding-top: 2px;
+    }
+
+    .task-group-label.overdue {
+      color: var(--overdue);
+    }
+
+    /* 左側完成勾選圈：中性空心圓（沿用 dashboard assignment-check 語言）
+       → hover 綠框（提示可勾）→ 完成綠底白勾。緊急度色改由右側 badge 承載，不再雙重編碼。 */
+    .task-check {
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       flex-shrink: 0;
+      padding: 0;
+      border: 1.5px solid var(--mid);
+      background: transparent;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
     }
 
-    .task-dot.urgent {
-      background: var(--orange);
+    .task-check::after {
+      content: '';
+      position: absolute;
+      left: 4.5px;
+      top: 2.5px;
+      width: 3px;
+      height: 6px;
+      border: solid #fff;
+      border-width: 0 1.5px 1.5px 0;
+      transform: rotate(45deg);
+      opacity: 0;
+      transition: opacity 0.15s;
     }
 
-    .task-dot.soon {
-      background: var(--warm);
+    .task-check:hover {
+      border-color: var(--green);
     }
 
-    .task-dot.exam {
-      background: var(--purple);
+    /* 勾選後的撤銷窗口：綠底白勾 */
+    .task-check.done {
+      background: var(--green);
+      border-color: var(--green);
     }
 
-    .task-dot.later {
-      background: var(--blue);
+    .task-check.done::after {
+      opacity: 1;
     }
 
     .task-body {
@@ -220,38 +324,89 @@
       margin-top: 1px;
     }
 
+    /* 右側到期 badge：柔色 chip（tint 底 + accent 字 + 淡框），三層緊急度 */
     .task-due {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      font-weight: 400;
+      font-weight: 500;
       flex-shrink: 0;
-      padding: 2px 7px;
-      border-radius: 5px;
-      border: 1px solid currentColor;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      white-space: nowrap;
     }
 
-    .task-due.urgent {
-      background: var(--orange);
-      border-color: var(--orange);
-      color: #fff;
+    /* 今天到期（最燙，紅）+ 小火焰特效表示最緊急 */
+    .task-due.today {
+      background: color-mix(in srgb, var(--overdue) 16%, transparent);
+      color: var(--overdue);
+      border-color: color-mix(in srgb, var(--overdue) 34%, transparent);
+      padding-left: 6px;
+      animation: flame-glow 1.5s ease-in-out infinite;
     }
 
-    .task-due.soon {
-      background: var(--warm);
-      border-color: var(--warm);
-      color: #fff;
+    .task-due.today::before {
+      content: '';
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      margin-right: 3px;
+      vertical-align: -1.5px;
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><defs><linearGradient id='g' x1='0' y1='1' x2='0' y2='0'><stop offset='0' stop-color='%23e0552f'/><stop offset='.55' stop-color='%23e8863f'/><stop offset='1' stop-color='%23f4c542'/></linearGradient></defs><path fill='url(%23g)' d='M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z'/></svg>") center/contain no-repeat;
+      transform-origin: center bottom;
+      animation: flame-flicker 0.85s ease-in-out infinite;
     }
 
-    .task-due.exam {
-      background: var(--purple);
-      border-color: var(--purple);
-      color: #fff;
+    @keyframes flame-flicker {
+      0%, 100% { transform: scaleY(1) translateY(0); opacity: 1; }
+      20% { transform: scaleY(1.16) translateY(-0.5px); opacity: 0.82; }
+      45% { transform: scaleY(0.92) translateY(0.4px); opacity: 1; }
+      70% { transform: scaleY(1.08) translateY(-0.3px); opacity: 0.9; }
     }
 
-    .task-due.later {
-      background: var(--blue);
-      border-color: var(--blue);
-      color: #fff;
+    @keyframes flame-glow {
+      0%, 100% { box-shadow: 0 0 3px 0 rgba(224, 90, 71, 0.25); }
+      50% { box-shadow: 0 0 8px 1px rgba(224, 90, 71, 0.55); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .task-due.today,
+      .task-due.today::before {
+        animation: none;
+      }
+    }
+
+    /* 3 天內（橘）*/
+    .task-due.soon3 {
+      background: color-mix(in srgb, var(--orange) 14%, transparent);
+      color: var(--orange);
+      border-color: color-mix(in srgb, var(--orange) 32%, transparent);
+    }
+
+    /* 4–7 天（琥珀，最緩；字色壓深補對比）*/
+    .task-due.week7 {
+      background: color-mix(in srgb, var(--warm) 16%, transparent);
+      color: color-mix(in srgb, var(--warm) 82%, #000);
+      border-color: color-mix(in srgb, var(--warm) 34%, transparent);
+    }
+
+    html[data-theme="dark"] .task-due.week7 {
+      color: var(--warm);
+    }
+
+    /* 已逾期（同今天的紅；區塊與文案已足以區分）*/
+    .task-due.overdue {
+      background: color-mix(in srgb, var(--overdue) 14%, transparent);
+      color: var(--overdue);
+      border-color: color-mix(in srgb, var(--overdue) 32%, transparent);
+    }
+
+    /* 撤銷 pill：橘字透明底 */
+    .task-due.undo {
+      background: transparent;
+      color: var(--orange);
+      border-color: transparent;
+      cursor: pointer;
     }
 
     .empty-state {
@@ -296,9 +451,9 @@
 
 <body>
   <div class="popup-header">
-    <div class="section-label" id="task-label">NEXT 7-D TASKS</div>
+    <div class="section-label" id="task-label">7 天內待辦</div>
     <div class="usage-actions">
-      <button class="usage-chip is-empty" id="claude-usage-chip" type="button" title="Claude usage">CLAUDE --</button>
+      <button class="usage-chip is-empty" id="claude-usage-chip" type="button">CLAUDE --</button>
       <button class="usage-refresh" id="claude-usage-refresh" type="button"
         title="Refresh Claude usage">&#8635;</button>
     </div>
@@ -308,6 +463,7 @@
   <hr class="divider" />
   <button class="btn" id="dashboard-btn">開啟 Dashboard</button>
 
+  <script src="dashboard/taskRules.js"></script>
   <script src="dashboard/completion.js"></script>
   <script src="popup.js"></script>
 </body>

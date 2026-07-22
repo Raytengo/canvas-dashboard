@@ -29,7 +29,11 @@ cc/
     ├── popup.js                   ← popup 的邏輯
     └── dashboard/
         ├── index.html             ← Dashboard 頁面（CSS + HTML 骨架）
-        └── dashboard.js           ← 所有 Dashboard 渲染邏輯和事件綁定
+        ├── dashboard.js           ← 所有 Dashboard 渲染邏輯和事件綁定
+        ├── taskRules.js           ← 共用規則：考試/簽到判定、緊急度色階、逾期窗（含測試，popup 共用）
+        ├── completion.js          ← 完成標記單一真相來源：isDone / toggleManualDone（含測試）
+        ├── customAssignments.js   ← 自訂作業建立與合併（含測試）
+        └── descSanitizer.js       ← 作業描述 HTML 白名單 sanitize（含測試）
 ```
 
 ---
@@ -71,6 +75,8 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
   "scores": { "assignmentId": 85.5 },
   "manualDone": { "assignmentId": true },
   "manualUndone": { "assignmentId": true },
+  "manualShown": { "assignmentId": true },
+  "manualHidden": { "assignmentId": true },
   "customWeights": { "courseId": [{ "name": "Homework", "weight": 30 }] },
   "courseNames": { "courseId": "自訂名稱" },
   "darkMode": false,
@@ -92,8 +98,8 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 --bg:       #faf9f5;   /* 暖米白，頁面背景 */
 --surface:  #f2f0e8;   /* 稍深的米白，卡片/側欄背景 */
 --dark:     #141413;   /* 近黑，主要文字 */
---mid:      #9a9890;   /* 中灰，次要文字 */
---muted:    #7c7a72;   /* 深灰，說明文字 */
+--mid:      #6c685e;   /* 中灰，次要文字（WCAG AA：對 surface ≥4.5:1）*/
+--muted:    #63605a;   /* 深灰，說明文字（WCAG AA：對 surface ≥4.5:1）*/
 --border:   #dedad0;   /* 邊框顏色 */
 --orange:   #d97757;   /* 主強調色 */
 --blue:     #6a9bcc;   /* 次強調色 */
@@ -104,8 +110,8 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 **Dark mode**（`html[data-theme="dark"]` 時覆蓋）：
 ```css
---bg: #1e1d1b;  --surface: #141312;  --dark: #eeebe4;
---mid: #5c5a56;  --muted: #8e8c88;   --border: #272522;
+--bg: #121316;  --surface: #1b1d22;  --dark: #eceff4;
+--mid: #9aa3b2;  --muted: #8b93a1;   --border: #343843;
 ```
 
 ### 字體
@@ -115,6 +121,8 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 內文：         'DM Sans', sans-serif（font-weight: 300）
 代碼/數字/標籤：'DM Mono', monospace
 ```
+
+字體已打包於 `extension/fonts/`（latin subset woff2，透過 `@font-face` 宣告），不再使用 Google Fonts CDN；CJK 字元由系統字體 fallback。
 
 ### 風格原則
 
@@ -126,12 +134,17 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 ### 截止日期顏色規則
 
+色階統一由 `taskRules.urgency(dueAt)` 決定；`dashboard/urgencyClass()` 只做映射（popup 共用同一規則）。
+
+- 逾期未繳（30 天窗內）：紅橘 `var(--overdue)`（`#b3452c`／dark `#e07a5f`，class: `due-overdue`）
 - ≤7 天：橘紅 `var(--orange)`（class: `due-urgent`）
 - 8–30 天：暖黃 `var(--warm)`（class: `due-soon`）
 - 30 天以上：藍色 `var(--blue)`（class: `due-later`）
-- 已過期：灰色 `var(--mid)`（class: `due-past`）
-- 考試類：紫色 `var(--purple)`（class: `due-exam`）
-- 無截止日期：class: `due-none`
+- 已過期（30 天窗外的舊逾期）：灰色淡化 `var(--mid)`（class: `due-past`；窗外項目只在課程詳情可見）
+- 考試類：紫色 `var(--purple)`（class: `due-exam`；日常視圖不顯示考試，此色目前用於課程詳情的「已自動隱藏」稽核列）
+- 無截止日期／已完成：class: `due-none`
+- **已完成且時間已過 → 不顯示任何時間標籤**（`dueLabelFor`；已繳交視圖／稽核列適用——過去的事無需再標「逾X天」）；緊急件數（詳情 header／grid 卡 badge）一律排除已完成，已繳交視圖不會出現「N件緊急」
+- 時間標籤括號內不留空格：`8月4日（2天後）`、`7月2日（逾20天）`（`daysLater`／`overdueDaysLabel` 為 `{n}` 模板，與 popup 一致）
 
 ---
 
@@ -151,8 +164,12 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 - 7 天待辦快速預覽：顯示所有 7 天內到期的未繳作業清單
 - 每筆任務顯示：緊急程度色點、作業名稱、**課程名稱**（支援自訂名稱）、剩餘時間
+- 置頂「已逾期」區（30 天窗內逾期未繳；緊急度色階與 dashboard 統一，皆走 `taskRules.urgency`）
+- 每筆可勾完成（1.5 秒撤銷窗口，寫入 `manualDone`／`manualUndone`，與 dashboard 同步）
 - 支援 UI 語言（跟隨 Dashboard 設定）
 - 開啟 Dashboard 按鈕；顯示上次同步時間
+
+> 註：popup 的完成勾選、置頂逾期區與統一色階由並行工作完成；上述為行為說明。
 
 ### Dashboard（index.html + dashboard.js）
 
@@ -160,19 +177,27 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 ```
 sidebar（300px）+ main-content（flex:1）
-│                │
-│  品牌標題       │  .page-tabs（學期待辦 / 課程）
-│  篩選 pills     │  #main-section（目前頁面）
-│  作業/考試/全部  │  #course-detail-container（課程詳情）
-│  查看已繳交     │
-│  課程導航列     │
-│  同步/設定      │
+│                      │
+│  品牌標題             │  .page-tabs（頁面標題 + 返回鍵 + 新增作業）
+│  主導航 .side-nav     │  #main-section（目前頁面）
+│   學期待辦/課程/已繳交 │  #course-detail-container（課程詳情）
+│  課程導航列 課程導航列  │
+│  同步/設定            │
 ```
 
+> 主導航（`.side-nav`）：`學期待辦`／`課程` 為兩個頁面（互斥 active，切換帶水平 slide），`已繳交` 為過濾切換（`showSubmitted`，開啟時獨立高亮）。三者右側各顯示數量（待辦數／課程數／已完成數）。active 狀態、數量與頂部 `#page-title` 由 `updateSideNav()` 統一更新；在課程詳情頁點 `學期待辦`／`課程` 會先退出詳情再切換（見 `goToPage()`）。頂部 `.page-tabs` 只保留頁面標題（詳情模式下由 CSS 隱藏，改顯示返回鍵）與「新增作業」。
+>
+> **已繳交固定用各課程 grid 版面**：`render()` 選版面的條件為 `currentPage === 'week' && !showSubmitted` 才走週待辦（圓餅圖）版面，否則一律 `renderCardGrid()`。因此不論從「學期待辦」或「課程」頁開啟已繳交，都顯示各課程 grid；關閉後回到原本所在頁面。
+
 **學期待辦頁（Week）：**
-- 左側：conic-gradient 環形圓餅圖（orange/warm/blue 分別代表≤7d/8–30d/30+d 的作業數量比例）
-- 右側：2 欄 task cards，依緊急程度分三時間區塊顯示
-- 點擊任意 task card → View Transitions API morph 展開對應課程詳情
+- 左側「本週概覽」面板（頂部對齊，`.week-left`）：
+  - **進度環**（`.wk-ring`，conic-gradient 綠色弧）：本週完成度 `nearDone/nearTotal`；範圍＝逾期窗 ∪ 未來 7 天（`isNear`），分母含已完成項，現算；中央顯示 `X/Y` + 「本週完成」，`role="img"` + aria-label
+  - **分級摘要**（`.wk-breakdown` / `.wk-sum-row`）：逾期/7天內/8-30天/30天以上 的未完成數，色碼（逾期紅底凸顯），只顯示 count>0；每列為 `<button>`，點擊/Enter/Space 捲動右側清單到對應區塊（`data-scroll-group` ↔ `.week-group[data-group]`，手動算位移用 `scrollTo` smooth）
+  - （舊 conic 圓餅 `.week-pie`/`.week-legend` 已移除）
+- 右側：2 欄 task cards，依緊急度分區塊顯示（`.week-group[data-group]`）；分組委派 `taskRules.urgency`
+- **置頂「已逾期 (N)」區**（紅橘 `color-overdue`）：只收 30 天窗內逾期未繳（`taskRules.isWithinOverdueWindow`），排序最近錯過的在最上；窗外逾期不進待辦（只在課程詳情可見），側欄待辦數（`updateSideNav` weekCount）＝未來三組＋窗內逾期，與列表一致
+- 每張週卡片右上角有完成勾選圈（含逾期卡）：勾選走 1.5 秒撤銷窗口＋碎點爆（`beginCompleteWeek`／`cancelCompleteWeek`／`finishCompleteWeek`，與課程詳情列共用 `COMPLETE_*` 常數與 `spawnBurstDots`），窗口內點卡片任意處可取消
+- 點擊 task card（非勾選圈、非撤銷窗口）→ View Transitions API morph 展開對應課程詳情
 
 **課程頁（Courses）：**
 - 3 欄課程卡片 grid，依最近截止日期排序
@@ -183,9 +208,17 @@ sidebar（300px）+ main-content（flex:1）
 - 上半：課程代碼、名稱（含鉛筆圖示可 inline 重命名）、緊急 badge
 - 左下：評分比重圓餅圖 + 圖例；資料來源優先序：手動輸入權重（`customWeights`）→ Canvas 分組權重（`group_weight`）→ 皆無則顯示「無評分資訊」
 - 右下：成績計算器（accordion）+ 作業清單
-  - 成績計算器：輸入分數即時計算加權總分
+  - 成績計算器：輸入分數即時計算加權總分；**Canvas 已評分自動預填**（可改可清；清空會記住 → `scores[id]=null`），詳見下方「成績計算器」
   - 作業列表：點擊行展開描述，點擊作業名稱文字開新分頁跳轉 Canvas
   - 作業列最左有完成勾選圈（見下方「完成標記」）
+  - 清單底部「已自動隱藏 N 項（考試・簽到）」稽核入口（`renderHiddenItemsSection`）：點開展開精簡列（作業名可跳 Canvas＋分組名＋due 標籤，考試顯 `due-exam` 紫），整列淡化、**不顯示任何分數**；預設收合、開合不持久化
+  - **拖曳升級／降級隱藏項**（`manualShown`，見 spec 2026-07-22）：稽核列可拖進作業清單「升級」為一般可操作作業（可勾/可點；考試仍紫），升級後在清單中亦可拖回稽核區「降級」。升級為逐項手動覆蓋，**視同一般作業出現在所有視圖**（學期待辦進度環/分級/計數、課程 grid、popup）。判定：`isHideable(a) && !isManuallyShown(a)` 才隱藏；此規則同時套用於 `applyFilters`、`updateSideNav` 計數、`renderWeekSection` 進度環 nearItems、popup `getTasks`。稽核區只要該課「原本有」考試/簽到即恆存在（作降級放置目標）。拖曳為 **Pointer Events 自繪引擎**（`setupHideablePromoteDrag`／`trackDragFrom`；原生 HTML5 DnD 啟動層在部分環境不觸發已棄用）：名稱正後方的 grip 為唯一拖曳起點（4px 閾值內視為點擊），拿起後浮動 clone（`.drag-clone` 陰影＋微傾）跟隨游標；懸停清單時插入點以下列讓位（`.drag-shift` × `--drag-gap`，含 `.assignment-desc`），實際落點依 due 排序、放開後 clone 飛入真實位置並 `drag-arrived` 閃示；Esc／界外放開飛回原位；邊緣自動捲動；drop 目標 `.drop-active`／`.drop-hover` ＋ `data-drophint` 提示；重繪前 `abortActiveDrag()` 防孤兒 clone
+
+**成績計算器（Canvas 預填 + 三態）：**
+- 日常視圖（學期待辦／課程 grid／作業列／稽核列）一律**不顯示分數**（決策 3）；分數只出現在成績計算器
+- `scores[id]` 三態：無此 key → 有 Canvas `submission.score` 就預填、否則空；值為數字 → 顯示該數字；值為 `null` → 使用者清空過 → 顯示空
+- `recalculateGrades(courseId, { persist })`：開詳情主動算一次傳 `persist:false`（只算顯示、**不把預填值固化成手動值**）；使用者輸入的 `input` 事件走 `persist:true`。顯示與計算一律從輸入框現值讀（`Number.isFinite` 才計入），預填與手動輸入一致
+- persist 規則：欄位空且該作業有 Canvas 分數 → `scores[id]=null`（記住清空）；空且無 Canvas 分數 → 刪除 key；有值 → 存數字
 
 **課程自訂名稱：**
 - 課程詳情頁的課程名稱旁有鉛筆圖示（hover 顯示）
@@ -195,9 +228,10 @@ sidebar（300px）+ main-content（flex:1）
 
 **完成標記（手動，雙向）：**
 - 每個作業列最左有一個勾選圈，所有作業皆可雙向切換完成/未完成，獨立於 Canvas 繳交狀態
-- 判斷公式 `isDone = (isSubmitted && !manualUndone[id]) || manualDone[id]`，單一真相來源在 `dashboard/completion.js`（含單元測試）
-- 未繳者翻轉 `manualDone`；Canvas 已繳者翻轉 `manualUndone` 覆蓋——標回未完成會回到待辦清單（popup 同步），「已繳交」badge 仍顯示 Canvas 事實；再點一次移除覆蓋、回歸 Canvas 判定
-- 待辦視圖勾選完成 → 該列維持原尺寸 3 秒（底部橘色撤銷倒數條），期間點該列可取消；時間到「碎點爆」後移除、清單收合
+- 判斷公式 `isDone = (isExternallyDone && !manualUndone[id]) || manualDone[id]`，單一真相來源在 `dashboard/completion.js`（含單元測試）；`isExternallyDone = Canvas 已繳 ∨ 考試已結束`（`taskRules.isExamConcluded`：考試 due 一過即不可再行動，與已繳歸同一完成桶，不進待辦/逾期——還沒考的考試才進未完成，見 spec 2026-07-22）
+- 外部完成（已繳或考試已結束）者翻轉 `manualUndone` 覆蓋——標回未完成會回到待辦清單（popup 同步），「已繳交」badge 仍顯示 Canvas 事實；再點一次移除覆蓋、回歸外部事實判定；其餘翻轉 `manualDone`。勾選圈路由屬性為 `data-ext-done`
+- 待辦視圖勾選完成 → 維持原尺寸 1.5 秒（底部橘色撤銷倒數條，due 文字換成「↩ 撤銷」），期間點該列/卡片可取消；時間到「碎點爆」後移除、清單收合。**課程詳情列與學期待辦週卡片皆支援**（`beginComplete*`／`cancelComplete*`／`finishComplete*` 兩套平行版，共用 `COMPLETE_DELAY_MS`／`COMPLETE_BURST_MS`／`spawnBurstDots`；`toggleCompletion`／`revertCompletion` 為兩邊共用的寫入/還原）
+- 重繪/切頁前一律 `clearCompleteTimers()` 清掉殘留計時器（兩視圖共用同一組 `_completeTimers`），避免幽靈 callback
 - 兩個 map 同步皆不覆蓋；髒資料兩者同時存在時 `manualDone` 勝出（見 docs/superpowers/specs/2026-07-21-bidirectional-completion-toggle-design.md）
 
 **多語言支援（i18n）：**
@@ -207,15 +241,24 @@ sidebar（300px）+ main-content（flex:1）
 - 切換語言後，`formatDue()`、`formatLastSync()` 等函式也會隨語言調整顯示格式
 
 **全域篩選邏輯（`applyFilters`）：**
-- 永遠排除 attendance/簽到類作業（自動偵測關鍵字）
-- 按類型篩選：`作業` / `考試` / `全部`
-- 按完成狀態篩選：隱藏/顯示已完成（Canvas 已繳 + 手動標記完成，見 completion.js 的 isDone）
+- 預設排除簽到/出勤/參與類與考試/測驗類；考試/簽到判定已移至 `taskRules.js`（`isExam`／`isAttendance` 單一真相來源，含測試，popup 共用）。`dashboard.js` 的 `isExam`／`isAttendance` 僅為委派包裝；`isHideable = isExam || isAttendance`
+- **例外：`manualShown` 升級**——使用者拖曳升級的隱藏項（`isManuallyShown`）視同一般作業放行，出現在所有視圖（見上方課程詳情「拖曳升級／降級」）
+- 被隱藏（未升級）的項目可在該課程詳情底部「已自動隱藏 N 項」稽核清單展開檢視、並由此拖曳升級
+- 已無「作業／考試／全部」類型篩選 UI（篩選 pills 已拆除）
+- 按完成狀態篩選：預設隱藏已完成；「查看已繳交」切換後只顯示已完成（Canvas 已繳 + 手動標記完成，見 completion.js 的 isDone）
 
 **頁面切換動畫：**
 - 學期待辦 ↔ 課程：水平 slide（`.page-slider` translateX，470ms）
 - 課程卡片 ↔ 詳情：View Transitions API morph（0.28s，命名元素：`course-shell`、`course-code`、`course-name`、`course-badge`、`course-meta`）
 - Sidebar 在 morph 期間靜止（`view-transition-name: sidebar`，`animation: none`）
 - **注意**：若課程名稱 `div.detail-name` 內有 inline 元素（如鉛筆按鈕），需確保按鈕為 `position: absolute`（不影響 layout box），否則 View Transition 捕捉到不同高度會產生動畫跳動
+
+**瀏覽器上一頁整合（History API）：**
+- SPA 導航接上瀏覽器歷史，系統慣用的返回（Back 手勢／按鈕／Cmd+[／Alt+←）可退出課程詳情回到清單
+- 模型：清單（週待辦／課程 grid，含 `showSubmitted` 過濾）永遠是**同一個** history entry——橫向切換（`switchPage`／`goToPage`／已繳交切換）用 `replaceState`（`syncHistory()`）更新它、不疊返回步；**開課程詳情**才 `pushState` 疊一步（詳情內換課用 `replaceState` swap，Back 仍直接回清單）
+- `_appLocation()` 為 entry 狀態 `{app:'due', page, showSubmitted, view, courseId}`；`popstate` 依目標 state 還原畫面，期間 `_suppressHistory=true` 擋掉再寫 history
+- `← 返回` 按鈕與瀏覽器返回統一走 `history.back()` → `popstate`；`showGridView()` 現依 `currentPage`/`showSubmitted` 回對應清單（不再寫死回 courses grid，順帶修正「從週待辦開課程、Back 卻回課程頁」）
+- 動導航函式（`showCourseDetail`/`showGridView`/`switchPage`/`goToPage`）時務必同步維護對應的 push/replace，否則返回行為會錯亂
 
 ---
 
@@ -236,7 +279,7 @@ sidebar（300px）+ main-content（flex:1）
 6. `_currentData` 是全域快取；頁面切換時用 `_currentData` 同步渲染，不要再呼叫 `loadData()`（避免空白閃爍）
 7. `courseNames` 只影響顯示層，Canvas API 呼叫仍使用原始 `course.id`，不受自訂名稱影響
 8. `field-sizing: content`（Chrome 123+）用於 inline 重命名輸入框自動縮放
-9. 完成標記動畫：勾選後不立即重繪，該列跑 3 秒撤銷窗口＋碎點爆才移除；`dashboard.js` 無 `storage.onChanged` 監聽器，故寫入 `manualDone` 不會打斷動畫（見 `completion.js`）
+9. 完成標記動畫：勾選後不立即重繪，該列跑 1.5 秒撤銷窗口＋碎點爆才移除（`COMPLETE_DELAY_MS = 1500`）；`dashboard.js` 無 `storage.onChanged` 監聽器，故寫入 `manualDone` 不會打斷動畫（見 `completion.js`）
 
 ---
 
@@ -244,4 +287,3 @@ sidebar（300px）+ main-content（flex:1）
 
 - 成績計算器顯示優化（目前 accordion 折疊）
 - 多學期 / 歸檔課程過濾
-- 完成標記動畫延伸到週待辦卡片（目前僅課程詳情列）

@@ -4,6 +4,9 @@ const GROUP_COLORS = [
   '#a86070', '#7a9ba8', '#b08060', '#6a7c5d',
 ];
 
+// 拖曳握把（grip-vertical，用於可拖曳的考試/簽到列：升級/降級）；緊跟在作業名稱後、為唯一拖曳起點
+const DRAG_GRIP = '<span class="drag-grip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg></span>';
+
 let _uiLanguage = 'zh-TW';
 let _showClaudeUsage = true;
 const I18N = {
@@ -12,14 +15,16 @@ const I18N = {
     assignment: '作業',
     exam: '考試',
     all: '全部',
-    hideSubmitted: '查看已繳交',
     courses: '課程',
     sync: '同步',
     syncing: '同步中...',
+    syncFailed: '同步失敗',
     tabWeek: '學期待辦',
     tabCourses: '課程',
     addAssignment: '+ 新增作業',
     addAssignmentTitle: '新增作業',
+    editAssignmentTitle: '編輯作業',
+    customDelete: '刪除',
     customAssignment: '自訂作業',
     customCourseLabel: '課程',
     customNameLabel: '作業名稱',
@@ -41,10 +46,17 @@ const I18N = {
     menuUsageHide: '隱藏 Popup Claude 用量',
     // formatDue
     noDueDate: '無截止日期',
-    overdue: '已過期',
+    // 逾期文案與稽核入口（2026-07）
+    overdueToday: '今天到期',
+    overdueDaysLabel: '逾{n}天',
+    overdueGroup: '已逾期',
+    hiddenItemsToggle: '已隱藏 {n} 項',
+    hiddenItemsEmpty: '目前沒有隱藏項目（把作業拖到這裡可隱藏）',
+    dropToShow: '放開以加入作業清單',
+    dropToHide: '放開以隱藏',
     today: '今天',
     tomorrow: '明天',
-    daysLater: '天後',
+    daysLater: '{n}天後',
     // formatLastSync
     neverSynced: '尚未同步',
     justSynced: '剛才同步',
@@ -60,9 +72,10 @@ const I18N = {
     noDataMeta: '尚無資料，請先前往 Canvas 頁面',
     // badges
     pendingItems: '件待繳',
+    completedItems: '件已完成',
     urgentItems: '件緊急',
     // back button
-    back: '← 返回',
+    back: '返回',
     // list labels
     listAssignment: '作業清單',
     listExam: '考試清單',
@@ -90,11 +103,12 @@ const I18N = {
     within7Days: '7天內',
     within30Days: '8-30天',
     beyond30Days: '30天以上',
-    beyond30DaysShort: '30天+',
     noTasks: '無待辦事項',
+    weekDoneLabel: '本週完成',
     // ui widgets
     editWeight: '編輯',
     weightEditTitle: '編輯評分權重',
+    weightReset: '還原 Canvas 權重',
     weightAddItem: '+ 新增項目',
     weightTotal: '總計：',
     unnamedWeight: '未命名',
@@ -129,14 +143,16 @@ const I18N = {
     assignment: '作业',
     exam: '考试',
     all: '全部',
-    hideSubmitted: '查看已提交',
     courses: '课程',
     sync: '同步',
     syncing: '同步中...',
+    syncFailed: '同步失败',
     tabWeek: '学期待办',
     tabCourses: '课程',
     addAssignment: '+ 新增作业',
     addAssignmentTitle: '新增作业',
+    editAssignmentTitle: '编辑作业',
+    customDelete: '删除',
     customAssignment: '自定义作业',
     customCourseLabel: '课程',
     customNameLabel: '作业名称',
@@ -157,10 +173,16 @@ const I18N = {
     menuUsageShow: '显示 Popup Claude 用量',
     menuUsageHide: '隐藏 Popup Claude 用量',
     noDueDate: '无截止日期',
-    overdue: '已过期',
+    overdueToday: '今天到期',
+    overdueDaysLabel: '逾{n}天',
+    overdueGroup: '已逾期',
+    hiddenItemsToggle: '已隐藏 {n} 项',
+    hiddenItemsEmpty: '目前没有隐藏项目（把作业拖到这里可隐藏）',
+    dropToShow: '放开以加入作业清单',
+    dropToHide: '放开以隐藏',
     today: '今天',
     tomorrow: '明天',
-    daysLater: '天后',
+    daysLater: '{n}天后',
     neverSynced: '尚未同步',
     justSynced: '刚才同步',
     minutesAgo: '分钟前同步',
@@ -172,8 +194,9 @@ const I18N = {
     noDataHintSync: '请先登录 Canvas 并点击同步',
     noDataMeta: '尚无资料，请先前往 Canvas 页面',
     pendingItems: '件待交',
+    completedItems: '件已完成',
     urgentItems: '件紧急',
-    back: '← 返回',
+    back: '返回',
     listAssignment: '作业清单',
     listExam: '考试清单',
     listAll: '项目清单',
@@ -195,10 +218,11 @@ const I18N = {
     within7Days: '7天内',
     within30Days: '8-30天',
     beyond30Days: '30天以上',
-    beyond30DaysShort: '30天+',
     noTasks: '无待办事项',
+    weekDoneLabel: '本周完成',
     editWeight: '编辑',
     weightEditTitle: '编辑评分权重',
+    weightReset: '还原 Canvas 权重',
     weightAddItem: '+ 新增项目',
     weightTotal: '总计：',
     unnamedWeight: '未命名',
@@ -232,14 +256,16 @@ const I18N = {
     assignment: 'Assignments',
     exam: 'Exams',
     all: 'All',
-    hideSubmitted: 'Show Submitted',
     courses: 'Courses',
     sync: 'Sync',
     syncing: 'Syncing...',
-    tabWeek: 'This Week',
+    syncFailed: 'Sync failed',
+    tabWeek: 'Upcoming',
     tabCourses: 'Courses',
     addAssignment: '+ Add Assignment',
     addAssignmentTitle: 'Add Assignment',
+    editAssignmentTitle: 'Edit Assignment',
+    customDelete: 'Delete',
     customAssignment: 'Custom Assignment',
     customCourseLabel: 'Course',
     customNameLabel: 'Assignment Name',
@@ -260,10 +286,16 @@ const I18N = {
     menuUsageShow: 'Show Claude usage in popup',
     menuUsageHide: 'Hide Claude usage in popup',
     noDueDate: 'No due date',
-    overdue: 'Overdue',
+    overdueToday: 'due today',
+    overdueDaysLabel: '{n}d late',
+    overdueGroup: 'Overdue',
+    hiddenItemsToggle: '{n} hidden',
+    hiddenItemsEmpty: 'Nothing hidden (drag items here to hide)',
+    dropToShow: 'Drop to add to list',
+    dropToHide: 'Drop to hide',
     today: 'Today',
     tomorrow: 'Tomorrow',
-    daysLater: 'days left',
+    daysLater: '{n} days left',
     neverSynced: 'Never synced',
     justSynced: 'Just synced',
     minutesAgo: 'min ago',
@@ -275,8 +307,9 @@ const I18N = {
     noDataHintSync: 'Log into Canvas and click Sync',
     noDataMeta: 'No data — visit Canvas first',
     pendingItems: ' pending',
+    completedItems: ' done',
     urgentItems: ' urgent',
-    back: '← Back',
+    back: 'Back',
     listAssignment: 'Assignments',
     listExam: 'Exams',
     listAll: 'All Items',
@@ -298,10 +331,11 @@ const I18N = {
     within7Days: 'Due ≤ 7d',
     within30Days: '8-30 days',
     beyond30Days: 'Later (30d+)',
-    beyond30DaysShort: '30 d+',
     noTasks: 'No pending tasks',
+    weekDoneLabel: 'Done this week',
     editWeight: 'Edit',
     weightEditTitle: 'Edit Grade Weights',
+    weightReset: 'Reset to Canvas weights',
     weightAddItem: '+ Add Item',
     weightTotal: 'Total:',
     unnamedWeight: 'Unnamed',
@@ -372,14 +406,16 @@ function applyUILanguage() {
     const el = document.getElementById(id);
     if (el) el.textContent = tr(key);
   };
-  setText('label-hide-done', 'hideSubmitted');
   setText('label-courses', 'courses');
   setText('sync-btn', 'sync');
-  setText('tab-week', 'tabWeek');
-  setText('tab-courses', 'tabCourses');
+  setText('nav-week-label', 'tabWeek');
+  setText('nav-courses-label', 'tabCourses');
   setText('btn-add-assignment', 'addAssignment');
-  setText('btn-show-submitted', 'submittedBtn');
-  setText('detail-back-btn', 'back');
+  setText('nav-submitted-label', 'submittedBtn');
+  const backLabel = document.querySelector('#detail-back-btn .detail-back-label');
+  if (backLabel) backLabel.textContent = tr('back');
+  else setText('detail-back-btn', 'back');
+  updateSideNav();
   setText('custom-assignment-modal-title', 'addAssignmentTitle');
   setText('custom-assignment-course-label', 'customCourseLabel');
   setText('custom-assignment-name-label', 'customNameLabel');
@@ -390,6 +426,8 @@ function applyUILanguage() {
   setText('weight-edit-title', 'weightEditTitle');
   setText('weight-edit-add', 'weightAddItem');
   setText('weight-edit-save', 'customSave');
+  setText('weight-edit-cancel', 'customCancel');
+  setText('weight-edit-reset', 'weightReset');
   applyWelcomeTranslations();
   const tutorialBtn = document.getElementById('menu-open-tutorial');
   if (tutorialBtn) tutorialBtn.innerHTML = `${tr('menuTutorial')} <span>↗</span>`;
@@ -468,16 +506,19 @@ function bindLanguageMenuActions() {
 let _currentData = {};
 
 // ── 截止日期處理 ──
+// 緊急度色階統一由 DueTaskRules.urgency 決定（單一真相來源，popup 共用）；
+// 逾期在 30 天窗內顯 due-overdue（紅橘），窗外淡化為 due-past（灰）。
 function urgencyClass(dueAt, isExamFlag, submitted = false) {
-  if (!dueAt) return 'due-none';
   if (submitted) return 'due-none';
+  if (!dueAt) return 'due-none';
   if (isExamFlag) return 'due-exam';
-  const diff = new Date(dueAt) - Date.now();
-  if (diff < 0) return 'due-past';
-  const days = diff / 86400000;
-  if (days <= 7) return 'due-urgent';
-  if (days <= 30) return 'due-soon';
-  return 'due-later';
+  switch (DueTaskRules.urgency(dueAt)) {
+    case 'overdue': return DueTaskRules.isWithinOverdueWindow(dueAt) ? 'due-overdue' : 'due-past';
+    case 'urgent': return 'due-urgent';
+    case 'soon': return 'due-soon';
+    case 'later': return 'due-later';
+    default: return 'due-none';
+  }
 }
 
 function formatDue(dueAt) {
@@ -489,7 +530,11 @@ function formatDue(dueAt) {
   const locale = _uiLanguage === 'en' ? 'en-US' : 'zh-TW';
   const dateStr = d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
 
-  if (diffMs < 0) return `${dateStr}（${tr('overdue')}）`;
+  if (diffMs < 0) {
+    const n = DueTaskRules.overdueDays(dueAt);
+    const label = n === 0 ? tr('overdueToday') : tr('overdueDaysLabel').replace('{n}', n);
+    return `${dateStr}（${label}）`;
+  }
 
   const isSameDay =
     d.getFullYear() === now.getFullYear() &&
@@ -505,7 +550,13 @@ function formatDue(dueAt) {
   const dueDayUtc = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
   const nowDayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
   const diffDays = Math.round((dueDayUtc - nowDayUtc) / 86400000);
-  return `${dateStr}（${diffDays} ${tr('daysLater')}）`;
+  return `${dateStr}（${tr('daysLater').replace('{n}', diffDays)}）`;
+}
+
+// 列上的時間標籤：已完成且時間已過 → 什麼都不寫（過去的事無需再標示；已繳交視圖／稽核列適用）
+function dueLabelFor(a) {
+  if (isDone(a) && a.due_at && new Date(a.due_at).getTime() <= Date.now()) return '';
+  return formatDue(a.due_at);
 }
 
 function formatLastSync(iso) {
@@ -519,31 +570,13 @@ function formatLastSync(iso) {
   return `${Math.floor(h / 24)} ${tr('daysAgo')}`;
 }
 
+// 考試/簽到判定委派 DueTaskRules（單一真相來源，含測試，popup 共用；見 taskRules.js）
 function isExam(assignment) {
-  if (assignment.is_quiz_assignment) return true;
-  if ((assignment.submission_types || []).includes('online_quiz')) return true;
-  const lower = (assignment.name || '').toLowerCase();
-  return /\b(exam|quiz|midterm|test)\b/.test(lower)
-    || lower.includes('考試') || lower.includes('考试')
-    || lower.includes('測驗') || lower.includes('测验')
-    || lower.includes('期中');
+  return DueTaskRules.isExam(assignment);
 }
 
 function isAttendance(assignment) {
-  const title = (assignment.name || '').toLowerCase();
-  return (
-    title.includes('attendance') ||
-    title.includes('attendence') ||
-    title.includes('participation') ||
-    title.includes('sign-in') ||
-    title.includes('sign in') ||
-    title.includes('check-in') ||
-    title.includes('check in') ||
-    title.includes('checkin') ||
-    title.includes('簽到') ||
-    title.includes('出勤') ||
-    title.includes('考勤')
-  );
+  return DueTaskRules.isAttendance(assignment);
 }
 
 // 委派 DueCompletion.isSubmitted（單一真相來源，見 completion.js）
@@ -551,7 +584,13 @@ function isSubmitted(a) {
   return DueCompletion.isSubmitted(a);
 }
 
-// 綜合完成判斷：（Canvas 已繳 且 未標回未完成）「或」手動完成（比照 getCourseName 讀 _currentData）
+// 「外部事實」完成：Canvas 已繳「或」考試已結束（過期考試不可再行動，與已繳歸同桶；2026-07-22 決策）
+// 勾選圈路由用它決定翻哪張 map：外部完成 → manualUndone 覆蓋；純手動 → manualDone
+function isExternallyDone(a) {
+  return DueCompletion.isExternallyDone(a);
+}
+
+// 綜合完成判斷：（外部事實完成 且 未標回未完成）「或」手動完成（比照 getCourseName 讀 _currentData）
 function isDone(a) {
   return DueCompletion.isDone(a, _currentData.manualDone || {}, _currentData.manualUndone || {});
 }
@@ -562,13 +601,8 @@ function esc(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function stripHtml(html) {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent || div.innerText || '';
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function findGroupName(assignment, groups) {
@@ -590,14 +624,61 @@ function findGroup(assignment, groups) {
 let showSubmitted = false;
 
 // ── 完成過渡動畫（碎點爆）狀態 ──
-const COMPLETE_DELAY_MS = 3000;       // 勾選後的撤銷窗口（毫秒）
+const COMPLETE_DELAY_MS = 1500;       // 勾選後的撤銷窗口（毫秒）
+const COMPLETE_BURST_MS = 480;        // 碎點爆淡出後才重繪（略長於 .45s 動畫）
 const _completeTimers = {};           // assignmentId -> setTimeout id
+
+// 清掉所有殘留完成計時器（重繪/切頁前呼叫，course detail 與 week 卡共用）
+function clearCompleteTimers() {
+  Object.keys(_completeTimers).forEach((k) => { clearTimeout(_completeTimers[k]); delete _completeTimers[k]; });
+}
+
+// 勾選圈點擊：依「外部事實完成」（已繳或考試已結束）翻轉對應 map（就地寫入 _currentData 與 storage）
+//   外部完成 → 翻 manualUndone（標回未完成的覆蓋）；否則 → 翻 manualDone
+function toggleCompletion(extDone, id) {
+  const mapKey = extDone ? 'manualUndone' : 'manualDone';
+  const next = DueCompletion.toggleManualDone(_currentData[mapKey] || {}, id);
+  _currentData[mapKey] = next;
+  chrome.storage.local.set({ [mapKey]: next });
+}
+
+// 撤銷完成：還原到「未完成」（外部完成 → 補回 manualUndone 覆蓋；否則 → 移除 manualDone）
+function revertCompletion(extDone, id) {
+  if (extDone) {
+    const next = DueCompletion.toggleManualDone(_currentData.manualUndone || {}, id, true);
+    _currentData.manualUndone = next;
+    chrome.storage.local.set({ manualUndone: next });
+  } else {
+    const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id, false);
+    _currentData.manualDone = next;
+    chrome.storage.local.set({ manualDone: next });
+  }
+}
 
 // ── View 狀態 ──
 let currentView = 'grid';      // 'grid' | 'course'
 let currentCourseId = null;
+// 側欄雙擊課程名 → 進入重命名（同課 300ms 內連點兩下）：計時狀態放模組層級，第一下重繪換掉按鈕後仍讀得到
+const NAV_RENAME_DBLCLICK_MS = 300;
+let _navLastRenameId = null;
+let _navLastRenameTime = 0;
 let currentPage = 'week';      // 'week' | 'courses'
 const cardPages = {};           // { [courseId]: pageIndex }
+const CARD_PAGE_SIZE = 3;       // 課程卡片每頁作業數（renderCardBottom / updateCardPage 共用）
+
+// ── 瀏覽器上一頁整合（History API）──
+// 目標：開課程詳情後，用系統慣用的返回（Back 手勢／按鈕／Cmd+[）就能退回清單。
+// 模型：清單（週待辦／課程 grid，含「已繳交」過濾）永遠是同一個 history entry（橫向切換用
+//       replaceState 更新它、不疊返回步）；開課程詳情才 pushState 疊一步，Back → popstate → 退回清單。
+let _historyReady = false;      // 首次 render 前不動 history
+let _suppressHistory = false;   // popstate 驅動的重繪期間，不要再寫 history
+function _appLocation() {
+  return { app: 'due', page: currentPage, showSubmitted, view: currentView, courseId: currentCourseId };
+}
+function syncHistory() {         // 橫向移動：更新目前 entry（不增加返回步）
+  if (!_historyReady || _suppressHistory) return;
+  history.replaceState(_appLocation(), '');
+}
 
 function currentItemLabel() {
   return tr('assignment');
@@ -608,9 +689,56 @@ function cardEmptyLabel() { return tr('noPendingAssignment'); }
 function noItemsLabel() { return tr('noAssignment'); }
 
 // ── 套用篩選到作業列表 ──
+// 考試/簽到＝可被自動隱藏的類別
+function isHideable(a) {
+  return isExam(a) || isAttendance(a);
+}
+
+// 使用者是否手動把此隱藏項「升級」為正常作業（拖曳升級，見 spec 2026-07-22）
+function isManuallyShown(a) {
+  return !!(_currentData.manualShown || {})[String(a && a.id)];
+}
+
+// 寫入升級/降級：val=true 升級（視同一般作業）、false 降級（回自動隱藏）；就地更新 + storage + 重繪詳情/側欄
+function setManualShown(id, val) {
+  const key = String(id);
+  const next = { ...(_currentData.manualShown || {}) };
+  if (val) next[key] = true; else delete next[key];
+  _currentData.manualShown = next;
+  chrome.storage.local.set({ manualShown: next });
+  rerenderDetailAndNav(currentCourseId);
+}
+
+// 使用者是否手動把「一般作業」收進稽核區（拖曳隱藏，見 spec 2026-07-22 drag-hide-all）
+function isManuallyHidden(a) {
+  return !!(_currentData.manualHidden || {})[String(a && a.id)];
+}
+
+// 寫入手動隱藏（一般作業）：val=true 隱藏、false 顯示；就地更新 + storage + 重繪
+function setManualHidden(id, val) {
+  const key = String(id);
+  const next = { ...(_currentData.manualHidden || {}) };
+  if (val) next[key] = true; else delete next[key];
+  _currentData.manualHidden = next;
+  chrome.storage.local.set({ manualHidden: next });
+  rerenderDetailAndNav(currentCourseId);
+}
+
+// 是否被收進稽核區（不在主清單）：考試/簽到預設隱藏（除非升級）；一般作業預設顯示（除非手動隱藏）
+function isHidden(a) {
+  return isHideable(a) ? !isManuallyShown(a) : isManuallyHidden(a);
+}
+
+// 拖曳落點統一寫入：makeHidden=true 收進稽核區、false 拉回清單（依類型寫 manualShown/manualHidden）
+function setItemHiddenByDrag(id, makeHidden) {
+  const a = ((_currentData.assignments || {})[currentCourseId] || []).find((x) => String(x.id) === String(id));
+  if (a && isHideable(a)) setManualShown(id, !makeHidden);
+  else setManualHidden(id, makeHidden);
+}
+
 function applyFilters(asgns) {
-  // 永久排除簽到/出勤/參與類，以及考試類
-  let result = asgns.filter((a) => !isAttendance(a) && !isExam(a));
+  // 排除「被收進稽核區」者（未升級的考試/簽到 ∪ 手動隱藏的一般作業）
+  let result = asgns.filter((a) => !isHidden(a));
 
   // 默認隱藏已完成（含手動）；勾選「查看已繳交」後改為只顯示已完成
   if (showSubmitted) {
@@ -629,7 +757,10 @@ function getCourseName(course) {
   return custom || course.name || '';
 }
 
-function openCustomAssignmentModal(defaultCourseId = currentCourseId) {
+// 模組級狀態：null = 新增模式；非 null = 正在編輯的既有自訂作業（帶原 id / created_at / course_id）
+let _editingCustom = null;
+
+function openCustomAssignmentModal(defaultCourseId = currentCourseId, editing = null) {
   const courses = _currentData.courses || [];
   if (!courses.length) return;
 
@@ -640,17 +771,36 @@ function openCustomAssignmentModal(defaultCourseId = currentCourseId) {
   const descInput = document.getElementById('custom-assignment-description');
   const dueInput = document.getElementById('custom-assignment-due');
   const errorEl = document.getElementById('custom-assignment-error');
+  const titleEl = document.getElementById('custom-assignment-modal-title');
   if (!overlay || !form || !courseSelect || !nameInput || !descInput || !dueInput) return;
+
+  _editingCustom = editing;
 
   courseSelect.innerHTML = courses.map((course) => `
     <option value="${course.id}">${esc(getCourseName(course))}</option>
   `).join('');
 
   form.reset();
-  if (defaultCourseId && courses.some((course) => String(course.id) === String(defaultCourseId))) {
-    courseSelect.value = String(defaultCourseId);
+  if (editing) {
+    // 編輯模式：預填課程／名稱／描述／截止；標題改為「編輯作業」
+    if (titleEl) titleEl.textContent = tr('editAssignmentTitle');
+    const editCourseId = editing.course_id != null ? editing.course_id : defaultCourseId;
+    if (editCourseId != null && courses.some((c) => String(c.id) === String(editCourseId))) {
+      courseSelect.value = String(editCourseId);
+    }
+    nameInput.value = editing.name || '';
+    descInput.value = editing.description || '';
+    dueInput.value = editing.due_at
+      ? DueCustomAssignments.toDatetimeLocalValue(new Date(editing.due_at))
+      : '';
+  } else {
+    // 新增模式：標題「新增作業」，截止預設 7 天後 23:59
+    if (titleEl) titleEl.textContent = tr('addAssignmentTitle');
+    if (defaultCourseId && courses.some((course) => String(course.id) === String(defaultCourseId))) {
+      courseSelect.value = String(defaultCourseId);
+    }
+    dueInput.value = DueCustomAssignments.getDefaultDueLocalValue();
   }
-  dueInput.value = DueCustomAssignments.getDefaultDueLocalValue();
   if (errorEl) errorEl.textContent = '';
   overlay.classList.add('open');
   requestAnimationFrame(() => nameInput.focus());
@@ -659,6 +809,7 @@ function openCustomAssignmentModal(defaultCourseId = currentCourseId) {
 function closeCustomAssignmentModal() {
   const overlay = document.getElementById('custom-assignment-overlay');
   if (overlay) overlay.classList.remove('open');
+  _editingCustom = null;   // 關閉/取消一律清掉編輯狀態
 }
 
 function saveCustomAssignmentFromForm(e) {
@@ -669,37 +820,99 @@ function saveCustomAssignmentFromForm(e) {
   const dueInput = document.getElementById('custom-assignment-due');
   const errorEl = document.getElementById('custom-assignment-error');
 
+  const input = {
+    courseId: courseSelect.value,
+    name: nameInput.value,
+    description: descInput.value,
+    dueLocalValue: dueInput.value,
+  };
+
   try {
-    const assignment = DueCustomAssignments.createCustomAssignment({
-      courseId: courseSelect.value,
-      name: nameInput.value,
-      description: descInput.value,
-      dueLocalValue: dueInput.value,
-    });
-    const key = String(assignment.course_id);
-    chrome.storage.local.get(['customAssignments'], (data) => {
-      const customAssignments = data.customAssignments || {};
-      customAssignments[key] = [assignment, ...(customAssignments[key] || [])];
-      chrome.storage.local.set({ customAssignments }, () => {
-        closeCustomAssignmentModal();
-        loadData();
+    if (_editingCustom) {
+      // ── 編輯：更新既有筆（保留 id / created_at）；若改了課程要跨陣列搬移 ──
+      const oldKey = String(_editingCustom.course_id);
+      const updated = DueCustomAssignments.updateCustomAssignment(_editingCustom, input);
+      const newKey = String(updated.course_id);
+      chrome.storage.local.get(['customAssignments'], (data) => {
+        const customAssignments = data.customAssignments || {};
+        if (oldKey === newKey) {
+          // 同課程：就地取代（保留原順序）；找不到就補到最前
+          const list = customAssignments[newKey] || [];
+          const idx = list.findIndex((a) => String(a.id) === String(updated.id));
+          if (idx >= 0) list[idx] = updated;
+          else list.unshift(updated);
+          customAssignments[newKey] = list;
+        } else {
+          // 換課程：從舊 course_id 陣列移除、加到新 course_id 陣列
+          customAssignments[oldKey] = (customAssignments[oldKey] || [])
+            .filter((a) => String(a.id) !== String(updated.id));
+          if (!customAssignments[oldKey].length) delete customAssignments[oldKey];
+          customAssignments[newKey] = [updated, ...(customAssignments[newKey] || [])];
+        }
+        chrome.storage.local.set({ customAssignments }, () => {
+          closeCustomAssignmentModal();
+          loadData();
+        });
       });
-    });
+    } else {
+      // ── 新增：建立新筆並置於該課程陣列最前 ──
+      const assignment = DueCustomAssignments.createCustomAssignment(input);
+      const key = String(assignment.course_id);
+      chrome.storage.local.get(['customAssignments'], (data) => {
+        const customAssignments = data.customAssignments || {};
+        customAssignments[key] = [assignment, ...(customAssignments[key] || [])];
+        chrome.storage.local.set({ customAssignments }, () => {
+          closeCustomAssignmentModal();
+          loadData();
+        });
+      });
+    }
   } catch (err) {
     if (errorEl) errorEl.textContent = tr('customNameRequired');
   }
 }
 
 function deleteCustomAssignment(courseId, assignmentId) {
-  if (!confirm(tr('confirmDeleteCustom'))) return;
-  chrome.storage.local.get(['customAssignments'], (data) => {
-    const customAssignments = data.customAssignments || {};
-    const key = String(courseId);
-    customAssignments[key] = (customAssignments[key] || [])
-      .filter((assignment) => String(assignment.id) !== String(assignmentId));
-    if (!customAssignments[key].length) delete customAssignments[key];
-    chrome.storage.local.set({ customAssignments }, loadData);
+  // 以自製確認對話框取代原生 window.confirm 對話框（見 openConfirmDialog）
+  openConfirmDialog({
+    title: tr('deleteCustomTitle'),
+    message: tr('confirmDeleteCustom'),
+    confirmLabel: tr('customDelete'),
+    onConfirm: () => {
+      chrome.storage.local.get(['customAssignments'], (data) => {
+        const customAssignments = data.customAssignments || {};
+        const key = String(courseId);
+        customAssignments[key] = (customAssignments[key] || [])
+          .filter((assignment) => String(assignment.id) !== String(assignmentId));
+        if (!customAssignments[key].length) delete customAssignments[key];
+        chrome.storage.local.set({ customAssignments }, loadData);
+      });
+    },
   });
+}
+
+// ── 自製確認對話框（取代 window.confirm；焦點 trap 與 Esc/背景關閉見 setupModalA11y / Esc handler）──
+let _confirmOnOk = null;
+
+function openConfirmDialog({ title, message, confirmLabel, cancelLabel, onConfirm } = {}) {
+  const overlay = document.getElementById('confirm-overlay');
+  const titleEl = document.getElementById('confirm-title');
+  const msgEl = document.getElementById('confirm-message');
+  const okBtn = document.getElementById('confirm-ok');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  if (!overlay || !okBtn || !cancelBtn) return;
+  if (titleEl) titleEl.textContent = title || '';
+  if (msgEl) msgEl.textContent = message || '';
+  okBtn.textContent = confirmLabel || tr('customSave');
+  cancelBtn.textContent = cancelLabel || tr('customCancel');
+  _confirmOnOk = typeof onConfirm === 'function' ? onConfirm : null;
+  overlay.classList.add('open');
+}
+
+function closeConfirmDialog() {
+  const overlay = document.getElementById('confirm-overlay');
+  if (overlay) overlay.classList.remove('open');
+  _confirmOnOk = null;
 }
 
 function fitMetaText() {
@@ -711,6 +924,19 @@ function fitMetaText() {
     size -= 0.5;
     el.style.fontSize = size + 'px';
   }
+}
+
+// 課程詳情左欄評分圖例：固定寬度下字體自動縮小以放下（13→11px 保 a11y 地板），
+// 縮到 11px 仍溢出則交給 CSS 的 text-overflow: ellipsis。
+function fitLegendText(root) {
+  (root || document).querySelectorAll('.detail-pie-legend-text').forEach((el) => {
+    let size = 13;
+    el.style.fontSize = size + 'px';
+    while (el.scrollWidth > el.clientWidth && size > 11) {
+      size -= 0.5;
+      el.style.fontSize = size + 'px';
+    }
+  });
 }
 
 // ── 主要渲染 ──
@@ -731,6 +957,7 @@ function render(data) {
   fitMetaText();
 
   renderNav(courses, assignments);
+  updateSideNav();
 
   if (currentView === 'course') {
     document.getElementById('page-tabs').style.display = '';
@@ -748,8 +975,8 @@ function render(data) {
     document.getElementById('page-tabs').classList.remove('detail-mode');
     document.getElementById('main-section').style.display = '';
     document.getElementById('course-detail-container').style.display = 'none';
-    updateTabs();
-    if (currentPage === 'week') {
+    // 「已繳交」一律用各課程 grid 版面（不套用週待辦的圓餅圖版面）
+    if (currentPage === 'week' && !showSubmitted) {
       renderWeekSection(courses, assignments);
     } else {
       renderCardGrid(courses, assignments, assignmentGroups);
@@ -801,19 +1028,68 @@ function renderNav(courses, assignments) {
       </button>`;
   }).join('');
 
-  // Bind nav clicks → course detail view
+  // Bind nav clicks → 單擊即時開詳情；同課 300ms 內雙擊 → 進入重命名（詳情頁 inline）
   navEl.querySelectorAll('.nav-course-item').forEach((btn) => {
     btn.addEventListener('click', () => {
-      showCourseDetail(parseInt(btn.dataset.targetCourse, 10));
+      const id = parseInt(btn.dataset.targetCourse, 10);
+      const now = Date.now();
+      const isDouble = id === _navLastRenameId && (now - _navLastRenameTime) < NAV_RENAME_DBLCLICK_MS;
+      _navLastRenameId = id;
+      _navLastRenameTime = now;
+      if (isDouble) {
+        // 第一下已同步渲染詳情（無 cardEl → 走同步 fallback），.detail-name-text 已就緒可直接重命名；
+        // 三連點時 .detail-name-text 已被 input 取代，startCourseRename 內部 early-return，保留進行中的編輯
+        startCourseRename(id);
+      } else {
+        showCourseDetail(id);   // 單擊：維持即時開啟
+      }
     });
   });
 }
 
-// ── 頁面切換 ──
-function updateTabs() {
-  document.querySelectorAll('.page-tab').forEach((tab) => {
-    tab.classList.toggle('active', tab.dataset.page === currentPage);
-  });
+// ── 側欄主導航（active 狀態、數量、頁面標題） ──
+function updateSideNav() {
+  const navWeek = document.getElementById('nav-week');
+  if (!navWeek) return;
+  const navCourses = document.getElementById('nav-courses');
+  const navSubmitted = document.getElementById('nav-submitted');
+
+  const inCourse = currentView === 'course';
+  navWeek.classList.toggle('active', !inCourse && !showSubmitted && currentPage === 'week');
+  navCourses.classList.toggle('active', !inCourse && !showSubmitted && currentPage === 'courses');
+  navSubmitted.classList.toggle('active', showSubmitted);
+
+  // 數量：學期待辦＝未完成的待辦（無截止＋未來三組＋窗內逾期）；已繳交＝已完成作業；課程＝課程數
+  const { courses = [], assignments = {} } = _currentData;
+  let weekCount = 0;
+  let doneCount = 0;
+  for (const c of courses) {
+    for (const a of (assignments[c.id] || [])) {
+      if (isHidden(a)) continue;  // 被收進稽核區者（未升級考試/簽到 ∪ 手動隱藏作業）不計數
+      if (isDone(a)) { doneCount++; continue; }
+      // 與週待辦列表一致：無截止 ＋ 未來三組（urgent/soon/later）＋ 30 天窗內逾期；窗外逾期不計
+      const u = DueTaskRules.urgency(a.due_at);
+      if (u === 'overdue') {
+        if (DueTaskRules.isWithinOverdueWindow(a.due_at)) weekCount++;
+      } else {
+        weekCount++;  // 'none'（無截止）／urgent／soon／later 皆計入
+      }
+    }
+  }
+  const setCount = (id, n) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = n > 0 ? n : '';
+  };
+  setCount('nav-week-count', weekCount);
+  setCount('nav-courses-count', courses.length);
+  setCount('nav-submitted-count', doneCount);
+
+  // 頁面標題（詳情模式下由 CSS 隱藏）
+  const titleEl = document.getElementById('page-title');
+  if (titleEl) {
+    const key = showSubmitted ? 'submittedBtn' : (currentPage === 'week' ? 'tabWeek' : 'tabCourses');
+    titleEl.textContent = tr(key);
+  }
 }
 
 function switchPage(page) {
@@ -834,7 +1110,8 @@ function switchPage(page) {
   const { courses = [], assignments = {}, assignmentGroups = {} } = _currentData;
   const prevPage = currentPage;
   currentPage = page;
-  updateTabs();
+  updateSideNav();
+  syncHistory();   // 週待辦↔課程 為橫向切換：更新目前 entry，不疊返回步
 
   // 渲染新页面内容到 mainSection（暂时）
   if (page === 'week') {
@@ -884,98 +1161,116 @@ function switchPage(page) {
 // ── 本週待辦 ──
 function renderWeekSection(courses, assignments) {
   const el = document.getElementById('main-section');
-  const now = Date.now();
+  // 重繪前清掉殘留的完成計時器（切頁/重繪時避免週卡幽靈 callback）
+  clearCompleteTimers();
 
+  // 收集所有作業（含逾期、含無截止日期）；applyFilters 已排除考試/簽到/已完成
   const items = [];
   for (const course of courses) {
     const asgns = assignments[course.id] || [];
     for (const a of asgns) {
-      if (!a.due_at) continue;
-      const diff = new Date(a.due_at) - now;
-      // 只顯示未到期的作業
-      if (diff >= 0) {
-        items.push({ ...a, _course: course });
-      }
+      items.push({ ...a, _course: course });
     }
   }
-
   const filtered = applyFilters(items);
-  filtered.sort((a, b) => new Date(a.due_at) - new Date(b.due_at));
 
-  // 分成三組：7天內 / 8-30天 / 30天以上
-  const urgent = [];   // 7天內
-  const soon = [];     // 8-30天
-  const later = [];    // 30天以上
-
+  // 依統一緊急度分組（單一真相來源 DueTaskRules.urgency）
+  const overdue = [];  // 逾期（僅 30 天窗內；窗外不進待辦，僅課程詳情可見）
+  const urgent = [];   // 7 天內
+  const soon = [];     // 8-30 天
+  const later = [];    // 30 天以上
+  const noDue = [];    // 無截止日期（due_at 為 null 或無效日期 → urgency 'none'）
   for (const a of filtered) {
-    const diff = new Date(a.due_at) - now;
-    const days = diff / 86400000;
-    if (days <= 7) urgent.push(a);
-    else if (days <= 30) soon.push(a);
-    else later.push(a);
-  }
-
-  const total = urgent.length + soon.length + later.length;
-  const urgentPct = total > 0 ? (urgent.length / total) * 100 : 0;
-  const soonPct = total > 0 ? (soon.length / total) * 100 : 0;
-  const laterPct = total > 0 ? (later.length / total) * 100 : 0;
-
-  const pieStyle = total > 0
-    ? `background: conic-gradient(
-        var(--orange) 0% ${urgentPct}%,
-        var(--warm) ${urgentPct}% ${urgentPct + soonPct}%,
-        var(--blue) ${urgentPct + soonPct}% 100%
-      );`
-    : 'background: var(--border);';
-
-  const renderGroup = (title, list, colorClass, isLast) => {
-    if (list.length === 0) {
-      return '';
+    switch (DueTaskRules.urgency(a.due_at)) {
+      case 'overdue':
+        if (DueTaskRules.isWithinOverdueWindow(a.due_at)) overdue.push(a);
+        break;
+      case 'urgent': urgent.push(a); break;
+      case 'soon': soon.push(a); break;
+      case 'later': later.push(a); break;
+      default: noDue.push(a); break; // 'none' → 無截止日期組（置底）
     }
-    const cards = list.map((a) => {
-      const uClass = urgencyClass(a.due_at, isExam(a));
-      return `
-        <div class="week-task-card" data-course-id="${a._course.id}">
-          <div class="week-task-course">${esc(getCourseName(a._course))}</div>
-          <div class="week-task-title">${esc(a.name)}</div>
-          <div class="week-task-due ${uClass}">${formatDue(a.due_at)}</div>
-        </div>`;
-    }).join('');
+  }
+  // 逾期組：最近錯過的在最上（due_at 降冪）；未來三組：due_at 升冪
+  overdue.sort((a, b) => new Date(b.due_at) - new Date(a.due_at));
+  const byDueAsc = (a, b) => new Date(a.due_at) - new Date(b.due_at);
+  urgent.sort(byDueAsc); soon.sort(byDueAsc); later.sort(byDueAsc);
+  // 無截止組：無日期可排，依課程名→作業名穩定排序
+  noDue.sort((a, b) =>
+    getCourseName(a._course).localeCompare(getCourseName(b._course)) ||
+    String(a.name).localeCompare(String(b.name)));
+
+  // 「本週概覽」進度環：範圍＝逾期窗 ∪ 未來 7 天（近期可行動集），現算完成/總數（含已完成項）
+  const isNear = (a) => {
+    const u = DueTaskRules.urgency(a.due_at);
+    return u === 'urgent' || (u === 'overdue' && DueTaskRules.isWithinOverdueWindow(a.due_at));
+  };
+  const nearItems = items.filter((a) => !isHidden(a) && isNear(a));
+  const nearTotal = nearItems.length;
+  const nearDone = nearItems.filter((a) => isDone(a)).length;
+  const donePct = nearTotal > 0 ? (nearDone / nearTotal) * 100 : 0;
+  const ringStyle = `background: conic-gradient(var(--green) 0% ${donePct}%, var(--border) ${donePct}% 100%);`;
+  const ringAria = `${tr('weekDoneLabel')} ${nearDone}/${nearTotal}`;
+
+  // 分級摘要列（只顯示 count>0；逾期紅色，點擊跳到右側對應區塊）
+  const sumRows = [
+    { key: 'overdue', cls: 'is-overdue', label: tr('overdueGroup'), n: overdue.length },
+    { key: 'urgent', cls: 'is-urgent', label: tr('within7Days'), n: urgent.length },
+    { key: 'soon', cls: 'is-soon', label: tr('within30Days'), n: soon.length },
+    { key: 'later', cls: 'is-later', label: tr('beyond30Days'), n: later.length },
+    { key: 'nodue', cls: 'is-nodue', label: tr('noDueDate'), n: noDue.length },
+  ].filter((r) => r.n > 0)
+    .map((r) => `<button class="wk-sum-row ${r.cls}" data-scroll-group="${r.key}"><span class="wk-sum-num">${r.n}</span><span class="wk-sum-label">${esc(r.label)}</span></button>`)
+    .join('');
+
+  // 單張週卡片（含右上角完成勾選圈；勾選圈狀態沿用 .assignment-check 語言）
+  const renderWeekCard = (a) => {
+    const uClass = urgencyClass(a.due_at, isExam(a)); // 已濾除考試 → 走 overdue/urgent/soon/later 色
+    const extDone = isExternallyDone(a);               // 勾選路由：外部完成翻 manualUndone、否則翻 manualDone
+    const done = isDone(a);                            // 週視圖恆為 false，仍寫入以保勾選圈狀態一致
+    const checkLabel = done ? tr('markUndone') : tr('markDone');
     return `
-      <div class="week-group">
-        <div class="week-group-title ${colorClass}">${title} (${list.length})</div>
-        <div class="week-task-grid">
-          ${cards}
-        </div>
-      </div>
-      ${!isLast ? '<div class="week-divider"></div>' : ''}`;
+      <div class="week-task-card" role="button" tabindex="0" aria-label="${esc(getCourseName(a._course) + ' · ' + a.name)}" data-course-id="${a._course.id}" data-assignment-id="${esc(String(a.id))}">
+        <button class="assignment-check week-task-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${a._course.id}" data-done="${done ? 'true' : 'false'}" data-ext-done="${extDone ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"></button>
+        <div class="week-task-course">${esc(getCourseName(a._course))}</div>
+        <div class="week-task-title">${esc(a.name)}</div>
+        <div class="week-task-due ${uClass}">${formatDue(a.due_at)}</div>
+      </div>`;
   };
 
+  const renderGroup = (title, list, colorClass, groupKey) => {
+    if (list.length === 0) return '';
+    return `
+      <div class="week-group" data-group="${groupKey}">
+        <div class="week-group-title ${colorClass}">${title} (${list.length})</div>
+        <div class="week-task-grid">
+          ${list.map(renderWeekCard).join('')}
+        </div>
+      </div>`;
+  };
+
+  // 逾期組置頂；分隔線只夾在相鄰的非空組之間
   const groupsHTML = [
-    renderGroup(tr('within7Days'), urgent, 'color-urgent', false),
-    renderGroup(tr('within30Days'), soon, 'color-soon', false),
-    renderGroup(tr('beyond30Days'), later, 'color-later', true)
-  ].filter(h => h).join('');
+    renderGroup(tr('overdueGroup'), overdue, 'color-overdue', 'overdue'),
+    renderGroup(tr('within7Days'), urgent, 'color-urgent', 'urgent'),
+    renderGroup(tr('within30Days'), soon, 'color-soon', 'soon'),
+    renderGroup(tr('beyond30Days'), later, 'color-later', 'later'),
+    renderGroup(tr('noDueDate'), noDue, 'color-nodue', 'nodue'),
+  ].filter(h => h).join('<div class="week-divider"></div>');
 
   el.innerHTML = `
     <div class="week-panel">
       <div class="week-content">
         <div class="week-left">
-          <div class="week-pie" style="${pieStyle}"></div>
-          <div class="week-legend">
-            <div class="week-legend-item">
-              <span class="week-legend-dot" style="background: var(--orange);"></span>
-              <span class="week-legend-label">${tr('within7Days')} (${urgent.length})</span>
-            </div>
-            <div class="week-legend-item">
-              <span class="week-legend-dot" style="background: var(--warm);"></span>
-              <span class="week-legend-label">${tr('within30Days')} (${soon.length})</span>
-            </div>
-            <div class="week-legend-item">
-              <span class="week-legend-dot" style="background: var(--blue);"></span>
-              <span class="week-legend-label">${tr('beyond30DaysShort')} (${later.length})</span>
+          <div class="wk-ring-wrap">
+            <div class="wk-ring" role="img" aria-label="${esc(ringAria)}" style="${ringStyle}">
+              <div class="wk-ring-center">
+                <div class="wk-ring-frac"><b>${nearDone}</b>/${nearTotal}</div>
+                <div class="wk-ring-cap">${tr('weekDoneLabel')}</div>
+              </div>
             </div>
           </div>
+          ${sumRows ? `<div class="wk-breakdown">${sumRows}</div>` : ''}
         </div>
         <div class="week-right">
           ${groupsHTML || `<div class="week-group-empty">${tr('noTasks')}</div>`}
@@ -983,12 +1278,61 @@ function renderWeekSection(courses, assignments) {
       </div>
     </div>`;
 
+  // 勾選圈：依 Canvas 事實翻轉，未完成→完成走 1.5 秒撤銷窗口動畫（stopPropagation 不開詳情）
+  el.querySelectorAll('.week-task-check').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('.week-task-card');
+      const id = String(btn.dataset.assignmentId);
+      const cid = parseInt(btn.dataset.courseId, 10);
+      if (card && card.classList.contains('bursting')) return;        // 爆開中不互動
+      if (card && card.classList.contains('completing')) {            // 撤銷窗口內 → 取消
+        cancelCompleteWeek(card, id, cid);
+        return;
+      }
+      toggleCompletion(btn.dataset.extDone === 'true', id);
+      const a = ((_currentData.assignments || {})[cid] || []).find((x) => String(x.id) === id);
+      const nowDone = a ? isDone(a) : false;
+      if (nowDone && card) {
+        beginCompleteWeek(card, id, cid);
+      } else {
+        rerenderWeekAndNav();
+      }
+    });
+  });
+
   el.querySelectorAll('.week-task-card').forEach((card) => {
     card.addEventListener('click', () => {
+      if (card.classList.contains('bursting')) return;                // 爆開中不互動
+      if (card.classList.contains('completing')) {                    // 撤銷窗口內 → 點卡片任意處取消
+        const chk = card.querySelector('.assignment-check');
+        if (chk) cancelCompleteWeek(card, String(chk.dataset.assignmentId), parseInt(chk.dataset.courseId, 10));
+        return;
+      }
       const courseId = parseInt(card.dataset.courseId, 10);
       if (!Number.isNaN(courseId)) {
         showCourseDetail(courseId, card);
       }
+    });
+    // 鍵盤：Enter / Space 等同點擊（Space preventDefault 阻止捲動）；焦點在內部勾選圈時不攔截
+    card.addEventListener('keydown', (e) => {
+      if (e.target !== card) return;
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  // 左欄分級摘要 → 捲動右側清單到對應區塊（原生 button，Enter/Space 自動觸發 click）
+  // 手動算相對位移，避免 scrollIntoView 在巢狀 overflow 結構下不作用
+  el.querySelectorAll('.wk-sum-row').forEach((row) => {
+    row.addEventListener('click', () => {
+      const target = el.querySelector(`.week-group[data-group="${row.dataset.scrollGroup}"]`);
+      const right = el.querySelector('.week-right');
+      if (!target || !right) return;
+      const delta = target.getBoundingClientRect().top - right.getBoundingClientRect().top + right.scrollTop;
+      right.scrollTo({ top: delta, behavior: 'smooth' });
     });
   });
 }
@@ -996,6 +1340,8 @@ function renderWeekSection(courses, assignments) {
 // ── 卡片格 ──
 function renderCardGrid(courses, assignments, assignmentGroups) {
   const el = document.getElementById('main-section');
+  // 切到卡片格前清掉殘留的週卡完成計時器，避免幽靈 callback 重繪週待辦
+  clearCompleteTimers();
 
   if (!courses.length) {
     el.innerHTML = `
@@ -1028,6 +1374,14 @@ function renderCardGrid(courses, assignments, assignmentGroups) {
       const courseId = parseInt(card.dataset.courseId, 10);
       showCourseDetail(courseId, card);
     });
+    // 鍵盤：Enter / Space 等同點擊（Space preventDefault 阻止捲動）；焦點在分頁鈕時不攔截
+    card.addEventListener('keydown', (e) => {
+      if (e.target !== card) return;
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        card.click();
+      }
+    });
   });
 
   el.querySelectorAll('.card-pager-btn').forEach((btn) => {
@@ -1047,21 +1401,22 @@ function renderCourseCardGrid(course, asgns, groups) {
     return new Date(a.due_at) - new Date(b.due_at);
   });
 
+  // 緊急＝7 天內到期「且未完成」——已完成（含已繳交視圖）不算緊急
   const urgentCount = filtered.filter((a) => {
-    if (!a.due_at) return false;
+    if (!a.due_at || isDone(a)) return false;
     const diff = new Date(a.due_at) - Date.now();
     return diff > 0 && diff <= 7 * 86400000;
   }).length;
 
   const pendingCount = filtered.length;
   const metaParts = [];
-  if (pendingCount) metaParts.push(`${pendingCount}${tr('pendingItems')}`);
+  if (pendingCount) metaParts.push(`${pendingCount}${tr(showSubmitted ? 'completedItems' : 'pendingItems')}`);
 
   const pageIdx = cardPages[course.id] || 0;
   const bottomHtml = renderCardBottom(course.id, filtered, pageIdx);
 
   return `
-    <div class="course-card-grid" data-course-id="${course.id}">
+    <div class="course-card-grid" role="button" tabindex="0" aria-label="${esc(getCourseName(course))}" data-course-id="${course.id}">
       <div class="card-top" data-course-id="${course.id}">
         <div class="card-top-row">
           <div class="card-code">${esc(course.course_code || '')}</div>
@@ -1076,7 +1431,7 @@ function renderCourseCardGrid(course, asgns, groups) {
 
 // ── 卡片下半部分（作業列表 + 分頁） ──
 function renderCardBottom(courseId, sorted, pageIdx) {
-  const pageSize = 3;
+  const pageSize = CARD_PAGE_SIZE;
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const page = Math.min(pageIdx, totalPages - 1);
   const visible = sorted.slice(page * pageSize, (page + 1) * pageSize);
@@ -1087,16 +1442,16 @@ function renderCardBottom(courseId, sorted, pageIdx) {
         return `
           <div class="card-row">
             <div class="card-row-title">${esc(a.name)}</div>
-            <div class="card-row-due ${uClass}">${formatDue(a.due_at)}</div>
+            <div class="card-row-due ${uClass}">${dueLabelFor(a)}</div>
           </div>`;
       }).join('')
     : `<div class="card-empty">${cardEmptyLabel()}</div>`;
 
   const pager = totalPages > 1 ? `
     <div class="card-pager">
-      <button class="card-pager-btn" data-course-id="${courseId}" data-dir="-1"${page === 0 ? ' disabled' : ''}>‹</button>
+      <button class="card-pager-btn" data-course-id="${courseId}" data-dir="-1"${page === 0 ? ' disabled' : ''}><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
       <span class="card-pager-info">${page + 1} / ${totalPages}</span>
-      <button class="card-pager-btn" data-course-id="${courseId}" data-dir="1"${page >= totalPages - 1 ? ' disabled' : ''}>›</button>
+      <button class="card-pager-btn" data-course-id="${courseId}" data-dir="1"${page >= totalPages - 1 ? ' disabled' : ''}><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>` : '';
 
   return `<div class="card-bottom"><div class="card-rows-container">${rows}</div>${pager}</div>`;
@@ -1112,7 +1467,7 @@ function updateCardPage(courseId, dir) {
     return new Date(a.due_at) - new Date(b.due_at);
   });
 
-  const pageSize = 2;
+  const pageSize = CARD_PAGE_SIZE;
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const current = cardPages[courseId] || 0;
   const next = Math.max(0, Math.min(totalPages - 1, current + dir));
@@ -1134,6 +1489,14 @@ function updateCardPage(courseId, dir) {
 
 // ── 切換至課程詳細 ──
 function showCourseDetail(courseId, cardEl) {
+  // 歷史：從清單進詳情 → push（新增一個返回步，Back 回清單）；
+  //       詳情內換課（sidebar 點另一課）→ replace（不疊步，Back 仍直接回清單）。
+  if (_historyReady && !_suppressHistory) {
+    const loc = { app: 'due', page: currentPage, showSubmitted, view: 'course', courseId };
+    if (currentView === 'course') history.replaceState(loc, '');
+    else history.pushState(loc, '');
+  }
+
   // 没有卡片元素或不支持 View Transitions 时的回退
   if (!cardEl || !document.startViewTransition) {
     currentView = 'course';
@@ -1213,14 +1576,15 @@ function showCourseDetail(courseId, cardEl) {
   });
 }
 
-// ── 返回格狀視圖 ──
+// ── 退出課程詳情、回到清單 ──
+// 回到「currentPage / showSubmitted 所指的清單」（不再寫死回 courses grid）——
+// 由 popstate（Back）或 render() fallback 呼叫；currentPage/showSubmitted 已由呼叫端設好。
 function showGridView() {
   const prevCourseId = currentCourseId;
 
   if (!document.startViewTransition) {
     currentView = 'grid';
     currentCourseId = null;
-    currentPage = 'courses';
     loadData();
     return;
   }
@@ -1241,7 +1605,6 @@ function showGridView() {
   const transition = document.startViewTransition(() => {
     currentView = 'grid';
     currentCourseId = null;
-    currentPage = 'courses';
 
     const pageTabs = document.getElementById('page-tabs');
     const mainSection = document.getElementById('main-section');
@@ -1254,9 +1617,14 @@ function showGridView() {
     detailContainer.style.display = 'none';
 
     const { courses = [], assignments = {}, assignmentGroups = {} } = _currentData;
-    updateTabs();
+    updateSideNav();
     renderNav(courses, assignments);
-    renderCardGrid(courses, assignments, assignmentGroups);
+    // 回到原本所在的清單（週待辦或課程 grid）；回週待辦時下方 querySelector 找不到課程卡 → 自然淡出
+    if (currentPage === 'week' && !showSubmitted) {
+      renderWeekSection(courses, assignments);
+    } else {
+      renderCardGrid(courses, assignments, assignmentGroups);
+    }
 
     // ── LAST: 在小卡片上标记对应的共享元素 ──
     const card = document.querySelector(`.course-card-grid[data-course-id="${prevCourseId}"]`);
@@ -1354,6 +1722,7 @@ function rerenderDetailAndNav(cid) {
   const course = courses.find((c) => c.id === cid);
   if (course) renderCourseDetailSection(course, assignments[cid] || [], assignmentGroups[cid] || [], scores);
   renderNav(courses, assignments);
+  updateSideNav();   // 升級/降級、完成勾選後同步刷新側欄頂部計數（待辦/已完成）
 }
 
 function beginComplete(item, id, cid) {
@@ -1384,27 +1753,72 @@ function finishComplete(item, id, cid) {
   spawnBurstDots(item);
   item.classList.add('bursting');
   // 略長於 .45s 爆開動畫，結束後重繪：已完成的會被濾掉、計數/圓餅/側欄一起更新
-  setTimeout(() => rerenderDetailAndNav(cid), 480);
+  setTimeout(() => rerenderDetailAndNav(cid), COMPLETE_BURST_MS);
 }
 
 function cancelComplete(item, id, cid) {
   if (_completeTimers[id]) { clearTimeout(_completeTimers[id]); delete _completeTimers[id]; }
-  // 撤銷要還原到「未完成」：Canvas 已繳者是恢復 manualUndone 覆蓋；未繳者是移除 manualDone
   const chk = item.querySelector('.assignment-check');
-  if (chk && chk.dataset.submitted === 'true') {
-    const next = DueCompletion.toggleManualDone(_currentData.manualUndone || {}, id, true);
-    _currentData.manualUndone = next;
-    chrome.storage.local.set({ manualUndone: next });
-  } else {
-    const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id, false);
-    _currentData.manualDone = next;
-    chrome.storage.local.set({ manualDone: next });
-  }
+  revertCompletion(chk && chk.dataset.extDone === 'true', id);
   // 就地還原（不整段重繪，避免影響其他進行中的動畫）
   item.classList.remove('completing');
   const hint = item.querySelector('.complete-undo-hint');
   if (hint) hint.remove();
   const bar = item.querySelector('.complete-countdown');
+  if (bar) bar.remove();
+  if (chk) { chk.dataset.done = 'false'; chk.setAttribute('aria-label', tr('markDone')); }
+}
+
+// ── 週卡片完成過渡（平行於 assignment-item 版；共用 COMPLETE_* 常數與 spawnBurstDots）──
+function rerenderWeekAndNav() {
+  const { courses = [], assignments = {} } = _currentData;
+  renderWeekSection(courses, assignments);
+  updateSideNav();
+  renderNav(courses, assignments);
+}
+
+function beginCompleteWeek(card, id, cid) {
+  const chk = card.querySelector('.assignment-check');
+  if (chk) { chk.dataset.done = 'true'; chk.setAttribute('aria-label', tr('markUndone')); }
+  card.classList.add('completing');
+  // due 文字位置換成「↩ 撤銷」hint（沿用 .complete-undo-hint 樣式）
+  const due = card.querySelector('.week-task-due');
+  if (due && !card.querySelector('.complete-undo-hint')) {
+    due.style.display = 'none';
+    const hint = document.createElement('div');
+    hint.className = 'complete-undo-hint';
+    hint.textContent = '↩ ' + tr('undoComplete');
+    due.parentNode.insertBefore(hint, due);
+  }
+  if (!card.querySelector('.complete-countdown')) {
+    const bar = document.createElement('div');
+    bar.className = 'complete-countdown';
+    bar.style.animation = `complete-countdown ${COMPLETE_DELAY_MS / 1000}s linear forwards`;
+    card.appendChild(bar);
+  }
+  _completeTimers[id] = setTimeout(() => {
+    delete _completeTimers[id];
+    finishCompleteWeek(card, id, cid);
+  }, COMPLETE_DELAY_MS);
+}
+
+function finishCompleteWeek(card /* id, cid */) {
+  spawnBurstDots(card);
+  card.classList.add('bursting');
+  // 已完成者會被 applyFilters 濾掉；重繪週 section＋側欄＋左欄（用 _currentData，避免閃白）
+  setTimeout(rerenderWeekAndNav, COMPLETE_BURST_MS);
+}
+
+function cancelCompleteWeek(card, id) {
+  if (_completeTimers[id]) { clearTimeout(_completeTimers[id]); delete _completeTimers[id]; }
+  const chk = card.querySelector('.assignment-check');
+  revertCompletion(chk && chk.dataset.extDone === 'true', id);
+  card.classList.remove('completing');
+  const hint = card.querySelector('.complete-undo-hint');
+  if (hint) hint.remove();
+  const due = card.querySelector('.week-task-due');
+  if (due) due.style.display = '';
+  const bar = card.querySelector('.complete-countdown');
   if (bar) bar.remove();
   if (chk) { chk.dataset.done = 'false'; chk.setAttribute('aria-label', tr('markDone')); }
 }
@@ -1427,8 +1841,10 @@ function spawnBurstDots(item) {
 function renderCourseDetailSection(course, asgns, groups, scores) {
   const el = document.getElementById('course-detail-container');
 
-  // 重繪前清掉殘留的完成計時器（導覽離開 / 切換篩選時避免 stray callback）
-  Object.keys(_completeTimers).forEach((k) => { clearTimeout(_completeTimers[k]); delete _completeTimers[k]; });
+  // 重繪前清掉殘留的完成計時器（導覽離開 / 切換篩選時避免 stray callback；week 卡共用同一組計時器）
+  clearCompleteTimers();
+  // 重繪前中止進行中的拖曳（避免浮動 clone／window 監聽器變孤兒）
+  abortActiveDrag();
 
   const filtered = applyFilters(asgns).sort((a, b) => {
     if (!a.due_at && !b.due_at) return 0;
@@ -1437,14 +1853,15 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     return new Date(a.due_at) - new Date(b.due_at);
   });
 
+  // 緊急＝7 天內到期「且未完成」——已完成（含已繳交視圖）不算緊急
   const urgentCount = filtered.filter((a) => {
-    if (!a.due_at) return false;
+    if (!a.due_at || isDone(a)) return false;
     const diff = new Date(a.due_at) - Date.now();
     return diff > 0 && diff <= 7 * 86400000;
   }).length;
 
   const pendingCount = filtered.length;
-  const detailMeta = `${pendingCount}${tr('pendingItems')}`;
+  const detailMeta = `${pendingCount}${tr(showSubmitted ? 'completedItems' : 'pendingItems')}`;
   const detailUrgentBadge = urgentCount
     ? `<div class="card-badge-urgent">${urgentCount}${tr('urgentItems')}</div>`
     : `<div class="card-badge-urgent is-placeholder" aria-hidden="true">0${tr('urgentItems')}</div>`;
@@ -1452,6 +1869,11 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
   const weightPieHtml = renderWeightPie(groups, course.id);
   const gradeCalcHtml = renderGradeCalculator(course, asgns, groups, scores);
   const assignmentRows = filtered.map((a) => renderAssignmentRow(a, groups, course.id)).join('');
+  // 稽核入口：僅列目前仍隱藏（未升級）的考試/簽到；只要該課「原本有」可隱藏項就恆常顯示此區
+  // （即使全部升級、隱藏數為 0，仍作為「拖回降級」的放置目標）
+  const hiddenItems = asgns.filter((a) => isHidden(a));
+  // 「已隱藏」區恆存在（只要該課有作業）作為拖放目標；列出所有被收起來的項目
+  const hiddenHtml = asgns.length ? renderHiddenItemsSection(hiddenItems, groups, course.id) : '';
 
   el.innerHTML = `
     <div class="course-detail-view">
@@ -1473,7 +1895,10 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
         <div class="detail-right-panel">
           ${gradeCalcHtml}
           <div class="detail-assignments-label">${currentListLabel()}</div>
-          ${assignmentRows || `<div style="padding:12px 0;color:var(--mid);font-size:13px;">${noItemsLabel()}</div>`}
+          <div class="detail-assignments-list" data-course-id="${course.id}" data-drophint="${esc(tr('dropToShow'))}">
+            ${assignmentRows || `<div style="padding:12px 0;color:var(--mid);font-size:13px;">${noItemsLabel()}</div>`}
+          </div>
+          ${hiddenHtml}
         </div>
       </div>
     </div>`;
@@ -1486,7 +1911,11 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     renameBtn.style.left = `${textSpan.offsetLeft + textSpan.offsetWidth + 8}px`;
   }
 
-  document.getElementById('detail-back-btn').addEventListener('click', showGridView);
+  // 固定寬左欄下，評分圖例字體自動縮放（過長再 ellipsis）
+  fitLegendText(el);
+
+  // ← 返回：走 history.back()，與瀏覽器返回（手勢／按鈕／Cmd+[）統一由 popstate 處理
+  document.getElementById('detail-back-btn').addEventListener('click', () => history.back());
 
   el.querySelectorAll('.assignment-item').forEach((item) => {
     item.addEventListener('click', () => {
@@ -1514,6 +1943,18 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
     });
   });
 
+  // 自訂作業「編輯」鈕 → 帶入既有資料開 modal（編輯模式）
+  el.querySelectorAll('.btn-edit-custom-assignment').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const cid = parseInt(btn.dataset.courseId, 10);
+      const id = String(btn.dataset.assignmentId);
+      const list = (_currentData.assignments || {})[cid] || [];
+      const editing = list.find((a) => String(a.id) === id && a._isCustom);
+      if (editing) openCustomAssignmentModal(cid, editing);
+    });
+  });
+
   el.querySelectorAll('.assignment-check').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation(); // 不觸發整列展開或作業名稱跳轉
@@ -1526,15 +1967,7 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
         return;
       }
       // 依 Canvas 事實分流：已繳 → 翻轉「標回未完成」覆蓋；未繳 → 翻轉手動完成（就地更新，避免閃白）
-      if (btn.dataset.submitted === 'true') {
-        const next = DueCompletion.toggleManualDone(_currentData.manualUndone || {}, id);
-        _currentData.manualUndone = next;
-        chrome.storage.local.set({ manualUndone: next });
-      } else {
-        const next = DueCompletion.toggleManualDone(_currentData.manualDone || {}, id);
-        _currentData.manualDone = next;
-        chrome.storage.local.set({ manualDone: next });
-      }
+      toggleCompletion(btn.dataset.extDone === 'true', id);
       const a = ((_currentData.assignments || {})[cid] || []).find((x) => String(x.id) === id);
       const nowDone = a ? isDone(a) : false;
       if (nowDone && !showSubmitted && item) {
@@ -1576,6 +2009,341 @@ function renderCourseDetailSection(course, asgns, groups, scores) {
       openWeightEditModal(parseInt(btn.dataset.courseId, 10));
     });
   });
+
+  // 「已自動隱藏」稽核清單展開/收合（不持久化，每次進詳情預設收合）
+  el.querySelectorAll('.hidden-items-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const wrap = btn.closest('.hidden-items');
+      if (!wrap) return;
+      wrap.classList.toggle('open');
+    });
+  });
+
+  // 拖曳升級／降級隱藏項
+  setupHideablePromoteDrag(el);
+
+  // 開頁時主動算一次「顯示用」總分（persist:false → 不把 Canvas 預填值固化成手動值）
+  if (el.querySelector('.grade-calc')) {
+    recalculateGrades(course.id, { persist: false });
+  }
+}
+
+// ── 拖曳升級（隱藏列→作業清單）／降級（升級列→稽核區）──
+// Pointer Events 自繪引擎（原生 HTML5 DnD 的啟動層在部分環境不觸發、ghost/插入動畫皆不可控）：
+// grip 為唯一拖曳起點 → 超過閾值「拿起」浮動 clone 跟隨游標 → 懸停清單時插入點以下的列讓位 →
+// 放開命中則寫入 manualShown 重繪，clone 飛入重繪後的實際落點（清單依 due 排序）；未命中/Esc 飛回原位。
+let _dragCtx = null;                 // 進行中的拖曳（全域僅允許一場）
+
+const DRAG_LIFT_PX = 4;              // 移動超過此距離才視為拖曳（否則當一般點擊）
+const DRAG_SETTLE_MS = 240;          // 落點／返回動畫時長
+const DRAG_EDGE_ZONE = 56;           // 距捲動容器上下緣此距離內自動捲動
+const DRAG_EDGE_SPEED = 14;          // 自動捲動每 frame 最大位移
+
+function setupHideablePromoteDrag(el) {
+  const zones = {
+    list: el.querySelector('.detail-assignments-list'),
+    hidden: el.querySelector('.hidden-items'),
+    scroller: el.querySelector('.detail-right-panel'),
+  };
+  el.querySelectorAll('[data-drag]').forEach((row) => {
+    const grip = row.querySelector('.drag-grip');
+    if (!grip) return;
+    // grip 上的點擊不觸發列展開／名稱跳轉
+    grip.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); });
+    grip.addEventListener('pointerdown', (e) => {
+      if (_dragCtx || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if (row.classList.contains('completing') || row.classList.contains('bursting')) return;
+      e.preventDefault();              // 擋文字選取
+      e.stopPropagation();
+      trackDragFrom(e, row, zones);
+    });
+  });
+}
+
+function trackDragFrom(e, row, zones) {
+  const dir = row.dataset.drag;                                  // 'promote' | 'demote'
+  const target = dir === 'promote' ? zones.list : zones.hidden;
+  if (!target) return;
+  const ctx = _dragCtx = {
+    row, dir, target, zones,
+    id: row.dataset.hideableId,
+    pointerId: e.pointerId,
+    startX: e.clientX, startY: e.clientY,
+    lastX: e.clientX, lastY: e.clientY,
+    lifted: false, over: false, done: false,
+    clone: null, base: null, gap: 0, gapIdx: -1,
+    scrollV: 0, scrollRaf: 0,
+  };
+  try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* 合成事件無 active pointer */ }
+  ctx.onMove = (ev) => { if (ev.pointerId === ctx.pointerId) dragMove(ctx, ev); };
+  ctx.onUp = (ev) => { if (ev.pointerId === ctx.pointerId) endDrag(ctx, false); };
+  ctx.onCancel = (ev) => { if (ev.pointerId === ctx.pointerId) endDrag(ctx, true); };
+  ctx.onKey = (ev) => { if (ev.key === 'Escape' && ctx.lifted) { ev.stopPropagation(); endDrag(ctx, true); } };
+  // 拖曳放開後瀏覽器仍會補發 click → 吞掉，避免誤觸列展開
+  ctx.onClick = (ev) => { if (ctx.lifted) { ev.stopPropagation(); ev.preventDefault(); } };
+  window.addEventListener('pointermove', ctx.onMove);
+  window.addEventListener('pointerup', ctx.onUp);
+  window.addEventListener('pointercancel', ctx.onCancel);
+  window.addEventListener('keydown', ctx.onKey, true);
+  window.addEventListener('click', ctx.onClick, true);
+}
+
+function dragMove(ctx, ev) {
+  ctx.lastX = ev.clientX;
+  ctx.lastY = ev.clientY;
+  if (!ctx.lifted) {
+    if (Math.hypot(ctx.lastX - ctx.startX, ctx.lastY - ctx.startY) < DRAG_LIFT_PX) return;
+    liftRow(ctx);
+  }
+  positionClone(ctx);
+  updateDropState(ctx);
+  maybeEdgeScroll(ctx);
+}
+
+// 「拿起」：以原列複製浮動 clone；原列留殘影、目標區亮起
+function liftRow(ctx) {
+  ctx.lifted = true;
+  const rect = ctx.row.getBoundingClientRect();
+  ctx.base = rect;
+  ctx.gap = Math.round(rect.height) + 1;         // 讓位距離＝原列高（含 1px 分隔線）
+  const clone = ctx.row.cloneNode(true);
+  clone.classList.add('drag-clone');
+  clone.style.width = rect.width + 'px';
+  clone.style.height = rect.height + 'px';
+  clone.style.left = rect.left + 'px';
+  clone.style.top = rect.top + 'px';
+  document.body.appendChild(clone);
+  ctx.clone = clone;
+  ctx.row.classList.add('drag-source');
+  ctx.target.classList.add('drop-active');
+  // 拖曳只在同完成類別內發生（握把只出現在與當前視圖相符的隱藏列，見 spec 2026-07-22 same-bucket）
+  // → 升級一律開插入縫，不會有跨桶落點
+  if (ctx.dir === 'promote') ctx.zones.list.classList.add('drag-flow');
+  document.body.classList.add('drag-active');
+}
+
+function positionClone(ctx) {
+  const dx = ctx.lastX - ctx.startX;
+  const dy = ctx.lastY - ctx.startY;
+  ctx.clone.style.transform = `translate(${dx}px, ${dy}px) scale(1.02) rotate(0.4deg)`;
+}
+
+function updateDropState(ctx) {
+  const t = ctx.target.getBoundingClientRect();
+  const pad = 14;                                 // 貼近邊緣也算在目標內
+  const over = ctx.lastX >= t.left - pad && ctx.lastX <= t.right + pad
+            && ctx.lastY >= t.top - pad && ctx.lastY <= t.bottom + pad;
+  if (over !== ctx.over) {
+    ctx.over = over;
+    ctx.target.classList.toggle('drop-hover', over);
+  }
+  // 升級一律開插入縫（拖曳已保證同桶，落點就在目前清單）
+  if (ctx.dir === 'promote') { if (over) applyInsertGap(ctx); else clearInsertGap(ctx); }
+}
+
+// 插入物理感：依游標對比各列「未讓位時」的中點算插入索引，索引起的列（含描述）平移讓位
+function applyInsertGap(ctx) {
+  const zone = ctx.zones.list;
+  const rows = [...zone.querySelectorAll('.assignment-item')];
+  let idx = rows.length;
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i].getBoundingClientRect();
+    const baseMid = r.top + r.height / 2 - (rows[i].classList.contains('drag-shift') ? ctx.gap : 0);
+    if (ctx.lastY < baseMid) { idx = i; break; }
+  }
+  if (idx === ctx.gapIdx) return;
+  ctx.gapIdx = idx;
+  zone.style.setProperty('--drag-gap', ctx.gap + 'px');
+  zone.style.paddingBottom = ctx.gap + 'px';      // 末端空位＋讓稽核區一起順移
+  rows.forEach((r, i) => {
+    const shift = i >= idx;
+    r.classList.toggle('drag-shift', shift);
+    const desc = r.nextElementSibling;
+    if (desc && desc.classList.contains('assignment-desc')) desc.classList.toggle('drag-shift', shift);
+  });
+}
+
+function clearInsertGap(ctx) {
+  const zone = ctx.zones.list;
+  if (!zone || (ctx.gapIdx === -1 && !zone.style.paddingBottom)) return;
+  ctx.gapIdx = -1;
+  zone.style.paddingBottom = '';
+  zone.querySelectorAll('.drag-shift').forEach((n) => n.classList.remove('drag-shift'));
+}
+
+// 游標貼近捲動容器上下緣時自動捲動（速度與貼近程度成正比），捲動中持續重算讓位
+function maybeEdgeScroll(ctx) {
+  const sc = ctx.zones.scroller;
+  if (!sc || !ctx.lifted) return;
+  const r = sc.getBoundingClientRect();
+  let v = 0;
+  if (ctx.lastY < r.top + DRAG_EDGE_ZONE) {
+    v = -DRAG_EDGE_SPEED * Math.min(1, (r.top + DRAG_EDGE_ZONE - ctx.lastY) / DRAG_EDGE_ZONE);
+  } else if (ctx.lastY > r.bottom - DRAG_EDGE_ZONE) {
+    v = DRAG_EDGE_SPEED * Math.min(1, (ctx.lastY - (r.bottom - DRAG_EDGE_ZONE)) / DRAG_EDGE_ZONE);
+  }
+  ctx.scrollV = v;
+  if (v && !ctx.scrollRaf) {
+    const step = () => {
+      if (ctx.done || !ctx.scrollV) { ctx.scrollRaf = 0; return; }
+      const before = sc.scrollTop;
+      sc.scrollTop += ctx.scrollV;
+      if (sc.scrollTop !== before) updateDropState(ctx);
+      ctx.scrollRaf = requestAnimationFrame(step);
+    };
+    ctx.scrollRaf = requestAnimationFrame(step);
+  }
+}
+
+function endDrag(ctx, cancelled) {
+  if (ctx.done) return;
+  ctx.done = true;
+  _dragCtx = null;
+  window.removeEventListener('pointermove', ctx.onMove);
+  window.removeEventListener('pointerup', ctx.onUp);
+  window.removeEventListener('pointercancel', ctx.onCancel);
+  window.removeEventListener('keydown', ctx.onKey, true);
+  setTimeout(() => window.removeEventListener('click', ctx.onClick, true), 0);  // 留到補發的 click 之後
+  ctx.scrollV = 0;
+  if (ctx.scrollRaf) { cancelAnimationFrame(ctx.scrollRaf); ctx.scrollRaf = 0; }
+  document.body.classList.remove('drag-active');
+  if (!ctx.lifted) return;                        // 未達閾值＝點擊，無事發生
+
+  ctx.target.classList.remove('drop-active', 'drop-hover');
+  if (!cancelled && ctx.over) {
+    commitDrag(ctx);
+  } else {
+    clearInsertGap(ctx);                          // 讓位歸零（drag-flow 過渡動畫送回原位）
+    settleClone(ctx, ctx.row, { flash: false, after: () => {
+      ctx.row.classList.remove('drag-source');
+      if (ctx.zones.list) ctx.zones.list.classList.remove('drag-flow');
+    } });
+  }
+}
+
+// 命中：寫入隱藏/顯示（同步重繪詳情＋側欄）→ clone 飛入重繪後的實際落點
+function commitDrag(ctx) {
+  const savedScroll = ctx.zones.scroller ? ctx.zones.scroller.scrollTop : 0;
+  const hiddenWasOpen = !!(ctx.zones.hidden && ctx.zones.hidden.classList.contains('open'));
+  setItemHiddenByDrag(ctx.id, ctx.dir === 'demote');
+
+  const container = document.getElementById('course-detail-container');
+  const scroller = container.querySelector('.detail-right-panel');
+  if (scroller) scroller.scrollTop = savedScroll;  // 重繪會重置捲動位置 → 還原
+  // 稽核區開合：降級後強制展開（讓使用者看到落點）；升級則維持拖曳前狀態
+  const hidden = container.querySelector('.hidden-items');
+  if (hidden && (hiddenWasOpen || ctx.dir === 'demote')) hidden.classList.add('open');
+
+  const cssId = (window.CSS && CSS.escape) ? CSS.escape(String(ctx.id)) : String(ctx.id);
+  let landed = null;
+  if (ctx.dir === 'promote') {
+    const chk = container.querySelector(`.detail-assignments-list .assignment-check[data-assignment-id="${cssId}"]`);
+    landed = chk && chk.closest('.assignment-item');
+  } else {
+    landed = container.querySelector(`.hidden-item-row[data-hideable-id="${cssId}"]`);
+  }
+  settleClone(ctx, landed, { flash: true });
+}
+
+// clone 飛入 targetRow 的位置後移除；targetRow 期間隱形、落地後亮一下（flash）
+function settleClone(ctx, targetRow, { flash = true, after = null } = {}) {
+  const clone = ctx.clone;
+  const finish = () => {
+    clone.remove();
+    if (targetRow && targetRow.isConnected) {
+      targetRow.classList.remove('drag-arriving');
+      if (flash) {
+        targetRow.classList.add('drag-arrived');
+        setTimeout(() => targetRow.classList.remove('drag-arrived'), 900);
+      }
+    }
+    if (after) after();
+  };
+  let to = null;
+  if (targetRow && targetRow.isConnected) {
+    targetRow.scrollIntoView({ block: 'nearest' });
+    to = targetRow.getBoundingClientRect();
+  }
+  if (!to || (!to.width && !to.height)) {          // 落點不存在/不可見（如已繳交過濾）→ 原地淡出
+    clone.style.transition = `opacity ${DRAG_SETTLE_MS}ms ease`;
+    clone.style.opacity = '0';
+    setTimeout(finish, DRAG_SETTLE_MS + 30);
+    return;
+  }
+  targetRow.classList.add('drag-arriving');
+  clone.style.transition = `transform ${DRAG_SETTLE_MS}ms cubic-bezier(0.2, 0.7, 0.2, 1), width ${DRAG_SETTLE_MS}ms ease, height ${DRAG_SETTLE_MS}ms ease`;
+  clone.style.transform = `translate(${to.left - ctx.base.left}px, ${to.top - ctx.base.top}px)`;
+  clone.style.width = to.width + 'px';
+  clone.style.height = to.height + 'px';
+  setTimeout(finish, DRAG_SETTLE_MS + 30);
+}
+
+// 重繪前中止進行中的拖曳（clone 直接移除，不跑動畫），避免 clone/監聽器變孤兒
+function abortActiveDrag() {
+  const ctx = _dragCtx;
+  if (!ctx) return;
+  ctx.done = true;
+  _dragCtx = null;
+  window.removeEventListener('pointermove', ctx.onMove);
+  window.removeEventListener('pointerup', ctx.onUp);
+  window.removeEventListener('pointercancel', ctx.onCancel);
+  window.removeEventListener('keydown', ctx.onKey, true);
+  window.removeEventListener('click', ctx.onClick, true);
+  if (ctx.scrollRaf) cancelAnimationFrame(ctx.scrollRaf);
+  document.body.classList.remove('drag-active');
+  if (ctx.clone) ctx.clone.remove();
+  if (ctx.row && ctx.row.isConnected) ctx.row.classList.remove('drag-source');
+  if (ctx.target && ctx.target.isConnected) ctx.target.classList.remove('drop-active', 'drop-hover');
+  clearInsertGap(ctx);
+}
+
+// ── 已自動隱藏稽核清單（唯讀精簡列；考試/簽到；不顯示任何分數，見決策 3）──
+function renderHiddenItemsSection(items, groups, courseId) {
+  // 排序：還沒到的（拖出會進待辦）在前依 due 升冪；已結束/已繳的放一起殿後、最近結束在前
+  const ordered = [...items].sort((a, b) => {
+    const da = isDone(a), db = isDone(b);
+    if (da !== db) return da ? 1 : -1;
+    const ta = a.due_at ? new Date(a.due_at).getTime() : Infinity;
+    const tb = b.due_at ? new Date(b.due_at).getTime() : Infinity;
+    return da ? tb - ta : ta - tb;
+  });
+  const rows = ordered.map((a) => {
+    const examFlag = isExam(a);
+    // 帶 examFlag → 考試顯 due-exam 紫色；簽到走一般 due 色階（此處不傳 submitted，考試恆紫）
+    const uClass = urgencyClass(a.due_at, examFlag);
+    const groupName = findGroupName(a, groups);
+    const submitted = isSubmitted(a);
+    const isCustom = !!a._isCustom;
+    // 只有「與當前視圖完成類別相符」者可拖升級（見 spec 2026-07-22 same-bucket）；
+    // 不相符者（如未完成視圖裡已結束/已繳的考試）淡化、無握把、此視圖拖不動
+    const draggable = isDone(a) === showSubmitted;
+    const titleHtml = isCustom
+      ? `<span>${esc(a.name)}</span>`
+      : `<span class="assignment-title-link" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}">${esc(a.name)}</span>`;
+    return `
+      <div class="hidden-item-row${draggable ? '' : ' hidden-item-locked'}"${draggable ? ' data-drag="promote"' : ''} data-hideable-id="${esc(String(a.id))}">
+        <div class="hidden-item-left">
+          <div class="hidden-item-title">${titleHtml}${draggable ? DRAG_GRIP : ''}</div>
+          ${groupName ? `<div class="assignment-group">${esc(groupName)}</div>` : ''}
+        </div>
+        <div class="hidden-item-right">
+          <div class="due-label ${uClass}">${dueLabelFor(a)}</div>
+          ${submitted ? `<div class="submitted-badge">${tr('submittedBadge')}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  const listInner = rows || `<div class="hidden-items-empty">${esc(tr('hiddenItemsEmpty'))}</div>`;
+
+  // 整個 .hidden-items 為「降級」放置目標（data-drophint 供 .drop-active::after 顯示提示）
+  return `
+    <div class="hidden-items" data-course-id="${courseId}" data-drophint="${esc(tr('dropToHide'))}">
+      <button class="hidden-items-toggle" data-course-id="${courseId}">
+        <span class="hidden-items-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+        <span>${esc(tr('hiddenItemsToggle').replace('{n}', items.length))}</span>
+      </button>
+      <div class="hidden-items-list">${listInner}</div>
+    </div>`;
 }
 
 
@@ -1607,7 +2375,7 @@ function renderWeightPie(groups, courseId) {
         </div>`).join('');
       return `
         <div class="detail-weight-pie-container">
-          <div class="detail-pie" style="background: conic-gradient(${gradientParts});"></div>
+          <div class="detail-pie" role="img" aria-label="${esc(customWeights.map((c) => `${c.name} ${c.weight}%`).join(', '))}" style="background: conic-gradient(${gradientParts});"></div>
           <div class="detail-pie-legend">${legend}</div>
           ${courseId ? EDIT_WEIGHT_BTN(courseId) : ''}
         </div>`;
@@ -1636,7 +2404,7 @@ function renderWeightPie(groups, courseId) {
 
     return `
       <div class="detail-weight-pie-container">
-        <div class="detail-pie" style="background: conic-gradient(${gradientParts});"></div>
+        <div class="detail-pie" role="img" aria-label="${esc(groups.map((g) => `${g.name} ${g.group_weight || 0}%`).join(', '))}" style="background: conic-gradient(${gradientParts});"></div>
         <div class="detail-pie-legend">${legend}</div>
         ${courseId ? EDIT_WEIGHT_BTN(courseId) : ''}
       </div>`;
@@ -1645,34 +2413,9 @@ function renderWeightPie(groups, courseId) {
   // No data
   return `
     <div class="detail-weight-pie-container">
-      <div class="detail-pie" style="background: var(--border);"></div>
+      <div class="detail-pie" role="img" aria-label="${esc(tr('noGradeInfo'))}" style="background: var(--border);"></div>
       <div class="detail-pie-label">${tr('noGradeInfo')}</div>
       ${courseId ? EDIT_WEIGHT_BTN(courseId) : ''}
-    </div>`;
-}
-
-// ── Weight Bar ──
-function renderWeightBar(groups) {
-  if (!groups.length) return '';
-  const total = groups.reduce((s, g) => s + (g.group_weight || 0), 0);
-  if (!total) return '';
-
-  const segments = groups.map((g, i) => {
-    const pct = ((g.group_weight || 0) / total) * 100;
-    return `<div class="weight-bar-segment" style="flex:${pct};background:${GROUP_COLORS[i % GROUP_COLORS.length]}"></div>`;
-  }).join('');
-
-  const legend = groups.map((g, i) => `
-    <div class="legend-item">
-      <div class="legend-dot" style="background:${GROUP_COLORS[i % GROUP_COLORS.length]}"></div>
-      ${esc(g.name)} ${g.group_weight || 0}%
-    </div>`).join('');
-
-  return `
-    <div class="weight-section">
-      <div class="weight-title">評分比重</div>
-      <div class="weight-bar-container">${segments}</div>
-      <div class="weight-legend">${legend}</div>
     </div>`;
 }
 
@@ -1691,7 +2434,16 @@ function renderGradeCalculator(course, asgns, groups, scores) {
     if (!groupAsgns.length) return '';
 
     const rows = groupAsgns.map((a) => {
-      const savedScore = scores[a.id] !== undefined ? scores[a.id] : '';
+      // 三態：scores 自有該 id → null 代表使用者清空過（顯示空）、數字則顯示；
+      //       scores 無該 id → 有 Canvas 已評分成績就預填，否則空
+      let savedScore;
+      if (Object.prototype.hasOwnProperty.call(scores, a.id)) {
+        savedScore = scores[a.id] === null ? '' : scores[a.id];
+      } else if (a.submission && a.submission.score != null) {
+        savedScore = a.submission.score;
+      } else {
+        savedScore = '';
+      }
       return `
         <div class="grade-calc-row">
           <span class="grade-calc-asgn-name" title="${esc(a.name)}">${esc(a.name)}</span>
@@ -1735,90 +2487,101 @@ function renderGradeCalculator(course, asgns, groups, scores) {
 }
 
 // ── 成績即時計算 ──
-function recalculateGrades(courseId) {
+// persist:true（使用者輸入）才寫 storage；persist:false（開頁預填）只算顯示，
+// 不把 Canvas 預填值固化成手動值。顯示一律從輸入框現值讀，確保預填與手動輸入一致。
+function recalculateGrades(courseId, { persist = true } = {}) {
   const { assignments = {}, assignmentGroups = {} } = _currentData;
   const asgns = assignments[courseId] || [];
   const groups = assignmentGroups[courseId] || [];
 
-  // Read all input values for this course
-  const newScores = {};
-  const clearedIds = new Set();
+  const inputFor = (a) => document.querySelector(
+    `.grade-calc-pts input[data-assignment-id="${a.id}"][data-course-id="${courseId}"]`
+  );
 
+  // 每個作業的「有效分數」＝輸入框現值（含預填）；只在可解析為有限數時記錄
+  const effective = {};
   asgns.forEach((a) => {
-    const input = document.querySelector(
-      `.grade-calc-pts input[data-assignment-id="${a.id}"][data-course-id="${courseId}"]`
-    );
+    const input = inputFor(a);
     if (!input) return;
-    if (input.value !== '') {
-      newScores[a.id] = parseFloat(input.value);
-    } else {
-      clearedIds.add(a.id);
-    }
+    const v = input.value === '' ? NaN : parseFloat(input.value);
+    if (Number.isFinite(v)) effective[a.id] = v;
   });
 
-  // Persist scores
-  chrome.storage.local.get(['scores'], (data) => {
-    const scores = { ...(data.scores || {}), ...newScores };
-    clearedIds.forEach((id) => delete scores[id]);
-    chrome.storage.local.set({ scores });
-    _currentData.scores = scores;
+  // 分組小計＋加權總分（只有有限數且有配分才計入）
+  let weightedSum = 0;
+  let weightedTotal = 0;
+  groups.forEach((g) => {
+    const groupAsgns = asgns.filter((a) => {
+      if (g.assignments) return g.assignments.some((ga) => ga.id === a.id);
+      return a.assignment_group_id === g.id;
+    });
 
-    // Update group score displays
-    let weightedSum = 0;
-    let weightedTotal = 0;
-
-    groups.forEach((g) => {
-      const groupAsgns = asgns.filter((a) => {
-        if (g.assignments) return g.assignments.some((ga) => ga.id === a.id);
-        return a.assignment_group_id === g.id;
-      });
-
-      let earnedSum = 0;
-      let possibleSum = 0;
-      let hasScore = false;
-
-      groupAsgns.forEach((a) => {
-        if (scores[a.id] !== undefined && a.points_possible) {
-          earnedSum += scores[a.id];
-          possibleSum += a.points_possible;
-          hasScore = true;
-        }
-      });
-
-      const scoreEl = document.getElementById(`group-score-${g.id}`);
-      if (scoreEl) {
-        if (hasScore && possibleSum > 0) {
-          const pct = ((earnedSum / possibleSum) * 100).toFixed(1);
-          scoreEl.textContent = `${pct}%`;
-          weightedSum += (earnedSum / possibleSum) * (g.group_weight || 0);
-          weightedTotal += (g.group_weight || 0);
-        } else {
-          scoreEl.textContent = '—';
-        }
+    let earnedSum = 0;
+    let possibleSum = 0;
+    let hasScore = false;
+    groupAsgns.forEach((a) => {
+      if (Number.isFinite(effective[a.id]) && a.points_possible) {
+        earnedSum += effective[a.id];
+        possibleSum += a.points_possible;
+        hasScore = true;
       }
     });
 
-    const finalEl = document.getElementById(`final-grade-${courseId}`);
-    if (finalEl) {
-      if (weightedTotal > 0) {
-        const final = ((weightedSum / weightedTotal) * 100).toFixed(1);
-        finalEl.textContent = `${final}%`;
+    const scoreEl = document.getElementById(`group-score-${g.id}`);
+    if (scoreEl) {
+      if (hasScore && possibleSum > 0) {
+        scoreEl.textContent = `${((earnedSum / possibleSum) * 100).toFixed(1)}%`;
+        weightedSum += (earnedSum / possibleSum) * (g.group_weight || 0);
+        weightedTotal += (g.group_weight || 0);
       } else {
-        finalEl.textContent = '—';
+        scoreEl.textContent = '—';
       }
     }
+  });
+
+  const finalEl = document.getElementById(`final-grade-${courseId}`);
+  if (finalEl) {
+    finalEl.textContent = weightedTotal > 0
+      ? `${((weightedSum / weightedTotal) * 100).toFixed(1)}%`
+      : '—';
+  }
+
+  if (!persist) return;
+
+  // 持久化三態：空且有 Canvas 分數 → null（記住「清空」）；空且無 Canvas 分數 → 刪除；有值 → 數字
+  chrome.storage.local.get(['scores'], (data) => {
+    const scores = { ...(data.scores || {}) };
+    asgns.forEach((a) => {
+      const input = inputFor(a);
+      if (!input) return;
+      if (input.value === '') {
+        if (a.submission && a.submission.score != null) scores[a.id] = null;
+        else delete scores[a.id];
+      } else {
+        const v = parseFloat(input.value);
+        if (Number.isFinite(v)) scores[a.id] = v;
+        else delete scores[a.id];
+      }
+    });
+    chrome.storage.local.set({ scores });
+    _currentData.scores = scores;
   });
 }
 
 // ── 作業列 ──
 function renderAssignmentRow(a, groups, courseId) {
   const submitted = isSubmitted(a); // Canvas 事實：badge / 成績顯示
-  const done = isDone(a);           // 顯示狀態：列樣式 / 勾選圈（已繳可被標回未完成）
+  const extDone = isExternallyDone(a); // 勾選路由：已繳或考試已結束 → 翻 manualUndone
+  const done = isDone(a);           // 顯示狀態：列樣式 / 勾選圈（外部完成可被標回未完成）
   const examFlag = isExam(a);
   const uClass = urgencyClass(a.due_at, examFlag, done);
   const groupName = findGroupName(a, groups);
-  const desc = a.description ? stripHtml(a.description) : tr('noDesc');
+  // 作業描述：白名單 sanitize 後直接以 innerHTML 呈現；空白 → noDesc（見 descSanitizer.js）
+  const sanitizedDesc = DueDescSanitizer.sanitize(a.description || '');
+  const descInner = sanitizedDesc.trim() ? sanitizedDesc : esc(tr('noDesc'));
   const isCustom = !!a._isCustom;
+  // 升級後的考試/簽到（manualShown）：在清單中可拖回稽核區降級 → 名稱後加 grip 拖曳把手
+  const promotedHideable = isHideable(a) && isManuallyShown(a);
   const titleHtml = isCustom
     ? `<span>${esc(a.name)}</span>`
     : `<span class="assignment-title-link" data-assignment-id="${a.id}" data-course-id="${courseId}">${esc(a.name)}</span>`;
@@ -1826,7 +2589,7 @@ function renderAssignmentRow(a, groups, courseId) {
 
   // ── 完成勾選圈：一律可雙向切換；Canvas 已繳者切的是 manualUndone 覆蓋（見 spec 2026-07-21）──
   const checkLabel = done ? tr('markUndone') : tr('markDone');
-  const checkHtml = `<button class="assignment-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}" data-done="${done ? 'true' : 'false'}" data-submitted="${submitted ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"${submitted ? ` title="${esc(tr('submittedBadge'))}"` : ''}></button>`;
+  const checkHtml = `<button class="assignment-check" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}" data-done="${done ? 'true' : 'false'}" data-ext-done="${extDone ? 'true' : 'false'}" aria-label="${esc(checkLabel)}"${submitted ? ` title="${esc(tr('submittedBadge'))}"` : ''}></button>`;
 
   // 考試成績顯示
   let gradeHtml = '';
@@ -1840,24 +2603,27 @@ function renderAssignmentRow(a, groups, courseId) {
   }
 
   return `
-    <div class="assignment-item${done ? ' submitted' : ''}${isCustom ? ' custom-assignment' : ''}">
+    <div class="assignment-item${done ? ' submitted' : ''}${isCustom ? ' custom-assignment' : ''}${promotedHideable ? ' promoted-hideable' : ''}" data-drag="demote" data-hideable-id="${esc(String(a.id))}">
       ${checkHtml}
       <div class="assignment-left">
-        <div class="assignment-title">${titleHtml}</div>
+        <div class="assignment-title">${titleHtml}${DRAG_GRIP}</div>
         ${customLabel}
         ${groupName ? `<div class="assignment-group">${esc(groupName)}</div>` : ''}
       </div>
       <div class="assignment-right">
-        <div class="due-label ${uClass}">${formatDue(a.due_at)}</div>
+        <div class="due-label ${uClass}">${dueLabelFor(a)}</div>
         ${gradeHtml}
         ${submitted ? `<div class="submitted-badge">${tr('submittedBadge')}</div>` : ''}
         ${isCustom
-          ? `<button class="btn-delete-custom-assignment" title="${tr('deleteCustomTitle')}" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}">✕</button>`
+          ? `<div class="custom-actions-row">
+              <button class="btn-edit-custom-assignment" title="${esc(tr('editAssignmentTitle'))}" aria-label="${esc(tr('editAssignmentTitle'))}" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
+              <button class="btn-delete-custom-assignment" title="${esc(tr('deleteCustomTitle'))}" aria-label="${esc(tr('deleteCustomTitle'))}" data-assignment-id="${esc(String(a.id))}" data-course-id="${courseId}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            </div>`
           : ''}
       </div>
     </div>
     <div class="assignment-desc">
-      <div class="assignment-desc-inner">${esc(desc)}</div>
+      <div class="assignment-desc-inner">${descInner}</div>
     </div>`;
 }
 
@@ -1871,17 +2637,50 @@ document.getElementById('custom-assignment-overlay')?.addEventListener('click', 
 });
 document.getElementById('custom-assignment-form')?.addEventListener('submit', saveCustomAssignmentFromForm);
 
-// ── 頁面切換 ──
-document.querySelectorAll('.page-tab').forEach((tab) => {
-  tab.addEventListener('click', () => {
-    switchPage(tab.dataset.page);
-  });
+// 確認對話框：確定 → 跑 callback 後關閉；取消／點背景 → 關閉不執行
+document.getElementById('confirm-ok')?.addEventListener('click', () => {
+  const cb = _confirmOnOk;
+  closeConfirmDialog();
+  if (cb) cb();
+});
+document.getElementById('confirm-cancel')?.addEventListener('click', closeConfirmDialog);
+document.getElementById('confirm-overlay')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('confirm-overlay')) closeConfirmDialog();
 });
 
-// ── 查看已繳交 ──
-document.getElementById('btn-show-submitted').addEventListener('click', (e) => {
+// ── 側欄主導航（學期待辦 / 課程 / 已繳交） ──
+function goToPage(page) {
+  // 在課程詳情頁時，先退出詳情再切換到目標頁
+  if (currentView === 'course') {
+    currentView = 'grid';
+    currentCourseId = null;
+    currentPage = page;
+    showSubmitted = false;
+    document.getElementById('page-tabs').classList.remove('detail-mode');
+    document.getElementById('detail-back-btn').style.display = 'none';
+    document.getElementById('course-detail-container').style.display = 'none';
+    document.getElementById('main-section').style.display = '';
+    syncHistory();   // 由詳情經 sidebar 離開：把目前 entry 更新為目標清單
+    loadData();
+    return;
+  }
+  // 若正在看「已繳交」，關閉後回到目標頁
+  if (showSubmitted) {
+    showSubmitted = false;
+    currentPage = page;
+    syncHistory();
+    loadData();
+    return;
+  }
+  switchPage(page);
+}
+document.getElementById('nav-week').addEventListener('click', () => goToPage('week'));
+document.getElementById('nav-courses').addEventListener('click', () => goToPage('courses'));
+
+// ── 查看已繳交（切換過濾） ──
+document.getElementById('nav-submitted').addEventListener('click', () => {
   showSubmitted = !showSubmitted;
-  e.currentTarget.classList.toggle('active', showSubmitted);
+  syncHistory();   // 「已繳交」為過濾切換：更新目前 entry，不疊返回步
   loadData();
 });
 
@@ -1890,17 +2689,28 @@ document.getElementById('sync-btn').addEventListener('click', () => {
   const btn = document.getElementById('sync-btn');
   btn.innerHTML = '<span class="sync-dots"><span></span><span></span><span></span></span>';
   btn.disabled = true;
-  chrome.runtime.sendMessage({ type: 'SYNC' }, () => {
-    btn.textContent = tr('sync');
-    btn.disabled = false;
-    loadData();
+  chrome.runtime.sendMessage({ type: 'SYNC' }, (resp) => {
+    if (chrome.runtime.lastError || !resp || !resp.success) {
+      // 同步失敗：顯示錯誤態，2.5 秒後恢復可點狀態
+      btn.textContent = tr('syncFailed');
+      btn.classList.add('sync-error');
+      setTimeout(() => {
+        btn.textContent = tr('sync');
+        btn.classList.remove('sync-error');
+        btn.disabled = false;
+      }, 2500);
+    } else {
+      btn.textContent = tr('sync');
+      btn.disabled = false;
+      loadData();
+    }
   });
 });
 
 // ── 讀取資料 ──
 function loadData() {
   chrome.storage.local.get(
-    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'courseNames', 'customWeights', 'manualDone', 'manualUndone'],
+    ['lastSync', 'schoolName', 'canvasBaseUrl', 'courses', 'assignments', 'customAssignments', 'assignmentGroups', 'scores', 'courseNames', 'customWeights', 'manualDone', 'manualUndone', 'manualShown', 'manualHidden'],
     (data) => {
       if (!data.courses || !data.courses.length) {
         currentView = 'grid';
@@ -1926,6 +2736,8 @@ function loadData() {
         customAssignments: data.customAssignments || {},
         manualDone: data.manualDone || {},
         manualUndone: data.manualUndone || {},
+        manualShown: data.manualShown || {},
+        manualHidden: data.manualHidden || {},
       });
     }
   );
@@ -2104,6 +2916,42 @@ if (new URLSearchParams(location.search).get('welcome') === '1') {
   openWelcomeModal();
 }
 
+// ── 瀏覽器返回整合：popstate 把畫面還原到目標 entry（期間 _suppressHistory 擋掉再寫 history）──
+window.addEventListener('popstate', (e) => {
+  if (!_currentData.courses) return;   // 資料尚未載入前忽略
+  const loc = (e.state && e.state.app === 'due')
+    ? e.state
+    : { page: 'week', showSubmitted: false, view: 'grid', courseId: null };
+  _suppressHistory = true;
+  try {
+    if (loc.view === 'course' && loc.courseId != null) {
+      // 前進／重做到某課程詳情
+      if (currentView !== 'course' || currentCourseId !== loc.courseId) {
+        currentPage = loc.page || currentPage;
+        showSubmitted = !!loc.showSubmitted;
+        showCourseDetail(loc.courseId);   // 無 cardEl → 直接切換（無 morph）
+      }
+    } else if (currentView === 'course') {
+      // 從課程詳情 Back → 帶 morph 退回 currentPage 指向的清單
+      currentPage = loc.page || 'week';
+      showSubmitted = !!loc.showSubmitted;
+      showGridView();
+    } else {
+      // 已在清單，僅頁面／過濾不同 → 重繪
+      currentPage = loc.page || 'week';
+      showSubmitted = !!loc.showSubmitted;
+      updateSideNav();
+      loadData();
+    }
+  } finally {
+    _suppressHistory = false;
+  }
+});
+
+// 建立 base entry（week grid），之後 pushState/replaceState 才有基準
+_historyReady = true;
+history.replaceState(_appLocation(), '');
+
 loadData();
 
 // ── Weight Edit Modal ──
@@ -2123,6 +2971,9 @@ function openWeightEditModal(courseId) {
   }
 
   renderWeightEditList(items);
+  // 逃生口：僅當該課已有自訂權重時，才顯示「還原 Canvas 權重」
+  const resetBtn = document.getElementById('weight-edit-reset');
+  if (resetBtn) resetBtn.style.display = (custom && custom.length > 0) ? '' : 'none';
   document.getElementById('weight-edit-overlay').classList.add('open');
 }
 
@@ -2133,7 +2984,7 @@ function renderWeightEditList(items) {
       <div class="weight-edit-color" style="background:${GROUP_COLORS[i % GROUP_COLORS.length]}"></div>
       <input class="weight-edit-name" type="text" value="${esc(item.name)}" placeholder="${tr('weightItemName')}">
       <input class="weight-edit-pct" type="number" value="${item.weight}" min="0" max="100" step="0.1">
-      <button class="weight-edit-del" data-index="${i}">✕</button>
+      <button class="weight-edit-del" data-index="${i}"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>`).join('');
 
   list.querySelectorAll('.weight-edit-del').forEach((btn) => {
@@ -2176,7 +3027,7 @@ document.getElementById('weight-edit-add').addEventListener('click', () => {
     <div class="weight-edit-color" style="background:${GROUP_COLORS[i % GROUP_COLORS.length]}"></div>
     <input class="weight-edit-name" type="text" value="" placeholder="${tr('weightItemName')}">
     <input class="weight-edit-pct" type="number" value="0" min="0" max="100" step="0.1">
-    <button class="weight-edit-del">✕</button>`;
+    <button class="weight-edit-del"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>`;
   row.querySelector('.weight-edit-del').addEventListener('click', () => {
     row.remove();
     updateWeightTotal();
@@ -2211,7 +3062,103 @@ document.getElementById('weight-edit-save').addEventListener('click', () => {
   if (course) renderCourseDetailSection(course, assignments[course.id] || [], assignmentGroups[course.id] || [], scores);
 });
 
+document.getElementById('weight-edit-cancel').addEventListener('click', () => {
+  document.getElementById('weight-edit-overlay').classList.remove('open');
+});
+
+document.getElementById('weight-edit-reset').addEventListener('click', () => {
+  const courseId = _weightEditCourseId;
+  // 刪除該課自訂權重 → 圓餅自然回退到 Canvas group_weight，或顯示無評分資訊
+  if (_currentData.customWeights) delete _currentData.customWeights[courseId];
+  chrome.storage.local.get(['customWeights'], (data) => {
+    const all = data.customWeights || {};
+    delete all[courseId];
+    chrome.storage.local.set({ customWeights: all });
+  });
+  document.getElementById('weight-edit-overlay').classList.remove('open');
+  const { courses = [], assignments = {}, assignmentGroups = {}, scores = {} } = _currentData;
+  const course = courses.find((c) => c.id === courseId);
+  if (course) renderCourseDetailSection(course, assignments[course.id] || [], assignmentGroups[course.id] || [], scores);
+});
+
 document.getElementById('weight-edit-overlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
+
+// ── Esc 關閉最上層 overlay（一次只關一個；優先序：新增作業 → 權重 → 教學）──
+// 註：課程重命名 inline input 自帶 Escape 處理，且重命名時無 overlay 開著，兩者不衝突
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  // 優先序：確認框 → 新增/編輯作業 → 權重 → 教學（一次只關最上層；經 close 函式一併清狀態）
+  const closers = [
+    ['confirm-overlay', closeConfirmDialog],
+    ['custom-assignment-overlay', closeCustomAssignmentModal],
+    ['weight-edit-overlay', () => document.getElementById('weight-edit-overlay').classList.remove('open')],
+    ['welcome-overlay', closeWelcomeModal],
+  ];
+  for (const [id, close] of closers) {
+    const ov = document.getElementById(id);
+    if (ov && ov.classList.contains('open')) {
+      close();
+      return;
+    }
+  }
+});
+
+// ── Modal 無障礙：focus trap ＋ 開啟聚焦第一元素 ＋ 關閉還原焦點到觸發元素（四個 overlay 共用）──
+function _focusablesIn(container) {
+  const sel = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  return Array.from(container.querySelectorAll(sel)).filter((el) => el.getClientRects().length > 0);
+}
+
+function setupModalA11y(overlay) {
+  if (!overlay || overlay._a11yBound) return;
+  overlay._a11yBound = true;
+  let triggerEl = null;
+
+  const activate = () => {
+    if (overlay._trapActive) return;
+    overlay._trapActive = true;
+    triggerEl = document.activeElement;                 // 記住觸發元素，關閉時還原
+    requestAnimationFrame(() => {
+      if (!overlay.contains(document.activeElement)) {   // 尊重呼叫端已設定的焦點（如作業名稱輸入框）
+        const f = _focusablesIn(overlay);
+        if (f.length) f[0].focus();
+      }
+    });
+  };
+  const deactivate = () => {
+    if (!overlay._trapActive) return;
+    overlay._trapActive = false;
+    if (triggerEl && document.contains(triggerEl) && typeof triggerEl.focus === 'function') triggerEl.focus();
+    triggerEl = null;
+  };
+
+  // Tab / Shift+Tab 在 modal 內循環
+  overlay.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !overlay.classList.contains('open')) return;
+    const f = _focusablesIn(overlay);
+    if (!f.length) return;
+    const first = f[0];
+    const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  // 監看 .open class：開→啟用 trap；關→還原焦點（涵蓋 Esc／背景點擊／儲存等所有關閉路徑）
+  new MutationObserver(() => {
+    if (overlay.classList.contains('open')) activate();
+    else deactivate();
+  }).observe(overlay, { attributes: true, attributeFilter: ['class'] });
+
+  if (overlay.classList.contains('open')) activate();   // 設定時已開著（如首次載入教學）也啟用
+}
+
+['custom-assignment-overlay', 'weight-edit-overlay', 'welcome-overlay', 'confirm-overlay']
+  .forEach((id) => setupModalA11y(document.getElementById(id)));
 

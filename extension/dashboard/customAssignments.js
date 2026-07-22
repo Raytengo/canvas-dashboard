@@ -60,6 +60,29 @@
     };
   }
 
+  // 更新既有自訂作業：保留 id / created_at / _isCustom，更新 name / description / due_at / course_id。
+  // 沿用 createCustomAssignment 的 normalize 與驗證（空名 throw）。回傳新物件，不 mutate existing。
+  function updateCustomAssignment(existing, input) {
+    if (!existing || !existing.id) throw new Error('existing assignment is required');
+    const name = (input.name || '').trim();
+    if (!name) throw new Error('name is required');
+
+    const courseId = normalizeCourseId(input.courseId);
+    const dueAt = input.dueLocalValue ? new Date(input.dueLocalValue).toISOString() : null;
+
+    return {
+      ...existing,
+      course_id: courseId,
+      name,
+      description: (input.description || '').trim(),
+      due_at: dueAt,
+      submission: null,
+      _isCustom: true,
+      id: existing.id,
+      created_at: existing.created_at,
+    };
+  }
+
   function normalizeCustomAssignment(assignment, fallbackCourseId) {
     if (!assignment || !assignment.id || !assignment.name) return null;
     const courseId = assignment.course_id != null
@@ -106,6 +129,7 @@
   return {
     CUSTOM_PREFIX,
     createCustomAssignment,
+    updateCustomAssignment,
     getDefaultDueLocalValue,
     mergeAssignmentMaps,
     normalizeCustomAssignmentMap,
