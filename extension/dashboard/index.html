@@ -2649,17 +2649,7 @@
       opacity: 0.3 !important;
     }
 
-    /* 插入物理感：拖曳懸停清單時，插入點以下的列（含描述）平移讓位；讓位距離＝被拖列高（--drag-gap） */
-    .detail-assignments-list.drag-flow .assignment-item,
-    .detail-assignments-list.drag-flow .assignment-desc {
-      transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1);
-    }
-
-    .detail-assignments-list .drag-shift {
-      transform: translateY(var(--drag-gap, 48px));
-    }
-
-    /* 放置目標：虛線框 + 淡橘底 + 提示文字（data-drophint）；padding-bottom 由 JS 動態給末端空位 */
+    /* 放置目標：虛線框 + 淡橘底 + 提示文字（data-drophint）*/
     .detail-assignments-list.drop-active,
     .hidden-items.drop-active {
       outline: 2px dashed var(--orange);

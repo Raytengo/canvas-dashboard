@@ -2071,7 +2071,7 @@ function trackDragFrom(e, row, zones) {
     startX: e.clientX, startY: e.clientY,
     lastX: e.clientX, lastY: e.clientY,
     lifted: false, over: false, done: false,
-    clone: null, base: null, gap: 0, gapIdx: -1,
+    clone: null, base: null,
     scrollV: 0, scrollRaf: 0,
   };
   try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* 合成事件無 active pointer */ }
@@ -2105,7 +2105,6 @@ function liftRow(ctx) {
   ctx.lifted = true;
   const rect = ctx.row.getBoundingClientRect();
   ctx.base = rect;
-  ctx.gap = Math.round(rect.height) + 1;         // 讓位距離＝原列高（含 1px 分隔線）
   const clone = ctx.row.cloneNode(true);
   clone.classList.add('drag-clone');
   clone.style.width = rect.width + 'px';
@@ -2116,9 +2115,6 @@ function liftRow(ctx) {
   ctx.clone = clone;
   ctx.row.classList.add('drag-source');
   ctx.target.classList.add('drop-active');
-  // 拖曳只在同完成類別內發生（握把只出現在與當前視圖相符的隱藏列，見 spec 2026-07-22 same-bucket）
-  // → 升級一律開插入縫，不會有跨桶落點
-  if (ctx.dir === 'promote') ctx.zones.list.classList.add('drag-flow');
   document.body.classList.add('drag-active');
 }
 
@@ -2137,41 +2133,9 @@ function updateDropState(ctx) {
     ctx.over = over;
     ctx.target.classList.toggle('drop-hover', over);
   }
-  // 升級一律開插入縫（拖曳已保證同桶，落點就在目前清單）
-  if (ctx.dir === 'promote') { if (over) applyInsertGap(ctx); else clearInsertGap(ctx); }
 }
 
-// 插入物理感：依游標對比各列「未讓位時」的中點算插入索引，索引起的列（含描述）平移讓位
-function applyInsertGap(ctx) {
-  const zone = ctx.zones.list;
-  const rows = [...zone.querySelectorAll('.assignment-item')];
-  let idx = rows.length;
-  for (let i = 0; i < rows.length; i++) {
-    const r = rows[i].getBoundingClientRect();
-    const baseMid = r.top + r.height / 2 - (rows[i].classList.contains('drag-shift') ? ctx.gap : 0);
-    if (ctx.lastY < baseMid) { idx = i; break; }
-  }
-  if (idx === ctx.gapIdx) return;
-  ctx.gapIdx = idx;
-  zone.style.setProperty('--drag-gap', ctx.gap + 'px');
-  zone.style.paddingBottom = ctx.gap + 'px';      // 末端空位＋讓稽核區一起順移
-  rows.forEach((r, i) => {
-    const shift = i >= idx;
-    r.classList.toggle('drag-shift', shift);
-    const desc = r.nextElementSibling;
-    if (desc && desc.classList.contains('assignment-desc')) desc.classList.toggle('drag-shift', shift);
-  });
-}
-
-function clearInsertGap(ctx) {
-  const zone = ctx.zones.list;
-  if (!zone || (ctx.gapIdx === -1 && !zone.style.paddingBottom)) return;
-  ctx.gapIdx = -1;
-  zone.style.paddingBottom = '';
-  zone.querySelectorAll('.drag-shift').forEach((n) => n.classList.remove('drag-shift'));
-}
-
-// 游標貼近捲動容器上下緣時自動捲動（速度與貼近程度成正比），捲動中持續重算讓位
+// 游標貼近捲動容器上下緣時自動捲動（速度與貼近程度成正比），捲動中持續重算 drop 狀態
 function maybeEdgeScroll(ctx) {
   const sc = ctx.zones.scroller;
   if (!sc || !ctx.lifted) return;
@@ -2213,10 +2177,8 @@ function endDrag(ctx, cancelled) {
   if (!cancelled && ctx.over) {
     commitDrag(ctx);
   } else {
-    clearInsertGap(ctx);                          // 讓位歸零（drag-flow 過渡動畫送回原位）
     settleClone(ctx, ctx.row, { flash: false, after: () => {
       ctx.row.classList.remove('drag-source');
-      if (ctx.zones.list) ctx.zones.list.classList.remove('drag-flow');
     } });
   }
 }
@@ -2294,7 +2256,6 @@ function abortActiveDrag() {
   if (ctx.clone) ctx.clone.remove();
   if (ctx.row && ctx.row.isConnected) ctx.row.classList.remove('drag-source');
   if (ctx.target && ctx.target.isConnected) ctx.target.classList.remove('drop-active', 'drop-hover');
-  clearInsertGap(ctx);
 }
 
 // ── 已自動隱藏稽核清單（唯讀精簡列；考試/簽到；不顯示任何分數，見決策 3）──
