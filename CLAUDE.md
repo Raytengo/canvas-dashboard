@@ -79,7 +79,6 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
   "manualHidden": { "assignmentId": true },
   "customWeights": { "courseId": [{ "name": "Homework", "weight": 30 }] },
   "courseNames": { "courseId": "自訂名稱" },
-  "darkMode": false,
   "uiLanguage": "zh-TW",
   "showClaudeUsageInPopup": true,
   "claudeUsage": { "usedPercent": 0, "resetAt": "..." }
@@ -108,12 +107,6 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 --purple:   #a86070;   /* 考試/測驗顏色 */
 ```
 
-**Dark mode**（`html[data-theme="dark"]` 時覆蓋）：
-```css
---bg: #121316;  --surface: #1b1d22;  --dark: #eceff4;
---mid: #9aa3b2;  --muted: #8b93a1;   --border: #343843;
-```
-
 ### 字體
 
 ```css
@@ -128,7 +121,7 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 - 大量留白，不要擁擠
 - 邊框用細線（1px），圓角保守（4–8px）
-- 整體 light mode，dark mode 為可選
+- 一律 light mode（深色模式已於 2026-07-23 移除；`darkMode` 舊 key 殘留無害，不主動清除）
 - Section 標題用 DM Mono 小字大寫間距
 - 動畫克制：卡片 hover 用 `translateY(-2px)`，轉場用 View Transitions API
 
@@ -136,7 +129,7 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 色階統一由 `taskRules.urgency(dueAt)` 決定；`dashboard/urgencyClass()` 只做映射（popup 共用同一規則）。
 
-- 逾期未繳（30 天窗內）：紅橘 `var(--overdue)`（`#b3452c`／dark `#e07a5f`，class: `due-overdue`）
+- 逾期未繳（30 天窗內）：紅橘 `var(--overdue)`（`#b3452c`，class: `due-overdue`）
 - ≤7 天：橘紅 `var(--orange)`（class: `due-urgent`）
 - 8–30 天：暖黃 `var(--warm)`（class: `due-soon`）
 - 30 天以上：藍色 `var(--blue)`（class: `due-later`）

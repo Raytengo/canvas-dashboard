@@ -67,26 +67,6 @@
       --overdue: #b3452c;
     }
 
-    html[data-theme="dark"] {
-      --bg: #121316;
-      --surface: #1b1d22;
-      --dark: #eceff4;
-      /* 對 bg(#121316) 與 surface(#1b1d22) 皆 ≥4.5:1（WCAG AA）
-         --mid #9aa3b2：bg 7.30 / surface 6.63；--muted #8b93a1：bg 6.00 / surface 5.45（原 #7f8897 在 surface 偏低故提亮） */
-      --mid: #9aa3b2;
-      --muted: #8b93a1;
-      --border: #343843;
-      --overdue: #e07a5f;
-    }
-
-    html[data-theme="dark"] .nav-course-item:hover {
-      background: #23262d;
-    }
-
-    html[data-theme="dark"] .side-nav-item:hover {
-      background: #23262d;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -2128,10 +2108,6 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
 
-    html[data-theme="dark"] .course-card-grid {
-      background: #23262d;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
-    }
 
     .course-card-grid:hover {
       border-color: var(--orange);
@@ -2139,10 +2115,6 @@
       transform: translateY(-2px);
     }
 
-    html[data-theme="dark"] .course-card-grid:hover {
-      background: #2a2e37;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.34);
-    }
 
     .card-top {
       padding: 14px 20px 12px;
@@ -2235,7 +2207,6 @@
       animation: skel-shimmer 1.4s ease-in-out infinite;
     }
 
-    html[data-theme="dark"] .skel { --skel-glint: rgba(255, 255, 255, 0.09); }
 
     .skel-card { pointer-events: none; cursor: default; }
     .skel-card .skel-code { width: 34%; height: 11px; margin-bottom: 12px; }
@@ -2367,10 +2338,6 @@
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     }
 
-    html[data-theme="dark"] .course-detail-view {
-      background: #23262d;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.34);
-    }
 
     .detail-back {
       font-family: 'DM Mono', monospace;
@@ -2738,10 +2705,6 @@
       will-change: transform;
     }
 
-    html[data-theme="dark"] .drag-clone.drag-clone {
-      background: var(--surface);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35), 0 14px 32px rgba(0, 0, 0, 0.5);
-    }
 
     /* 被拿起那列留在原位的殘影 */
     .drag-source {
@@ -3110,14 +3073,7 @@
 
     .weight-edit-save:hover { opacity: 0.8; }
 
-    html[data-theme="dark"] .weight-edit-modal {
-      background: #1b1d22;
-    }
 
-    html[data-theme="dark"] .weight-edit-name,
-    html[data-theme="dark"] .weight-edit-pct {
-      background: #121316;
-    }
 
     /* ── 無障礙：鍵盤 focus 一致外框（只在鍵盤導航時顯示，不干擾滑鼠點擊）──
        全域 :focus-visible 統一套用；卡片、側欄項、勾選圈、連結、modal 按鈕/輸入皆適用 */
@@ -3184,9 +3140,6 @@
       padding: 22px;
     }
 
-    html[data-theme="dark"] .confirm-modal {
-      background: #1b1d22;
-    }
 
     .confirm-title {
       font-family: 'Source Serif 4', Georgia, serif;
@@ -3317,7 +3270,6 @@
               <div class="settings-menu" id="settings-menu">
                 <div class="settings-menu-title">Quick Actions</div>
                 <div class="settings-menu-divider"></div>
-                <button class="settings-menu-item" id="menu-theme-toggle">切換深色模式</button>
                 <button class="settings-menu-item" id="menu-claude-usage-toggle">Claude 用量</button>
                 <div class="settings-menu-item has-submenu" id="menu-language-label">語言
                   <div class="settings-submenu">

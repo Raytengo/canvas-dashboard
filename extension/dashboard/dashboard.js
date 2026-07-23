@@ -35,8 +35,6 @@ const I18N = {
     customNameRequired: '請輸入作業名稱',
     confirmDeleteCustom: '確定要刪除此自訂作業嗎？',
     deleteCustomTitle: '刪除自訂作業',
-    themeDark: '切換深色模式',
-    themeLight: '切換淺色模式',
     languageLabel: '語言',
     langZhTw: '繁體中文',
     langZhCn: '简体中文',
@@ -164,8 +162,6 @@ const I18N = {
     customNameRequired: '请输入作业名称',
     confirmDeleteCustom: '确定要删除此自定义作业吗？',
     deleteCustomTitle: '删除自定义作业',
-    themeDark: '切换深色模式',
-    themeLight: '切换浅色模式',
     languageLabel: '语言',
     langZhTw: '繁體中文',
     langZhCn: '简体中文',
@@ -278,8 +274,6 @@ const I18N = {
     customNameRequired: 'Enter an assignment name',
     confirmDeleteCustom: 'Delete this custom assignment?',
     deleteCustomTitle: 'Delete custom assignment',
-    themeDark: 'Switch To Dark',
-    themeLight: 'Switch To Light',
     languageLabel: 'Language',
     langZhTw: 'Traditional Chinese',
     langZhCn: 'Simplified Chinese',
@@ -485,7 +479,6 @@ function bindLanguageMenuActions() {
     _uiLanguage = lang;
     chrome.storage.local.set({ uiLanguage: lang });
     applyUILanguage();
-    updateThemeMenuLabel();
     updateClaudeUsageMenuLabel();
     loadData();
     if (settingsMenu) settingsMenu.classList.remove('open');
@@ -2903,36 +2896,21 @@ function loadData() {
   );
 }
 
-// ── 深色模式 ──
-function applyTheme(dark) {
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-}
-
-function updateThemeMenuLabel() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const btn = document.getElementById('menu-theme-toggle');
-  if (!btn) return;
-  btn.textContent = isDark ? tr('themeLight') : tr('themeDark');
-}
-
 function updateClaudeUsageMenuLabel() {
   const btn = document.getElementById('menu-claude-usage-toggle');
   if (!btn) return;
   btn.textContent = _showClaudeUsage ? tr('menuUsageHide') : tr('menuUsageShow');
 }
 
-chrome.storage.local.get(['darkMode', 'uiLanguage', 'showClaudeUsageInPopup'], (data) => {
+chrome.storage.local.get(['uiLanguage', 'showClaudeUsageInPopup'], (data) => {
   _uiLanguage = data.uiLanguage || 'zh-TW';
   _showClaudeUsage = data.showClaudeUsageInPopup !== false;
-  applyTheme(!!data.darkMode);
   applyUILanguage();
-  updateThemeMenuLabel();
   updateClaudeUsageMenuLabel();
 });
 
 const settingsMenuBtn = document.getElementById('settings-menu-btn');
 const settingsMenu = document.getElementById('settings-menu');
-const menuThemeToggle = document.getElementById('menu-theme-toggle');
 const menuClaudeUsageToggle = document.getElementById('menu-claude-usage-toggle');
 const menuOpenTutorial = document.getElementById('menu-open-tutorial');
 
@@ -2954,19 +2932,6 @@ if (settingsMenuBtn && settingsMenu) {
       const menuLanguageLabel = document.getElementById('menu-language-label');
       if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
     }
-  });
-}
-
-if (menuThemeToggle) {
-  menuThemeToggle.addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    applyTheme(!isDark);
-    chrome.storage.local.set({ darkMode: !isDark });
-    updateThemeMenuLabel();
-    if (settingsMenu) settingsMenu.classList.remove('open');
-    if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
-    const menuLanguageLabel = document.getElementById('menu-language-label');
-    if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
   });
 }
 
