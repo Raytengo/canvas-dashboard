@@ -125,3 +125,95 @@ test('normalizeManualDone: null/undefined input → {}', () => {
   assert.deepEqual(DueCompletion.normalizeManualDone(null), {});
   assert.deepEqual(DueCompletion.normalizeManualDone(undefined), {});
 });
+
+// ── isManualUndone(鏡像 isManualDone)──
+test('isManualUndone: numeric id hits string key via String() normalization', () => {
+  assert.equal(DueCompletion.isManualUndone({ '12345': true }, 12345), true);
+});
+
+test('isManualUndone: string id hits key', () => {
+  assert.equal(DueCompletion.isManualUndone({ '991004': true }, '991004'), true);
+});
+
+test('isManualUndone: empty map → false', () => {
+  assert.equal(DueCompletion.isManualUndone({}, 12345), false);
+});
+
+test('isManualUndone: null map → false', () => {
+  assert.equal(DueCompletion.isManualUndone(null, 12345), false);
+});
+
+// ── isDone 第三參數 manualUndone(雙向切換核心)──
+test('isDone: Canvas-submitted + manualUndone has id → false (標回未完成)', () => {
+  assert.equal(
+    DueCompletion.isDone({ id: 9, submission: { workflow_state: 'graded' } }, {}, { '9': true }),
+    false
+  );
+});
+
+test('isDone: submitted_at set + undone via numeric key → false', () => {
+  assert.equal(
+    DueCompletion.isDone({ id: 9, submission: { submitted_at: '2026-07-01T00:00:00Z' } }, {}, { 9: true }),
+    false
+  );
+});
+
+test('isDone: submitted + undone + manualDone 髒資料同時存在 → true (manualDone 勝出)', () => {
+  assert.equal(
+    DueCompletion.isDone({ id: 9, submission: { workflow_state: 'graded' } }, { '9': true }, { '9': true }),
+    true
+  );
+});
+
+test('isDone: not submitted + stale undone entry → false (無害殘留)', () => {
+  assert.equal(DueCompletion.isDone({ id: 9, submission: null }, {}, { '9': true }), false);
+});
+
+test('isDone: 省略第三參數 → 與現行為完全相同 (回歸)', () => {
+  assert.equal(DueCompletion.isDone({ id: 9, submission: { workflow_state: 'graded' } }, {}), true);
+  assert.equal(DueCompletion.isDone({ id: 9, submission: null }, { '9': true }), true);
+  assert.equal(DueCompletion.isDone({ id: 9, submission: null }, {}), false);
+});
+
+test('isDone: null undone map → 同省略', () => {
+  assert.equal(
+    DueCompletion.isDone({ id: 9, submission: { workflow_state: 'graded' } }, {}, null),
+    true
+  );
+});
+
+// ── 雙向切換流程(toggleManualDone 為通用 map 切換,直接重用於 undone map)──
+test('bidirectional flow: 已繳 → 標回未完成 → 再點回歸 Canvas 事實', () => {
+  const a = { id: 991004, submission: { workflow_state: 'graded', submitted_at: '2026-07-10T12:00:00Z' } };
+  let undone = {};
+  assert.equal(DueCompletion.isDone(a, {}, undone), true);   // Canvas 事實:完成
+  undone = DueCompletion.toggleManualDone(undone, a.id);     // 標回未完成
+  assert.deepEqual(undone, { '991004': true });
+  assert.equal(DueCompletion.isDone(a, {}, undone), false);
+  undone = DueCompletion.toggleManualDone(undone, a.id);     // 再點 → 刪 key,回歸 Canvas 事實
+  assert.deepEqual(undone, {});
+  assert.equal(DueCompletion.isDone(a, {}, undone), true);
+});
+
+// ── 考試結束＝已完成桶(2026-07-22 決策:過期考試與已繳考試放一起,不進待辦)──
+const past = (days) => new Date(Date.now() - days * 86400000).toISOString();
+const future = (days) => new Date(Date.now() + days * 86400000).toISOString();
+
+test('isExternallyDone: Canvas 已繳 → true;過期考試未繳 → true;未來考試 → false;過期一般作業 → false', () => {
+  assert.equal(DueCompletion.isExternallyDone({ id: 1, submission: { workflow_state: 'graded' } }), true);
+  assert.equal(DueCompletion.isExternallyDone({ id: 2, name: 'Midterm Exam', due_at: past(3) }), true);
+  assert.equal(DueCompletion.isExternallyDone({ id: 3, name: 'Midterm Exam', due_at: future(3) }), false);
+  assert.equal(DueCompletion.isExternallyDone({ id: 4, name: 'Lab Report', due_at: past(3) }), false);
+});
+
+test('isDone: 過期未繳考試 → 預設完成(視同已繳);可 manualUndone 標回未完成;manualDone 髒資料仍勝出', () => {
+  const exam = { id: 991009, name: 'Paper Reading Quiz 9', due_at: past(5) };
+  assert.equal(DueCompletion.isDone(exam, {}, {}), true);                       // 過期考試=完成
+  assert.equal(DueCompletion.isDone(exam, {}, { '991009': true }), false);      // 手動標回未完成
+  assert.equal(DueCompletion.isDone(exam, { '991009': true }, { '991009': true }), true); // manualDone 勝出
+});
+
+test('isDone: 未來考試未繳 → 未完成(出現在待辦,不亂跳已繳交)', () => {
+  const exam = { id: 991010, name: 'Final Exam', due_at: future(10) };
+  assert.equal(DueCompletion.isDone(exam, {}, {}), false);
+});

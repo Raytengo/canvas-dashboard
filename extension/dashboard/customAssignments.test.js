@@ -58,3 +58,63 @@ test('merges Canvas and custom assignments by course id without mutating inputs'
   assert.deepEqual(merged[99].map((a) => a.name), ['Other item']);
   assert.equal(canvasAssignments[42].length, 1);
 });
+
+test('updates a custom assignment while preserving id and created_at', () => {
+  const existing = {
+    id: 'custom-fixed-id',
+    course_id: 42,
+    name: 'Old name',
+    description: 'Old desc',
+    due_at: new Date(2026, 2, 13, 23, 59).toISOString(),
+    submission: null,
+    points_possible: null,
+    html_url: null,
+    _isCustom: true,
+    created_at: '2026-03-06T02:15:00.000Z',
+  };
+
+  const updated = DueCustomAssignments.updateCustomAssignment(existing, {
+    courseId: '77',
+    name: '  New name  ',
+    description: '  New desc  ',
+    dueLocalValue: '2026-04-01T18:30',
+  });
+
+  assert.equal(updated.id, 'custom-fixed-id');
+  assert.equal(updated.created_at, '2026-03-06T02:15:00.000Z');
+  assert.equal(updated.course_id, 77);
+  assert.equal(updated.name, 'New name');
+  assert.equal(updated.description, 'New desc');
+  assert.equal(updated.due_at, new Date(2026, 3, 1, 18, 30).toISOString());
+  assert.equal(updated._isCustom, true);
+  // 不 mutate 原物件
+  assert.equal(existing.name, 'Old name');
+  assert.equal(existing.course_id, 42);
+});
+
+test('update clears due date when no due value is provided', () => {
+  const existing = {
+    id: 'custom-1', course_id: 5, name: 'Task', description: '',
+    due_at: new Date(2026, 2, 13, 23, 59).toISOString(), _isCustom: true,
+    created_at: '2026-03-01T00:00:00.000Z',
+  };
+  const updated = DueCustomAssignments.updateCustomAssignment(existing, {
+    courseId: 5, name: 'Task', description: '', dueLocalValue: '',
+  });
+  assert.equal(updated.due_at, null);
+});
+
+test('update rejects blank assignment names', () => {
+  assert.throws(() => {
+    DueCustomAssignments.updateCustomAssignment(
+      { id: 'custom-1', created_at: 'x', _isCustom: true },
+      { courseId: '42', name: '   ', dueLocalValue: '2026-03-13T23:59' },
+    );
+  }, /name is required/);
+});
+
+test('update rejects a missing existing assignment', () => {
+  assert.throws(() => {
+    DueCustomAssignments.updateCustomAssignment(null, { name: 'X' });
+  }, /existing assignment is required/);
+});
