@@ -1669,10 +1669,15 @@
     }
 
     .welcome-preview.square {
-      flex: 0 0 220px;
-      width: 220px;
-      height: 220px;
+      flex: 0 0 auto;
+      width: 260px;
+      height: auto;
       margin-top: 0;
+    }
+
+    .welcome-preview.square img {
+      width: 100%;
+      height: auto;
     }
 
     .welcome-preview img {
@@ -1815,18 +1820,6 @@
       font-family: 'DM Mono', monospace;
       font-size: 12px;
       color: var(--green);
-    }
-
-    /* ── Welcome mock badge ── */
-    .welcome-mock-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 2px 7px;
-      border-radius: 3px;
-      background: var(--orange);
-      color: #fff;
     }
 
     /* ── Welcome Dash Mock ── */
@@ -3416,7 +3409,6 @@
               <div class="welcome-dash-mock" style="flex:0 0 280px; margin-top:0; align-self: center; position: relative; top: -30px;">
                 <div class="welcome-dash-mock-header">
                   <span class="welcome-dash-mock-title">Dashboard 概覽</span>
-                  <span class="welcome-mock-badge" style="font-size: 10px;">示例</span>
                 </div>
                 <div class="welcome-dash-mock-body">
                   <div class="welcome-dash-mock-chart">
@@ -3438,8 +3430,6 @@
                     </div>
                   </div>
                   <div class="welcome-dash-mock-cards">
-                    <div style="color: var(--orange); font-size: 10px; font-weight: bold; margin-bottom: 2px;">7天內 (3)
-                    </div>
                     <div class="welcome-dash-mock-card">
                       <div class="welcome-dash-mock-card-tag">CHINESE</div>
                       <div class="welcome-dash-mock-card-title">期中小組報告大綱</div>
@@ -3527,7 +3517,7 @@
                 </ul>
               </div>
               <div class="welcome-drag-illus" aria-hidden="true">
-                <svg viewBox="0 0 280 250" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 280 232" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <filter id="wds-shadow" x="-20%" y="-20%" width="140%" height="160%">
                       <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#141413" flood-opacity="0.18" />
@@ -3541,64 +3531,45 @@
                   </defs>
 
                   <!-- 課程大卡片：整個拖曳場景都發生在這張卡裡 -->
-                  <rect x="8" y="6" width="264" height="238" rx="8" style="fill:var(--bg); stroke:var(--border)" />
+                  <rect x="8" y="6" width="264" height="218" rx="8" style="fill:var(--bg); stroke:var(--border)" />
                   <!-- 課程 header 帶（代碼＋Serif 課名，課程詳情的識別元素） -->
-                  <path d="M16 6 h248 a8 8 0 0 1 8 8 v34 h-264 v-34 a8 8 0 0 1 8 -8 z" style="fill:var(--surface)" />
-                  <text x="20" y="22" style="font-family:'DM Mono',monospace; font-size:7px; fill:var(--mid); letter-spacing:.08em">DSAA 5002</text>
-                  <text x="20" y="40" style="font-family:'Source Serif 4',Georgia,serif; font-size:14px; fill:var(--dark)">Data Mining</text>
+                  <path d="M16 6 h248 a8 8 0 0 1 8 8 v30 h-264 v-30 a8 8 0 0 1 8 -8 z" style="fill:var(--surface)" />
+                  <text x="20" y="21" style="font-family:'DM Mono',monospace; font-size:7px; fill:var(--mid); letter-spacing:.08em">DSAA 5002</text>
+                  <text x="20" y="38" style="font-family:'Source Serif 4',Georgia,serif; font-size:14px; fill:var(--dark)">Data Mining</text>
 
-                  <!-- 作業清單 -->
-                  <text x="22" y="64" style="font-family:'DM Mono',monospace; font-size:8px; fill:var(--mid); letter-spacing:.05em">作業清單</text>
+                  <!-- 作業清單：兩列極簡列（無 due 色條，焦點留給拖曳列） -->
+                  <circle cx="32" cy="66" r="5.5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
+                  <rect x="44" y="63" width="110" height="6" rx="3" style="fill:var(--mid); opacity:.4" />
+                  <circle cx="32" cy="90" r="5.5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
+                  <rect x="44" y="87" width="88" height="6" rx="3" style="fill:var(--mid); opacity:.4" />
 
-                  <circle cx="30" cy="80" r="5.5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
-                  <rect x="42" y="77" width="86" height="6" rx="3" style="fill:var(--mid); opacity:.45" />
-                  <g style="fill:var(--mid); opacity:.55">
-                    <circle cx="136" cy="75" r="1.3" /><circle cx="141" cy="75" r="1.3" />
-                    <circle cx="136" cy="80" r="1.3" /><circle cx="141" cy="80" r="1.3" />
-                    <circle cx="136" cy="85" r="1.3" /><circle cx="141" cy="85" r="1.3" />
-                  </g>
-                  <rect x="206" y="77" width="46" height="6" rx="3" style="fill:var(--orange); opacity:.65" />
-
-                  <circle cx="30" cy="102" r="5.5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
-                  <rect x="42" y="99" width="70" height="6" rx="3" style="fill:var(--mid); opacity:.45" />
-                  <g style="fill:var(--mid); opacity:.55">
-                    <circle cx="120" cy="97" r="1.3" /><circle cx="125" cy="97" r="1.3" />
-                    <circle cx="120" cy="102" r="1.3" /><circle cx="125" cy="102" r="1.3" />
-                    <circle cx="120" cy="107" r="1.3" /><circle cx="125" cy="107" r="1.3" />
-                  </g>
-                  <rect x="206" y="99" width="46" height="6" rx="3" style="fill:var(--warm); opacity:.65" />
-
-                  <!-- 被拿起的列留下的虛線空位 -->
-                  <rect x="22" y="116" width="230" height="18" rx="5" style="fill:none; stroke:var(--border); stroke-dasharray:3 3" />
-
-                  <!-- 拖曳中的浮起列（陰影＋微傾，仿 .drag-clone） -->
-                  <g transform="translate(46 142) rotate(2)">
-                    <rect width="182" height="26" rx="6" style="fill:var(--bg); stroke:var(--orange); stroke-width:1" filter="url(#wds-shadow)" />
+                  <!-- 拖曳中的浮起列（陰影＋微傾，仿 .drag-clone）——畫面主角 -->
+                  <g transform="translate(52 112) rotate(2)">
+                    <rect width="170" height="26" rx="6" style="fill:var(--bg); stroke:var(--orange); stroke-width:1" filter="url(#wds-shadow)" />
                     <circle cx="15" cy="13" r="5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
-                    <rect x="27" y="10" width="64" height="6" rx="3" style="fill:var(--mid); opacity:.55" />
+                    <rect x="27" y="10" width="78" height="6" rx="3" style="fill:var(--mid); opacity:.55" />
                     <g style="fill:var(--orange)">
-                      <circle cx="100" cy="8" r="1.3" /><circle cx="105" cy="8" r="1.3" />
-                      <circle cx="100" cy="13" r="1.3" /><circle cx="105" cy="13" r="1.3" />
-                      <circle cx="100" cy="18" r="1.3" /><circle cx="105" cy="18" r="1.3" />
+                      <circle cx="146" cy="8" r="1.3" /><circle cx="151" cy="8" r="1.3" />
+                      <circle cx="146" cy="13" r="1.3" /><circle cx="151" cy="13" r="1.3" />
+                      <circle cx="146" cy="18" r="1.3" /><circle cx="151" cy="18" r="1.3" />
                     </g>
-                    <rect x="132" y="10" width="38" height="6" rx="3" style="fill:var(--orange); opacity:.65" />
                   </g>
 
                   <!-- 清單底部的已隱藏區（放置目標） -->
-                  <rect x="22" y="184" width="230" height="50" rx="6" style="fill:var(--surface); stroke:var(--border); stroke-dasharray:4 3" />
-                  <path d="M32 194 l4 4 -4 4" style="fill:none; stroke:var(--mid); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round" />
-                  <text x="44" y="202" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--mid); letter-spacing:.05em">已隱藏 2 項</text>
-                  <rect x="44" y="216" width="74" height="6" rx="3" style="fill:var(--purple); opacity:.8" />
-                  <rect x="126" y="212" width="26" height="13" rx="3" style="fill:none; stroke:var(--purple); opacity:.8" />
-                  <text x="130" y="222" style="font-family:'DM Mono',monospace; font-size:8px; fill:var(--purple)">考試</text>
+                  <rect x="22" y="156" width="230" height="52" rx="6" style="fill:var(--surface); stroke:var(--border); stroke-dasharray:4 3" />
+                  <path d="M32 167 l4 4 -4 4" style="fill:none; stroke:var(--mid); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round" />
+                  <text x="44" y="175" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--mid); letter-spacing:.05em">已隱藏 2 項</text>
+                  <rect x="44" y="190" width="74" height="6" rx="3" style="fill:var(--purple); opacity:.8" />
+                  <rect x="126" y="186" width="26" height="13" rx="3" style="fill:none; stroke:var(--purple); opacity:.8" />
+                  <text x="130" y="196" style="font-family:'DM Mono',monospace; font-size:8px; fill:var(--purple)">考試</text>
 
-                  <!-- 右側：拖下隱藏（橘）；左側：拖回還原（綠）——皆在卡片內 -->
-                  <path d="M 248 122 C 266 142, 266 158, 252 180" marker-end="url(#wds-arrow-o)" style="fill:none; stroke:var(--orange); stroke-width:1.6; stroke-dasharray:4 4" />
-                  <text x="251" y="145" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--orange)">隱</text>
-                  <text x="251" y="157" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--orange)">藏</text>
-                  <path d="M 32 210 C 14 182, 14 140, 27 110" marker-end="url(#wds-arrow-g)" style="fill:none; stroke:var(--green); stroke-width:1.6; stroke-dasharray:4 4" />
-                  <text x="19" y="148" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--green)">還</text>
-                  <text x="19" y="160" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--green)">原</text>
+                  <!-- 右側：拖下隱藏（橘）；左側：拖回還原（綠） -->
+                  <path d="M 246 90 C 262 112, 262 130, 248 152" marker-end="url(#wds-arrow-o)" style="fill:none; stroke:var(--orange); stroke-width:1.5" />
+                  <text x="247" y="115" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--orange)">隱</text>
+                  <text x="247" y="127" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--orange)">藏</text>
+                  <path d="M 34 184 C 18 158, 18 122, 30 96" marker-end="url(#wds-arrow-g)" style="fill:none; stroke:var(--green); stroke-width:1.5" />
+                  <text x="22" y="132" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--green)">還</text>
+                  <text x="22" y="144" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--green)">原</text>
                 </svg>
               </div>
             </div>
