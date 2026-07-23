@@ -718,6 +718,39 @@
       margin-top: 6px;
     }
 
+    /* 貓耳朵：全部完成時的持續性裝飾（深色描邊 + 背景色內填，簡約線條風格） */
+    .wk-ears {
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      width: 96px;
+      margin-left: -48px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .wk-ear {
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 18px solid var(--dark);
+      position: relative;
+    }
+    .wk-ear::before {
+      content: '';
+      position: absolute;
+      left: -9px;
+      top: 3px;
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 13px solid var(--bg);
+    }
+    .wk-ear-l { transform: rotate(-12deg); }
+    .wk-ear-r { transform: rotate(12deg); }
+
     /* 分級摘要：可點列，跳到右側對應區塊 */
     .wk-breakdown {
       display: flex;

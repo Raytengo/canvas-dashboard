@@ -1229,6 +1229,7 @@ function renderWeekSection(courses, assignments) {
     : donePct;
   const ringStyle = `--ring-pct: ${_prevRingPct}%; background: conic-gradient(var(--green) 0% var(--ring-pct), var(--border) var(--ring-pct) 100%);`;
   const ringAria = `${tr('weekDoneLabel')} ${nearDone}/${nearTotal}`;
+  const showEars = nearTotal > 0 && nearDone === nearTotal;   // 近期作業全部完成 → 顯示貓耳朵
 
   // 分級摘要列（只顯示 count>0；逾期紅色，點擊跳到右側對應區塊）
   const sumRows = [
@@ -1286,6 +1287,7 @@ function renderWeekSection(courses, assignments) {
                 <div class="wk-ring-frac"><b>${nearDone}</b>/${nearTotal}</div>
                 <div class="wk-ring-cap">${tr('weekDoneLabel')}</div>
               </div>
+              ${showEars ? `<div class="wk-ears"><span class="wk-ear wk-ear-l"></span><span class="wk-ear wk-ear-r"></span></div>` : ''}
             </div>
           </div>
           ${sumRows ? `<div class="wk-breakdown">${sumRows}</div>` : ''}
