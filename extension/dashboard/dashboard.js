@@ -1222,7 +1222,12 @@ function renderWeekSection(courses, assignments) {
   // 「本週概覽」進度環：範圍＝逾期窗 ∪ 未來 7 天（近期可行動集），現算完成/總數（含已完成項）
   const { nearDone, nearTotal } = computeNearProgress(courses, assignments);
   const donePct = nearTotal > 0 ? (nearDone / nearTotal) * 100 : 0;
-  const ringStyle = `background: conic-gradient(var(--green) 0% ${donePct}%, var(--border) ${donePct}% 100%);`;
+  // 讀取畫面上舊的 .wk-ring 目前百分比當動畫起點；無舊節點（首次掛載）直接用目標值不做動畫
+  const _prevRingEl = document.querySelector('.wk-ring');
+  const _prevRingPct = _prevRingEl
+    ? (parseFloat(getComputedStyle(_prevRingEl).getPropertyValue('--ring-pct')) || 0)
+    : donePct;
+  const ringStyle = `--ring-pct: ${_prevRingPct}%; background: conic-gradient(var(--green) 0% var(--ring-pct), var(--border) var(--ring-pct) 100%);`;
   const ringAria = `${tr('weekDoneLabel')} ${nearDone}/${nearTotal}`;
 
   // 分級摘要列（只顯示 count>0；逾期紅色，點擊跳到右側對應區塊）
@@ -1290,6 +1295,14 @@ function renderWeekSection(courses, assignments) {
         </div>
       </div>
     </div>`;
+
+  // 雙層 rAF：等瀏覽器完成一次繪製（用 _prevRingPct 的舊值）後，再切到目標值觸發 transition
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const ringEl = el.querySelector('.wk-ring');
+      if (ringEl) ringEl.style.setProperty('--ring-pct', `${donePct}%`);
+    });
+  });
 
   // 勾選圈：依 Canvas 事實翻轉，未完成→完成走 1.5 秒撤銷窗口動畫（stopPropagation 不開詳情）
   el.querySelectorAll('.week-task-check').forEach((btn) => {

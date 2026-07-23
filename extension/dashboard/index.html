@@ -665,7 +665,13 @@
       justify-content: center;
     }
 
-    /* 進度環：綠色弧＝完成比例（conic 由 JS 內聯），中央挖空成甜甜圈 */
+    @property --ring-pct {
+      syntax: '<percentage>';
+      inherits: false;
+      initial-value: 0%;
+    }
+
+    /* 進度環：綠色弧＝完成比例（--ring-pct 由 JS 內聯 + 接續動畫，終點明顯減速無回彈） */
     .wk-ring {
       width: 158px;
       height: 158px;
@@ -674,6 +680,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: --ring-pct .5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .wk-ring::before {
