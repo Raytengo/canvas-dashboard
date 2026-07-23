@@ -712,6 +712,16 @@
       font-weight: 400;
     }
 
+    /* 慶祝碎點（全部完成「落點迸發」；飛行參數由 WAAPI 逐顆內聯，見 celebrateRingArrival） */
+    .wk-celebrate-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+
     /* 分子變動時的微上滑 tick（與弧的過渡同曲線，首次渲染不觸發） */
     @keyframes wk-frac-tick {
       from { opacity: 0; transform: translateY(7px); }

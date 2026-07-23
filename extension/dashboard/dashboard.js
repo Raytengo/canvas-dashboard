@@ -105,6 +105,7 @@ const I18N = {
     beyond30Days: '30天以上',
     noTasks: '無待辦事項',
     weekDoneLabel: '本週完成',
+    weekAllDoneLabel: '全部完成',
     // ui widgets
     editWeight: '編輯',
     weightEditTitle: '編輯評分權重',
@@ -220,6 +221,7 @@ const I18N = {
     beyond30Days: '30天以上',
     noTasks: '无待办事项',
     weekDoneLabel: '本周完成',
+    weekAllDoneLabel: '全部完成',
     editWeight: '编辑',
     weightEditTitle: '编辑评分权重',
     weightReset: '还原 Canvas 权重',
@@ -333,6 +335,7 @@ const I18N = {
     beyond30Days: 'Later (30d+)',
     noTasks: 'No pending tasks',
     weekDoneLabel: 'Done this week',
+    weekAllDoneLabel: 'All done',
     editWeight: 'Edit',
     weightEditTitle: 'Edit Grade Weights',
     weightReset: 'Reset to Canvas weights',
@@ -1185,7 +1188,52 @@ let _prevRingDone = null;
 const RING_R = 69;
 const RING_C = 2 * Math.PI * RING_R;
 
-function renderWeekSection(courses, assignments) {
+// ── 進度環「落點迸發」慶祝（見 spec 2026-07-23 後記）──
+// 只在勾完最後一項近期作業、弧合攏落地的瞬間觸發（renderWeekSection 的 celebrateNow）；
+// 之後維持全部完成狀態的重繪只靜態顯示「全部完成」，不重播。
+// 內容：環微彈＋分子 pop、多色碎點沿圓周外迸（切線初速＝旋轉能量）、中心淡入「全部完成」
+function celebrateRingArrival(ring) {
+  if (!ring || !ring.isConnected) return;   // 等待落地期間被重繪換掉 → 略過
+  const spring = 'cubic-bezier(0.34, 1.3, 0.5, 1)';
+  ring.animate(
+    [{ transform: 'scale(1)' }, { transform: 'scale(1.04)', offset: 0.38 }, { transform: 'scale(1)' }],
+    { duration: 320, easing: spring });
+  const fracB = ring.querySelector('.wk-ring-frac b');
+  if (fracB) {
+    fracB.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.16)', offset: 0.4 }, { transform: 'scale(1)' }],
+      { duration: 320, easing: spring });
+  }
+  const cap = ring.querySelector('.wk-ring-cap');
+  if (cap) {
+    cap.textContent = tr('weekAllDoneLabel');
+    cap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350, easing: 'ease-out' });
+  }
+  // 放大多色版碎點爆：16 顆沿圓周迸開，橘/藍/綠/暖黃輪替
+  const colors = ['--orange', '--blue', '--green', '--warm'];
+  for (let i = 0; i < 16; i++) {
+    const th = (Math.PI * 2 * i) / 16 - Math.PI / 2 + ((i % 3) - 1) * 0.07;
+    const p = document.createElement('span');
+    p.className = 'wk-celebrate-dot';
+    p.style.background = `var(${colors[i % 4]})`;
+    p.style.left = `${79 + RING_R * Math.cos(th)}px`;
+    p.style.top = `${79 + RING_R * Math.sin(th)}px`;
+    ring.appendChild(p);
+    const dist = 30 + ((i * 11) % 22);                              // 30–52px
+    const dx = Math.cos(th) * dist + Math.cos(th + Math.PI / 2) * dist * 0.85;
+    const dy = Math.sin(th) * dist + Math.sin(th + Math.PI / 2) * dist * 0.85;
+    p.animate(
+      [
+        { transform: 'translate(-50%, -50%) translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(0.35)`, opacity: 0 },
+      ],
+      { duration: 650 + ((i * 13) % 140), delay: (i * 7) % 60,
+        easing: 'cubic-bezier(0.2, 0.55, 0.3, 1)', fill: 'forwards' }
+    ).onfinish = () => p.remove();
+  }
+}
+
+function renderWeekSection(courses, assignments, celebrate = false) {
   const el = document.getElementById('main-section');
   // 重繪前清掉殘留的完成計時器（切頁/重繪時避免週卡幽靈 callback）
   clearCompleteTimers();
@@ -1238,6 +1286,11 @@ function renderWeekSection(courses, assignments) {
   // 分子變動時給數字一個微上滑 tick（與弧的過渡同曲線）；首次渲染不 tick
   const fracTick = _prevRingDone !== null && _prevRingDone !== nearDone;
   _prevRingDone = nearDone;
+  // 全部完成狀態與慶祝旗標：celebrate 由「勾完最後一項近期作業」的鏈路傳入，render 端即時核對
+  const allNearDone = nearTotal > 0 && nearDone === nearTotal;
+  const celebrateNow = celebrate && allNearDone;
+  // 慶祝時中心先維持「本週完成」、落地瞬間才換字淡入；非慶祝的全部完成重繪直接靜態顯示「全部完成」
+  const capText = (allNearDone && !celebrateNow) ? tr('weekAllDoneLabel') : tr('weekDoneLabel');
 
   // 分級摘要列（只顯示 count>0；逾期紅色，點擊跳到右側對應區塊）
   const sumRows = [
@@ -1297,7 +1350,7 @@ function renderWeekSection(courses, assignments) {
               </svg>
               <div class="wk-ring-center">
                 <div class="wk-ring-frac"><b${fracTick ? ' class="tick"' : ''}>${nearDone}</b>/${nearTotal}</div>
-                <div class="wk-ring-cap">${tr('weekDoneLabel')}</div>
+                <div class="wk-ring-cap">${capText}</div>
               </div>
             </div>
           </div>
@@ -1317,6 +1370,20 @@ function renderWeekSection(courses, assignments) {
     _barEl.style.strokeDashoffset = `${targetOffset}`;
   }
 
+  // 慶祝：等弧合攏「落地」的 transitionend 才引爆；弧已在終點（無過渡可等）則直接引爆
+  if (celebrateNow && _barEl) {
+    const _ringEl = el.querySelector('.wk-ring');
+    if (Math.abs(prevOffset - targetOffset) < 0.5) {
+      celebrateRingArrival(_ringEl);
+    } else {
+      _barEl.addEventListener('transitionend', function h(e) {
+        if (e.propertyName !== 'stroke-dashoffset') return;
+        _barEl.removeEventListener('transitionend', h);
+        celebrateRingArrival(_ringEl);
+      });
+    }
+  }
+
   // 勾選圈：依 Canvas 事實翻轉，未完成→完成走 1.5 秒撤銷窗口動畫（stopPropagation 不開詳情）
   el.querySelectorAll('.week-task-check').forEach((btn) => {
     btn.addEventListener('click', (e) => {
@@ -1333,7 +1400,9 @@ function renderWeekSection(courses, assignments) {
       const a = ((_currentData.assignments || {})[cid] || []).find((x) => String(x.id) === id);
       const nowDone = a ? isDone(a) : false;
       if (nowDone && card) {
-        beginCompleteWeek(card, id, cid);
+        const { nearDone: _nd, nearTotal: _nt } = computeNearProgress(_currentData.courses || [], _currentData.assignments || {});
+        const celebrate = _nt > 0 && _nd === _nt;   // 這次勾選讓近期作業全部完成 → 落地時引爆慶祝
+        beginCompleteWeek(card, id, cid, celebrate);
       } else {
         rerenderWeekAndNav();
       }
@@ -1859,14 +1928,14 @@ function cancelComplete(item, id, cid) {
 }
 
 // ── 週卡片完成過渡（平行於 assignment-item 版；共用 COMPLETE_* 常數與 spawnBurstDots）──
-function rerenderWeekAndNav() {
+function rerenderWeekAndNav(celebrate = false) {
   const { courses = [], assignments = {} } = _currentData;
-  renderWeekSection(courses, assignments);
+  renderWeekSection(courses, assignments, celebrate);
   updateSideNav();
   renderNav(courses, assignments);
 }
 
-function beginCompleteWeek(card, id, cid) {
+function beginCompleteWeek(card, id, cid, celebrate = false) {
   const chk = card.querySelector('.assignment-check');
   if (chk) { chk.dataset.done = 'true'; chk.setAttribute('aria-label', tr('markUndone')); }
   card.classList.add('completing');
@@ -1887,15 +1956,15 @@ function beginCompleteWeek(card, id, cid) {
   }
   _completeTimers[id] = setTimeout(() => {
     delete _completeTimers[id];
-    finishCompleteWeek(card, id, cid);
+    finishCompleteWeek(card, id, cid, celebrate);
   }, COMPLETE_DELAY_MS);
 }
 
-function finishCompleteWeek(card /* id, cid */) {
+function finishCompleteWeek(card, id, cid, celebrate = false) {
   spawnBurstDots(card);
   card.classList.add('bursting');
   // 已完成者會被 applyFilters 濾掉；重繪週 section＋側欄＋左欄（用 _currentData，避免閃白）
-  setTimeout(rerenderWeekAndNav, COMPLETE_BURST_MS);
+  setTimeout(() => rerenderWeekAndNav(celebrate), COMPLETE_BURST_MS);
 }
 
 function cancelCompleteWeek(card, id) {
