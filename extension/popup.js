@@ -75,10 +75,6 @@ function tr(key) {
   return (I18N[_uiLanguage] && I18N[_uiLanguage][key]) || I18N['zh-TW'][key];
 }
 
-function applyTheme(dark) {
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-}
-
 function applyUILanguage() {
   const taskLabel = document.getElementById('task-label');
   if (taskLabel) taskLabel.textContent = tr('taskHeading');
@@ -496,9 +492,8 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   if (changes.claudeUsage) renderClaudeUsage(changes.claudeUsage.newValue || null);
 });
 
-chrome.storage.local.get(['darkMode', 'uiLanguage', 'showClaudeUsageInPopup'], (data) => {
+chrome.storage.local.get(['uiLanguage', 'showClaudeUsageInPopup'], (data) => {
   _uiLanguage = data.uiLanguage || 'zh-TW';
-  applyTheme(!!data.darkMode);
   applyUILanguage();
   applyClaudeRefreshCopy();
 

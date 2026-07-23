@@ -54,16 +54,6 @@
       --overdue: #b3452c;
     }
 
-    html[data-theme="dark"] {
-      --bg: #23262d;
-      --surface: #23262d;
-      --dark: #eceff4;
-      --mid: #9aa3b2;
-      --muted: #8b93a1;
-      --border: #343843;
-      --overdue: #e07a5f;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -388,10 +378,6 @@
       background: color-mix(in srgb, var(--warm) 16%, transparent);
       color: color-mix(in srgb, var(--warm) 82%, #000);
       border-color: color-mix(in srgb, var(--warm) 34%, transparent);
-    }
-
-    html[data-theme="dark"] .task-due.week7 {
-      color: var(--warm);
     }
 
     /* 已逾期（同今天的紅；區塊與文案已足以區分）*/

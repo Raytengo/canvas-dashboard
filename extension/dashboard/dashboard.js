@@ -35,8 +35,6 @@ const I18N = {
     customNameRequired: '請輸入作業名稱',
     confirmDeleteCustom: '確定要刪除此自訂作業嗎？',
     deleteCustomTitle: '刪除自訂作業',
-    themeDark: '切換深色模式',
-    themeLight: '切換淺色模式',
     languageLabel: '語言',
     langZhTw: '繁體中文',
     langZhCn: '简体中文',
@@ -105,6 +103,7 @@ const I18N = {
     beyond30Days: '30天以上',
     noTasks: '無待辦事項',
     weekDoneLabel: '本週完成',
+    weekAllDoneLabel: '全部完成',
     // ui widgets
     editWeight: '編輯',
     weightEditTitle: '編輯評分權重',
@@ -116,23 +115,30 @@ const I18N = {
     // welcome steps
     wTitle1: '歡迎使用 Due',
     wBody1Intro: 'Due，提醒你該做的事 ⚡️',
-    wBody1Q1: '「Canvas 很靠北，找個作業要翻半天」- 有人',
-    wBody1Q2: '「蛤？明天要交Lab喔」- 另外一個人',
+    wBody1Q1: '「Canvas找個作業要翻半天」- 有人',
+    wBody1Q2: '「明天要交Lab喔...」- 另一個人',
     wTitle2: '登入 Canvas（必須）',
     wBody2: 'Due 透過你的 Canvas 登入狀態同步資料，不需要額外設定或 Token。',
-    wStep2Li1: '登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下這個連結用於第一次同步😭）',
+    wStep2Li1: '登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下，同步完成會自動帶你回來）',
     wStep2Li2: 'Due 會<strong>在你每次打開Canvas時自動更新</strong>你的所有課程與作業',
     wStep2Li3: '點擊工具列或進入 Dashboard 都可以看到相關資訊',
+    wCanvasSynced: '✓ 已同步，資料已更新',
     wTitle3: '釘選 Due 到工具列',
-    wBody3: '釘選後點一下圖示就能查看 7 天待辦（煮菠愛用😋）',
+    wBody3: '釘選後點一下圖示就能查看 7 天待辦',
+    wBody3Joke: '（是為了這碟醋包的餃子btw）',
     wStep3Li1: '點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）',
     wStep3Li2: '找到 <strong>Due</strong>，點擊旁邊的<strong>釘選圖示</strong>',
     wStep3Li3: '工具列出現 Due 圖示後即完成',
-    wTitle4: '一切就緒',
-    wBody4: '設定完成。登入 Canvas 後資料會自動同步。',
-    wDone1: 'Due 已釘選到瀏覽器工具列',
-    wDone2: 'Canvas 登入狀態已確認',
-    wDone3: '評分比重可在課程頁查看或編輯',
+    wTitle4: '拖曳整理作業清單',
+    wBody4: 'Due 會自動隱藏考試、簽到<br>你也可以自己決定要藏誰、留誰',
+    wStep4Li1: '按住作業的 <strong>⠿</strong> 拖到底部「<strong>已隱藏</strong>」區即可隱藏；反之亦然',
+    wTitle5: '開始用 Due 吧',
+    wBody5: '這幾個功能容易錯過，記得試試：',
+    wFeatCustomName: '自訂作業',
+    wFeatCustomDesc: '加入 Canvas 上沒有的個人任務',
+    wFeatRenameName: '課程改名',
+    wFeatRenameDesc: '改成你習慣的叫法',
+    wSupport5: '有 bug 或建議？跟我說一聲 → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: '開始設定',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
@@ -163,8 +169,6 @@ const I18N = {
     customNameRequired: '请输入作业名称',
     confirmDeleteCustom: '确定要删除此自定义作业吗？',
     deleteCustomTitle: '删除自定义作业',
-    themeDark: '切换深色模式',
-    themeLight: '切换浅色模式',
     languageLabel: '语言',
     langZhTw: '繁體中文',
     langZhCn: '简体中文',
@@ -220,6 +224,7 @@ const I18N = {
     beyond30Days: '30天以上',
     noTasks: '无待办事项',
     weekDoneLabel: '本周完成',
+    weekAllDoneLabel: '全部完成',
     editWeight: '编辑',
     weightEditTitle: '编辑评分权重',
     weightReset: '还原 Canvas 权重',
@@ -233,19 +238,26 @@ const I18N = {
     wBody1Q2: '「啥？明天要交Lab？」- 另一个人',
     wTitle2: '登录 Canvas（必须）',
     wBody2: 'Due 通过你的 Canvas 登录状态同步数据，无需额外设置或 Token。',
-    wStep2Li1: '登录 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（点击此链接以完成第一次同步😭）',
+    wStep2Li1: '登录 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（点一下，同步完成后会自动带你回来）',
     wStep2Li2: 'Due 会<strong>在每次打开 Canvas 时自动更新</strong>你的所有课程和作业',
     wStep2Li3: '点击工具栏图标或进入 Dashboard 即可查看',
+    wCanvasSynced: '✓ 已同步，数据已更新',
     wTitle3: '固定 Due 到工具栏',
-    wBody3: '固定后点一下图标就能查看 7 天待办😋',
+    wBody3: '固定后点一下图标就能查看 7 天待办',
+    wBody3Joke: '（是为了这碟醋包的饺子btw）',
     wStep3Li1: '点击浏览器右上角的<strong>拼图图标</strong>（扩展程序）',
     wStep3Li2: '找到 <strong>Due</strong>，点击旁边的<strong>固定图标</strong>',
     wStep3Li3: '工具栏出现 Due 图标后即完成',
-    wTitle4: '一切就绪',
-    wBody4: '设置完成。登录 Canvas 后数据将自动同步。',
-    wDone1: 'Due 已固定到浏览器工具栏',
-    wDone2: 'Canvas 登录状态已确认',
-    wDone3: '评分比重可在课程页查看或编辑',
+    wTitle4: '拖拽整理作业清单',
+    wBody4: 'Due 会自动隐藏考试、签到<br>你也可以自己决定要藏谁、留谁',
+    wStep4Li1: '按住作业的 <strong>⠿</strong> 拖到底部「<strong>已隐藏</strong>」区即可隐藏；反之亦然',
+    wTitle5: '开始用 Due 吧',
+    wBody5: '这几个功能容易错过，记得试试：',
+    wFeatCustomName: '自定义作业',
+    wFeatCustomDesc: '加入 Canvas 上没有的个人任务',
+    wFeatRenameName: '课程改名',
+    wFeatRenameDesc: '改成你习惯的叫法',
+    wSupport5: '有 bug 或建议？跟我说一声 → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: '开始设置',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
@@ -276,8 +288,6 @@ const I18N = {
     customNameRequired: 'Enter an assignment name',
     confirmDeleteCustom: 'Delete this custom assignment?',
     deleteCustomTitle: 'Delete custom assignment',
-    themeDark: 'Switch To Dark',
-    themeLight: 'Switch To Light',
     languageLabel: 'Language',
     langZhTw: 'Traditional Chinese',
     langZhCn: 'Simplified Chinese',
@@ -333,6 +343,7 @@ const I18N = {
     beyond30Days: 'Later (30d+)',
     noTasks: 'No pending tasks',
     weekDoneLabel: 'Done this week',
+    weekAllDoneLabel: 'All done',
     editWeight: 'Edit',
     weightEditTitle: 'Edit Grade Weights',
     weightReset: 'Reset to Canvas weights',
@@ -346,19 +357,26 @@ const I18N = {
     wBody1Q2: '"Wait, the lab is due tomorrow?" — someone else',
     wTitle2: 'Log in to Canvas (Required)',
     wBody2: 'Due syncs data using your Canvas login session — no extra setup or tokens needed.',
-    wStep2Li1: 'Log in to <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a> (click this link for your first sync 😭)',
+    wStep2Li1: 'Log in to <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a> (click it — you\'ll be brought back automatically once syncing finishes)',
     wStep2Li2: 'Due <strong>auto-syncs all your courses and assignments</strong> every time you open Canvas',
     wStep2Li3: 'Click the toolbar icon or open Dashboard to view your tasks',
+    wCanvasSynced: '✓ Synced — data updated',
     wTitle3: 'Pin Due to Toolbar',
-    wBody3: 'Pin it and tap the icon to see your 7-day tasks at a glance 😋',
+    wBody3: 'Pin it and tap the icon to see your 7-day tasks at a glance',
+    wBody3Joke: "(it's for the dumpling dipped in vinegar, btw)",
     wStep3Li1: 'Click the <strong>puzzle icon</strong> (Extensions) in the top-right of your browser',
     wStep3Li2: 'Find <strong>Due</strong> and click the <strong>pin icon</strong> next to it',
     wStep3Li3: 'Done when the Due icon appears in your toolbar',
-    wTitle4: 'All Set!',
-    wBody4: 'Setup complete. Data syncs automatically after you log in to Canvas.',
-    wDone1: 'Due pinned to browser toolbar',
-    wDone2: 'Canvas login confirmed',
-    wDone3: 'Grade weights available on each course page',
+    wTitle4: 'Organize by dragging',
+    wBody4: 'Due auto-hides exams and attendance items<br>but you decide what stays hidden',
+    wStep4Li1: 'Grab an assignment\'s <strong>⠿</strong> and drop it into <strong>Hidden</strong> to hide it, or drag it back to restore — it works both ways',
+    wTitle5: 'Start using Due',
+    wBody5: 'A couple of features worth trying:',
+    wFeatCustomName: 'Custom assignments',
+    wFeatCustomDesc: 'Add tasks that aren\'t on Canvas',
+    wFeatRenameName: 'Rename courses',
+    wFeatRenameDesc: 'Give courses names you prefer',
+    wSupport5: 'Found a bug or have an idea? Let me know → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: 'Get Started',
     wBtnPrev: 'Back',
     wBtnNext: 'Next',
@@ -390,14 +408,23 @@ function applyWelcomeTranslations() {
   setText('wstep-2-li3', 'wStep2Li3');
   setText('wstep-3-title', 'wTitle3');
   setText('wstep-3-body', 'wBody3');
+  setText('wstep-3-joke', 'wBody3Joke');
   setHTML('wstep-3-li1', 'wStep3Li1');
   setHTML('wstep-3-li2', 'wStep3Li2');
   setText('wstep-3-li3', 'wStep3Li3');
   setText('wstep-4-title', 'wTitle4');
-  setText('wstep-4-body', 'wBody4');
-  setText('wstep-4-done1', 'wDone1');
-  setText('wstep-4-done2', 'wDone2');
-  setText('wstep-4-done3', 'wDone3');
+  setHTML('wstep-4-body', 'wBody4');
+  setHTML('wstep-4-li1', 'wStep4Li1');
+  setText('wstep-5-title', 'wTitle5');
+  setText('wstep-5-body', 'wBody5');
+  setText('wstep-5-feat1-name', 'wFeatCustomName');
+  setText('wstep-5-feat1-desc', 'wFeatCustomDesc');
+  setText('wstep-5-feat2-name', 'wFeatRenameName');
+  setText('wstep-5-feat2-desc', 'wFeatRenameDesc');
+  setHTML('wstep-5-support', 'wSupport5');
+  // 「已同步」狀態若已顯示，隨語言切換更新文字
+  const syncedEl = document.getElementById('welcome-canvas-synced');
+  if (syncedEl && !syncedEl.hidden) syncedEl.textContent = tr('wCanvasSynced');
   _welcomeUpdateButtons(_welcomeStep);
 }
 
@@ -482,7 +509,6 @@ function bindLanguageMenuActions() {
     _uiLanguage = lang;
     chrome.storage.local.set({ uiLanguage: lang });
     applyUILanguage();
-    updateThemeMenuLabel();
     updateClaudeUsageMenuLabel();
     loadData();
     if (settingsMenu) settingsMenu.classList.remove('open');
@@ -729,6 +755,25 @@ function isHidden(a) {
   return isHideable(a) ? !isManuallyShown(a) : isManuallyHidden(a);
 }
 
+// 是否為進度環分母的「近期作業」：7 天內到期，或在 30 天逾期窗內的逾期作業
+// （與 renderWeekSection 的 isNear 邏輯相同，抽出供週卡完成 handler 共用判斷「是否全部完成」）
+function isNearAssignment(a) {
+  const u = DueTaskRules.urgency(a.due_at);
+  return u === 'urgent' || (u === 'overdue' && DueTaskRules.isWithinOverdueWindow(a.due_at));
+}
+
+// 算出「本週概覽」進度環的分子/分母：所有課程作業中，未隱藏的近期作業，及其中已完成數
+function computeNearProgress(courses, assignments) {
+  const items = [];
+  for (const course of courses) {
+    for (const a of (assignments[course.id] || [])) items.push(a);
+  }
+  const nearItems = items.filter((a) => !isHidden(a) && isNearAssignment(a));
+  const nearTotal = nearItems.length;
+  const nearDone = nearItems.filter((a) => isDone(a)).length;
+  return { nearDone, nearTotal };
+}
+
 // 拖曳落點統一寫入：makeHidden=true 收進稽核區、false 拉回清單（依類型寫 manualShown/manualHidden）
 function setItemHiddenByDrag(id, makeHidden) {
   const a = ((_currentData.assignments || {})[currentCourseId] || []).find((x) => String(x.id) === String(id));
@@ -939,8 +984,44 @@ function fitLegendText(root) {
   });
 }
 
+// ── 同步 skeleton（首次同步的載入佔位，見 spec 2026-07-23-sync-skeleton）──
+// 只在「無資料＋點同步」時渲染；成功後 loadData 原位替換成真卡片、失敗由 loadData 還原空狀態
+function renderSyncSkeleton() {
+  document.getElementById('header-meta').textContent = tr('syncing');
+  fitMetaText();
+
+  // 側欄：4 列課名佔位（寬度略變化，避免整齊到假）
+  document.getElementById('course-nav').innerHTML = [72, 58, 80, 64]
+    .map((w) => `<div class="skel-nav-row" aria-hidden="true"><span class="skel" style="width:${w}%"></span></div>`)
+    .join('');
+
+  // 主區：6 張課程卡佔位（對齊 .course-card-grid 結構：code 短條、name 長條、2–3 列作業條）
+  const card = (nameW, rows) => `
+    <div class="course-card-grid skel-card" aria-hidden="true">
+      <div class="card-top">
+        <span class="skel skel-code"></span>
+        <span class="skel skel-name" style="width:${nameW}%"></span>
+      </div>
+      <div class="card-bottom">
+        ${Array.from({ length: rows }, (_, i) => `<span class="skel skel-row" style="width:${88 - i * 14}%"></span>`).join('')}
+      </div>
+    </div>`;
+  const main = document.getElementById('main-section');
+  main.innerHTML = `<div class="courses-grid">${[[76, 3], [58, 2], [84, 3], [66, 2], [72, 3], [60, 2]]
+    .map(([w, r]) => card(w, r)).join('')}</div>`;
+  main.dataset.skeleton = '1';   // render() 據此在真資料到位時做一次性淡入
+}
+
 // ── 主要渲染 ──
 function render(data) {
+  // skeleton → 真資料的一次性淡入（同步完成、真課程原位出現的瞬間）
+  const _mainEl = document.getElementById('main-section');
+  if (_mainEl.dataset.skeleton) {
+    delete _mainEl.dataset.skeleton;
+    _mainEl.classList.add('arrive');
+    setTimeout(() => _mainEl.classList.remove('arrive'), 400);
+  }
+
   const canvasAssignments = data.assignments || {};
   const customAssignments = data.customAssignments || {};
   const mergedAssignments = DueCustomAssignments.mergeAssignmentMaps(canvasAssignments, customAssignments);
@@ -1028,7 +1109,7 @@ function renderNav(courses, assignments) {
       </button>`;
   }).join('');
 
-  // Bind nav clicks → 單擊即時開詳情；同課 300ms 內雙擊 → 進入重命名（詳情頁 inline）
+  // Bind nav clicks → 單擊即時開詳情；同課 300ms 內雙擊 → 就地在側欄行內重命名（左側編輯）
   navEl.querySelectorAll('.nav-course-item').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.targetCourse, 10);
@@ -1037,9 +1118,9 @@ function renderNav(courses, assignments) {
       _navLastRenameId = id;
       _navLastRenameTime = now;
       if (isDouble) {
-        // 第一下已同步渲染詳情（無 cardEl → 走同步 fallback），.detail-name-text 已就緒可直接重命名；
-        // 三連點時 .detail-name-text 已被 input 取代，startCourseRename 內部 early-return，保留進行中的編輯
-        startCourseRename(id);
+        // 雙擊：就地在側欄把課名換成輸入框編輯（編輯在左側，不跑到右側詳情）；
+        // 三連點時該側欄項已被 input 取代，startSidebarRename 找不到目標而 early-return，保留進行中的編輯
+        startSidebarRename(id);
       } else {
         showCourseDetail(id);   // 單擊：維持即時開啟
       }
@@ -1159,7 +1240,59 @@ function switchPage(page) {
 }
 
 // ── 本週待辦 ──
-function renderWeekSection(courses, assignments) {
+// 進度環分子上次渲染值：分子有變才給數字 tick 動畫（首次渲染不 tick）
+let _prevRingDone = null;
+
+// 進度環 SVG 幾何：158 外徑、20 線寬 → 半徑 69，全周長 2πr
+const RING_R = 69;
+const RING_C = 2 * Math.PI * RING_R;
+
+// ── 進度環「落點迸發」慶祝（見 spec 2026-07-23 後記）──
+// 只在勾完最後一項近期作業、弧合攏落地的瞬間觸發（renderWeekSection 的 celebrateNow）；
+// 之後維持全部完成狀態的重繪只靜態顯示「全部完成」，不重播。
+// 內容：環微彈＋分子 pop、多色碎點沿圓周外迸（切線初速＝旋轉能量）、中心淡入「全部完成」
+function celebrateRingArrival(ring) {
+  if (!ring || !ring.isConnected) return;   // 等待落地期間被重繪換掉 → 略過
+  const spring = 'cubic-bezier(0.34, 1.3, 0.5, 1)';
+  ring.animate(
+    [{ transform: 'scale(1)' }, { transform: 'scale(1.04)', offset: 0.38 }, { transform: 'scale(1)' }],
+    { duration: 320, easing: spring });
+  const fracB = ring.querySelector('.wk-ring-frac b');
+  if (fracB) {
+    fracB.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.16)', offset: 0.4 }, { transform: 'scale(1)' }],
+      { duration: 320, easing: spring });
+  }
+  const cap = ring.querySelector('.wk-ring-cap');
+  if (cap) {
+    cap.textContent = tr('weekAllDoneLabel');
+    cap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350, easing: 'ease-out' });
+  }
+  // 放大多色版碎點爆：16 顆沿圓周迸開，橘/藍/綠/暖黃輪替
+  const colors = ['--orange', '--blue', '--green', '--warm'];
+  for (let i = 0; i < 16; i++) {
+    const th = (Math.PI * 2 * i) / 16 - Math.PI / 2 + ((i % 3) - 1) * 0.07;
+    const p = document.createElement('span');
+    p.className = 'wk-celebrate-dot';
+    p.style.background = `var(${colors[i % 4]})`;
+    p.style.left = `${79 + RING_R * Math.cos(th)}px`;
+    p.style.top = `${79 + RING_R * Math.sin(th)}px`;
+    ring.appendChild(p);
+    const dist = 30 + ((i * 11) % 22);                              // 30–52px
+    const dx = Math.cos(th) * dist + Math.cos(th + Math.PI / 2) * dist * 0.85;
+    const dy = Math.sin(th) * dist + Math.sin(th + Math.PI / 2) * dist * 0.85;
+    p.animate(
+      [
+        { transform: 'translate(-50%, -50%) translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(0.35)`, opacity: 0 },
+      ],
+      { duration: 650 + ((i * 13) % 140), delay: (i * 7) % 60,
+        easing: 'cubic-bezier(0.2, 0.55, 0.3, 1)', fill: 'forwards' }
+    ).onfinish = () => p.remove();
+  }
+}
+
+function renderWeekSection(courses, assignments, celebrate = false) {
   const el = document.getElementById('main-section');
   // 重繪前清掉殘留的完成計時器（切頁/重繪時避免週卡幽靈 callback）
   clearCompleteTimers();
@@ -1201,16 +1334,22 @@ function renderWeekSection(courses, assignments) {
     String(a.name).localeCompare(String(b.name)));
 
   // 「本週概覽」進度環：範圍＝逾期窗 ∪ 未來 7 天（近期可行動集），現算完成/總數（含已完成項）
-  const isNear = (a) => {
-    const u = DueTaskRules.urgency(a.due_at);
-    return u === 'urgent' || (u === 'overdue' && DueTaskRules.isWithinOverdueWindow(a.due_at));
-  };
-  const nearItems = items.filter((a) => !isHidden(a) && isNear(a));
-  const nearTotal = nearItems.length;
-  const nearDone = nearItems.filter((a) => isDone(a)).length;
+  const { nearDone, nearTotal } = computeNearProgress(courses, assignments);
   const donePct = nearTotal > 0 ? (nearDone / nearTotal) * 100 : 0;
-  const ringStyle = `background: conic-gradient(var(--green) 0% ${donePct}%, var(--border) ${donePct}% 100%);`;
+  const targetOffset = RING_C * (1 - donePct / 100);
+  // 讀取畫面上舊弧的目前 offset 當動畫起點（可正確接續被打斷的動畫）；無舊節點（首次掛載）直接用目標值不做動畫
+  const _prevBar = document.querySelector('.wk-ring-bar');
+  const _prevParsed = _prevBar ? parseFloat(getComputedStyle(_prevBar).strokeDashoffset) : NaN;
+  const prevOffset = Number.isFinite(_prevParsed) ? _prevParsed : targetOffset;
   const ringAria = `${tr('weekDoneLabel')} ${nearDone}/${nearTotal}`;
+  // 分子變動時給數字一個微上滑 tick（與弧的過渡同曲線）；首次渲染不 tick
+  const fracTick = _prevRingDone !== null && _prevRingDone !== nearDone;
+  _prevRingDone = nearDone;
+  // 全部完成狀態與慶祝旗標：celebrate 由「勾完最後一項近期作業」的鏈路傳入，render 端即時核對
+  const allNearDone = nearTotal > 0 && nearDone === nearTotal;
+  const celebrateNow = celebrate && allNearDone;
+  // 慶祝時中心先維持「本週完成」、落地瞬間才換字淡入；非慶祝的全部完成重繪直接靜態顯示「全部完成」
+  const capText = (allNearDone && !celebrateNow) ? tr('weekAllDoneLabel') : tr('weekDoneLabel');
 
   // 分級摘要列（只顯示 count>0；逾期紅色，點擊跳到右側對應區塊）
   const sumRows = [
@@ -1263,10 +1402,14 @@ function renderWeekSection(courses, assignments) {
       <div class="week-content">
         <div class="week-left">
           <div class="wk-ring-wrap">
-            <div class="wk-ring" role="img" aria-label="${esc(ringAria)}" style="${ringStyle}">
+            <div class="wk-ring" role="img" aria-label="${esc(ringAria)}">
+              <svg class="wk-ring-svg" viewBox="0 0 158 158" aria-hidden="true">
+                <circle class="wk-ring-track" cx="79" cy="79" r="${RING_R}"></circle>
+                <circle class="wk-ring-bar" cx="79" cy="79" r="${RING_R}" stroke-dasharray="${RING_C}" stroke-dashoffset="${prevOffset}"></circle>
+              </svg>
               <div class="wk-ring-center">
-                <div class="wk-ring-frac"><b>${nearDone}</b>/${nearTotal}</div>
-                <div class="wk-ring-cap">${tr('weekDoneLabel')}</div>
+                <div class="wk-ring-frac"><b${fracTick ? ' class="tick"' : ''}>${nearDone}</b>/${nearTotal}</div>
+                <div class="wk-ring-cap">${capText}</div>
               </div>
             </div>
           </div>
@@ -1277,6 +1420,28 @@ function renderWeekSection(courses, assignments) {
         </div>
       </div>
     </div>`;
+
+  // 觸發弧的過渡：強制 reflow 讓瀏覽器先提交 prevOffset 起點，再同步設目標值
+  // （不用 rAF——分頁隱藏時 rAF 被暫停，寫入永遠不會發生，弧會卡在舊值；同步寫保證最終值一定落地）
+  const _barEl = el.querySelector('.wk-ring-bar');
+  if (_barEl) {
+    _barEl.getBoundingClientRect();   // forced reflow：提交起點樣式
+    _barEl.style.strokeDashoffset = `${targetOffset}`;
+  }
+
+  // 慶祝：等弧合攏「落地」的 transitionend 才引爆；弧已在終點（無過渡可等）則直接引爆
+  if (celebrateNow && _barEl) {
+    const _ringEl = el.querySelector('.wk-ring');
+    if (Math.abs(prevOffset - targetOffset) < 0.5) {
+      celebrateRingArrival(_ringEl);
+    } else {
+      _barEl.addEventListener('transitionend', function h(e) {
+        if (e.propertyName !== 'stroke-dashoffset') return;
+        _barEl.removeEventListener('transitionend', h);
+        celebrateRingArrival(_ringEl);
+      });
+    }
+  }
 
   // 勾選圈：依 Canvas 事實翻轉，未完成→完成走 1.5 秒撤銷窗口動畫（stopPropagation 不開詳情）
   el.querySelectorAll('.week-task-check').forEach((btn) => {
@@ -1294,7 +1459,9 @@ function renderWeekSection(courses, assignments) {
       const a = ((_currentData.assignments || {})[cid] || []).find((x) => String(x.id) === id);
       const nowDone = a ? isDone(a) : false;
       if (nowDone && card) {
-        beginCompleteWeek(card, id, cid);
+        const { nearDone: _nd, nearTotal: _nt } = computeNearProgress(_currentData.courses || [], _currentData.assignments || {});
+        const celebrate = _nt > 0 && _nd === _nt;   // 這次勾選讓近期作業全部完成 → 落地時引爆慶祝
+        beginCompleteWeek(card, id, cid, celebrate);
       } else {
         rerenderWeekAndNav();
       }
@@ -1682,22 +1849,7 @@ function startCourseRename(courseId) {
     const displayName = newName || (course ? course.name : '');
     restore(displayName);
 
-    if (!_currentData.courseNames) _currentData.courseNames = {};
-    if (newName && course && newName !== course.name) {
-      _currentData.courseNames[courseId] = newName;
-    } else {
-      delete _currentData.courseNames[courseId];
-    }
-
-    chrome.storage.local.get(['courseNames'], (data) => {
-      const names = data.courseNames || {};
-      if (newName && course && newName !== course.name) {
-        names[courseId] = newName;
-      } else {
-        delete names[courseId];
-      }
-      chrome.storage.local.set({ courseNames: names });
-    });
+    persistCourseName(courseId, newName, course);
 
     const { courses = [], assignments = {} } = _currentData;
     renderNav(courses, assignments);
@@ -1707,6 +1859,71 @@ function startCourseRename(courseId) {
     if (committed) return;
     committed = true;
     restore(currentName);
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') commit();
+    if (e.key === 'Escape') cancel();
+  });
+  input.addEventListener('blur', commit);
+}
+
+// 寫入課程自訂名稱（單一真相：_currentData + chrome.storage.local.courseNames）；
+// newName 已 trim，空或等於原始課名 → 視為移除自訂（startCourseRename / startSidebarRename 共用）
+function persistCourseName(courseId, newName, course) {
+  const useCustom = !!(newName && course && newName !== course.name);
+  if (!_currentData.courseNames) _currentData.courseNames = {};
+  if (useCustom) _currentData.courseNames[courseId] = newName;
+  else delete _currentData.courseNames[courseId];
+
+  chrome.storage.local.get(['courseNames'], (data) => {
+    const names = data.courseNames || {};
+    if (useCustom) names[courseId] = newName;
+    else delete names[courseId];
+    chrome.storage.local.set({ courseNames: names });
+  });
+}
+
+// ── 側欄課程 inline 重命名（雙擊側欄課名觸發：就地在左欄編輯，不跑到右側詳情）──
+function startSidebarRename(courseId) {
+  const item = document.querySelector(`.nav-course-item[data-target-course="${courseId}"]`);
+  if (!item) return;   // 目標不在（如三連點時已被 input 取代）→ 直接略過
+
+  const course = (_currentData.courses || []).find((c) => c.id === courseId);
+  const currentName = (_currentData.courseNames || {})[courseId] || (course ? course.name : '');
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'nav-rename-input';
+  input.value = currentName;
+  item.replaceWith(input);   // 用輸入框取代整個按鈕（避免把 input 巢狀進 button 造成事件/焦點問題）
+  input.focus();
+  input.select();
+
+  const rerenderNav = () => {
+    const { courses = [], assignments = {} } = _currentData;
+    renderNav(courses, assignments);   // 重繪還原按鈕（commit 後即套用新名）
+  };
+
+  let committed = false;
+  const commit = () => {
+    if (committed) return;
+    committed = true;
+    const newName = input.value.trim();
+    const displayName = newName || (course ? course.name : '');
+    persistCourseName(courseId, newName, course);
+    rerenderNav();
+    // 若右側正顯示同一課，順手同步詳情標題（只改文字、不整段重繪，避免打斷成績計算器/捲動）
+    if (currentView === 'course' && currentCourseId === courseId) {
+      const dName = document.querySelector('#course-detail-container .detail-name-text');
+      if (dName) dName.textContent = displayName;
+    }
+  };
+
+  const cancel = () => {
+    if (committed) return;
+    committed = true;
+    rerenderNav();   // 還原原本按鈕（不寫入）
   };
 
   input.addEventListener('keydown', (e) => {
@@ -1770,14 +1987,14 @@ function cancelComplete(item, id, cid) {
 }
 
 // ── 週卡片完成過渡（平行於 assignment-item 版；共用 COMPLETE_* 常數與 spawnBurstDots）──
-function rerenderWeekAndNav() {
+function rerenderWeekAndNav(celebrate = false) {
   const { courses = [], assignments = {} } = _currentData;
-  renderWeekSection(courses, assignments);
+  renderWeekSection(courses, assignments, celebrate);
   updateSideNav();
   renderNav(courses, assignments);
 }
 
-function beginCompleteWeek(card, id, cid) {
+function beginCompleteWeek(card, id, cid, celebrate = false) {
   const chk = card.querySelector('.assignment-check');
   if (chk) { chk.dataset.done = 'true'; chk.setAttribute('aria-label', tr('markUndone')); }
   card.classList.add('completing');
@@ -1798,15 +2015,15 @@ function beginCompleteWeek(card, id, cid) {
   }
   _completeTimers[id] = setTimeout(() => {
     delete _completeTimers[id];
-    finishCompleteWeek(card, id, cid);
+    finishCompleteWeek(card, id, cid, celebrate);
   }, COMPLETE_DELAY_MS);
 }
 
-function finishCompleteWeek(card /* id, cid */) {
+function finishCompleteWeek(card, id, cid, celebrate = false) {
   spawnBurstDots(card);
   card.classList.add('bursting');
   // 已完成者會被 applyFilters 濾掉；重繪週 section＋側欄＋左欄（用 _currentData，避免閃白）
-  setTimeout(rerenderWeekAndNav, COMPLETE_BURST_MS);
+  setTimeout(() => rerenderWeekAndNav(celebrate), COMPLETE_BURST_MS);
 }
 
 function cancelCompleteWeek(card, id) {
@@ -2650,9 +2867,13 @@ document.getElementById('sync-btn').addEventListener('click', () => {
   const btn = document.getElementById('sync-btn');
   btn.innerHTML = '<span class="sync-dots"><span></span><span></span><span></span></span>';
   btn.disabled = true;
+  // 首次同步（無資料）→ 渲染 skeleton 佔位；已有資料則維持靜默背景刷新（不用佔位蓋真資料）
+  const firstSync = !(_currentData.courses || []).length;
+  if (firstSync) renderSyncSkeleton();
   chrome.runtime.sendMessage({ type: 'SYNC' }, (resp) => {
     if (chrome.runtime.lastError || !resp || !resp.success) {
-      // 同步失敗：顯示錯誤態，2.5 秒後恢復可點狀態
+      // 同步失敗：先還原畫面（清掉 skeleton、回空狀態），再顯示錯誤態 2.5 秒
+      if (firstSync) loadData();
       btn.textContent = tr('syncFailed');
       btn.classList.add('sync-error');
       setTimeout(() => {
@@ -2683,6 +2904,7 @@ function loadData() {
         document.getElementById('page-tabs').style.display = '';
         document.getElementById('main-section').style.display = '';
         document.getElementById('course-detail-container').style.display = 'none';
+        delete document.getElementById('main-section').dataset.skeleton;   // 失敗還原：清掉 skeleton 標記
         document.getElementById('main-section').innerHTML = `
           <div class="state-msg">
             <div class="big">${tr('noData')}</div>
@@ -2704,36 +2926,21 @@ function loadData() {
   );
 }
 
-// ── 深色模式 ──
-function applyTheme(dark) {
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-}
-
-function updateThemeMenuLabel() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const btn = document.getElementById('menu-theme-toggle');
-  if (!btn) return;
-  btn.textContent = isDark ? tr('themeLight') : tr('themeDark');
-}
-
 function updateClaudeUsageMenuLabel() {
   const btn = document.getElementById('menu-claude-usage-toggle');
   if (!btn) return;
   btn.textContent = _showClaudeUsage ? tr('menuUsageHide') : tr('menuUsageShow');
 }
 
-chrome.storage.local.get(['darkMode', 'uiLanguage', 'showClaudeUsageInPopup'], (data) => {
+chrome.storage.local.get(['uiLanguage', 'showClaudeUsageInPopup'], (data) => {
   _uiLanguage = data.uiLanguage || 'zh-TW';
   _showClaudeUsage = data.showClaudeUsageInPopup !== false;
-  applyTheme(!!data.darkMode);
   applyUILanguage();
-  updateThemeMenuLabel();
   updateClaudeUsageMenuLabel();
 });
 
 const settingsMenuBtn = document.getElementById('settings-menu-btn');
 const settingsMenu = document.getElementById('settings-menu');
-const menuThemeToggle = document.getElementById('menu-theme-toggle');
 const menuClaudeUsageToggle = document.getElementById('menu-claude-usage-toggle');
 const menuOpenTutorial = document.getElementById('menu-open-tutorial');
 
@@ -2755,19 +2962,6 @@ if (settingsMenuBtn && settingsMenu) {
       const menuLanguageLabel = document.getElementById('menu-language-label');
       if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
     }
-  });
-}
-
-if (menuThemeToggle) {
-  menuThemeToggle.addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    applyTheme(!isDark);
-    chrome.storage.local.set({ darkMode: !isDark });
-    updateThemeMenuLabel();
-    if (settingsMenu) settingsMenu.classList.remove('open');
-    if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
-    const menuLanguageLabel = document.getElementById('menu-language-label');
-    if (menuLanguageLabel) menuLanguageLabel.classList.remove('submenu-open');
   });
 }
 
@@ -2809,9 +3003,9 @@ function _welcomeUpdateButtons(n) {
   let html = '';
   if (n === 1) {
     html = `<button class="welcome-btn" data-wgo="2">${tr('wBtnStart')}</button>`;
-  } else if (n === 4) {
+  } else if (n === 5) {
     html = `
-      <button class="welcome-btn sec" data-wgo="3">${tr('wBtnPrev')}</button>
+      <button class="welcome-btn sec" data-wgo="4">${tr('wBtnPrev')}</button>
       <button class="welcome-btn ora" id="welcome-done-btn">${tr('wBtnDone')}</button>
     `;
   } else {
@@ -2850,22 +3044,95 @@ function welcomeGoStep(n) {
   if (n === _welcomeStep) return;
   _welcomeStep = n;
   const track = document.getElementById('welcome-track');
-  if (track) track.style.transform = `translateX(-${(n - 1) * 25}%)`;
+  if (track) track.style.transform = `translateX(-${(n - 1) * 20}%)`;
   _welcomeUpdateDots(n);
   _welcomeUpdateButtons(n);
 }
 
 document.getElementById('welcome-close')?.addEventListener('click', closeWelcomeModal);
 document.getElementById('welcome-done-btn')?.addEventListener('click', closeWelcomeModal);
-document.getElementById('welcome-canvas-link')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  const base = _currentData.canvasBaseUrl || '';
-  if (base) chrome.tabs.create({ url: base });
-});
 
-// Delegate: overlay background click to close, data-wgo step nav, dot clicks
+// ── 登入 Canvas 自動跳回 ──
+// 點連結開 Canvas 分頁後「武裝」監聽：同步成功（lastSync 落地）→ 關閉開出的分頁、聚焦回 dashboard。
+// 未登入時 Canvas API 401、lastSync 不會動，所以不會過早跳回；登入完成後 auto-sync 成功才觸發。
+// 所有 chrome.* 呼叫皆守衛（dev harness 只 stub 部分 API）。
+const CANVAS_RETURN_TIMEOUT_MS = 10 * 60 * 1000; // 超時自動解除，避免使用者早已離開流程還被突然拉回
+let _canvasReturn = null; // { canvasTabId, dashboardTabId, timeoutId, onUpdated }
+
+function _disarmCanvasReturn() {
+  if (!_canvasReturn) return;
+  clearTimeout(_canvasReturn.timeoutId);
+  if (_canvasReturn.onUpdated && chrome.tabs?.onUpdated?.removeListener) {
+    chrome.tabs.onUpdated.removeListener(_canvasReturn.onUpdated);
+  }
+  _canvasReturn = null;
+}
+
+function _returnToDashboard() {
+  const armed = _canvasReturn;
+  if (!armed) return;
+  _disarmCanvasReturn();
+  loadData(); // 剛同步完的資料上畫面
+  const syncedEl = document.getElementById('welcome-canvas-synced');
+  if (syncedEl) { syncedEl.hidden = false; syncedEl.textContent = tr('wCanvasSynced'); }
+  // 只關我們自己開的那個 Canvas 分頁（可能已被使用者關掉，lastError 靜默）
+  if (chrome.tabs?.remove && armed.canvasTabId != null) {
+    chrome.tabs.remove(armed.canvasTabId, () => void chrome.runtime.lastError);
+  }
+  if (chrome.tabs?.update && armed.dashboardTabId != null) {
+    chrome.tabs.update(armed.dashboardTabId, { active: true }, (tab) => {
+      if (chrome.runtime.lastError) return;
+      if (tab && chrome.windows?.update) chrome.windows.update(tab.windowId, { focused: true });
+    });
+  }
+}
+
+function _armCanvasReturn(canvasTabId) {
+  _disarmCanvasReturn();
+  _canvasReturn = {
+    canvasTabId,
+    dashboardTabId: null,
+    timeoutId: setTimeout(_disarmCanvasReturn, CANVAS_RETURN_TIMEOUT_MS),
+    onUpdated: null,
+  };
+  if (chrome.tabs?.getCurrent) {
+    chrome.tabs.getCurrent((tab) => { if (_canvasReturn && tab) _canvasReturn.dashboardTabId = tab.id; });
+  }
+  // 輔助訊號：Canvas 分頁每次載入完成就補發手動 SYNC（不受 5 分鐘節流限制），
+  // 涵蓋「近期已同步過、auto-sync 被節流 → lastSync 不會變」的情況；跳回仍統一由 lastSync 變化觸發
+  if (chrome.tabs?.onUpdated?.addListener) {
+    const onUpdated = (tabId, info) => {
+      if (!_canvasReturn || tabId !== _canvasReturn.canvasTabId || info.status !== 'complete') return;
+      chrome.runtime.sendMessage({ type: 'SYNC' }, () => void chrome.runtime.lastError);
+    };
+    _canvasReturn.onUpdated = onUpdated;
+    chrome.tabs.onUpdated.addListener(onUpdated);
+  }
+}
+
+// 唯一的 storage 監聽：只在武裝期間反應 lastSync（不碰 manualDone 等 key，不影響完成動畫，見 CLAUDE.md）
+if (chrome.storage?.onChanged?.addListener) {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local' || !_canvasReturn || !changes.lastSync) return;
+    if (changes.lastSync.newValue && changes.lastSync.newValue !== changes.lastSync.oldValue) {
+      _returnToDashboard();
+    }
+  });
+}
+
+// Delegate: overlay background click to close, canvas link, data-wgo step nav, dot clicks
+// （canvas link 用委派：applyWelcomeTranslations 會以 innerHTML 重建該連結，直接綁定會失效）
 document.getElementById('welcome-overlay')?.addEventListener('click', (e) => {
   if (e.target === document.getElementById('welcome-overlay')) { closeWelcomeModal(); return; }
+  const link = e.target.closest('#welcome-canvas-link');
+  if (link) {
+    e.preventDefault();
+    const url = _currentData.canvasBaseUrl || 'https://hkust-gz.instructure.com';
+    if (chrome.tabs?.create) {
+      chrome.tabs.create({ url, active: true }, (tab) => { if (tab) _armCanvasReturn(tab.id); });
+    }
+    return;
+  }
   const btn = e.target.closest('[data-wgo]');
   if (btn) { welcomeGoStep(+btn.dataset.wgo); return; }
   const dot = e.target.closest('.welcome-dot[data-wstep]');

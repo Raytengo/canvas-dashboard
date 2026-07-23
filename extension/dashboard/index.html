@@ -67,26 +67,6 @@
       --overdue: #b3452c;
     }
 
-    html[data-theme="dark"] {
-      --bg: #121316;
-      --surface: #1b1d22;
-      --dark: #eceff4;
-      /* 對 bg(#121316) 與 surface(#1b1d22) 皆 ≥4.5:1（WCAG AA）
-         --mid #9aa3b2：bg 7.30 / surface 6.63；--muted #8b93a1：bg 6.00 / surface 5.45（原 #7f8897 在 surface 偏低故提亮） */
-      --mid: #9aa3b2;
-      --muted: #8b93a1;
-      --border: #343843;
-      --overdue: #e07a5f;
-    }
-
-    html[data-theme="dark"] .nav-course-item:hover {
-      background: #23262d;
-    }
-
-    html[data-theme="dark"] .side-nav-item:hover {
-      background: #23262d;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -665,24 +645,34 @@
       justify-content: center;
     }
 
-    /* 進度環：綠色弧＝完成比例（conic 由 JS 內聯），中央挖空成甜甜圈 */
+    /* 進度環：SVG stroke 畫弧（抗鋸齒、圓帽端點），stroke-dashoffset 過渡，終點明顯減速無回彈 */
     .wk-ring {
       width: 158px;
       height: 158px;
-      border-radius: 50%;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .wk-ring::before {
-      content: '';
+    .wk-ring-svg {
       position: absolute;
-      width: 118px;
-      height: 118px;
-      border-radius: 50%;
-      background: var(--surface);
+      inset: 0;
+      transform: rotate(-90deg);   /* 弧從 12 點鐘方向開始順時針生長 */
+    }
+
+    .wk-ring-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 20;
+    }
+
+    .wk-ring-bar {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 20;
+      stroke-linecap: round;
+      transition: stroke-dashoffset .8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .wk-ring-center {
@@ -700,6 +690,27 @@
     .wk-ring-frac b {
       color: var(--green);
       font-weight: 400;
+    }
+
+    /* 慶祝碎點（全部完成「落點迸發」；飛行參數由 WAAPI 逐顆內聯，見 celebrateRingArrival） */
+    .wk-celebrate-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+
+    /* 分子變動時的微上滑 tick（與弧的過渡同曲線，首次渲染不觸發） */
+    @keyframes wk-frac-tick {
+      from { opacity: 0; transform: translateY(7px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .wk-ring-frac b.tick {
+      display: inline-block;
+      animation: wk-frac-tick .4s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     .wk-ring-cap {
@@ -970,7 +981,7 @@
       flex-shrink: 0;
       width: 18px;
       height: 18px;
-      margin-top: 4px;
+      margin-top: 5px;
       margin-right: 12px;
       padding: 0;
       border: 1px solid var(--border);
@@ -978,11 +989,22 @@
       background: transparent;
       cursor: pointer;
       position: relative;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
 
+    /* 擴大點擊/hover 範圍：圓圈外約 7px（仍小於與文字的 12px 間距，不壓到字） */
+    .assignment-check::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+    }
+
+    /* 進入範圍即「亮起」：綠框 + 微綠填充 + 柔光暈（暗示可點範圍比圓圈大一圈） */
     .assignment-check:hover {
       border-color: var(--green);
+      background: color-mix(in srgb, var(--green) 12%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 10%, transparent);
     }
 
     .assignment-check[data-done="true"] {
@@ -1061,7 +1083,7 @@
       align-items: center;
       gap: 7px;
       min-width: 0;
-      font-size: 15px;
+      font-size: 16px;
       color: var(--dark);
     }
 
@@ -1103,13 +1125,13 @@
 
     .due-label {
       font-family: 'DM Mono', monospace;
-      font-size: 13px;
+      font-size: 14px;
       white-space: nowrap;
     }
 
     .submitted-badge {
       font-family: 'DM Mono', monospace;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--green);
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -1413,7 +1435,7 @@
       border-radius: 20px;
       width: 100%;
       max-width: 680px;
-      height: 480px;
+      height: 448px;
       max-height: calc(100vh - 64px);
       position: relative;
       box-shadow: 0 24px 64px rgba(20, 20, 19, 0.18);
@@ -1469,18 +1491,26 @@
 
     .welcome-track {
       display: flex;
-      width: 400%;
+      width: 500%;
       height: 100%;
       transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .welcome-step {
-      width: 25%;
+      width: 20%;
       display: flex;
       flex-direction: column;
       padding: 32px 40px 0;
       min-height: 0;
       overflow-y: auto;
+    }
+
+    /* 頂部一列：圖標 ＋ 頁碼（N / 5） */
+    .welcome-step-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
     }
 
     .welcome-icon {
@@ -1492,8 +1522,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
       color: var(--orange);
+      flex-shrink: 0;
     }
 
     .welcome-icon svg {
@@ -1512,11 +1542,10 @@
 
     .welcome-eyebrow {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--mid);
-      margin-bottom: 6px;
     }
 
     .welcome-title {
@@ -1647,10 +1676,15 @@
     }
 
     .welcome-preview.square {
-      flex: 0 0 220px;
-      width: 220px;
-      height: 220px;
+      flex: 0 0 auto;
+      width: 238px;
+      height: auto;
       margin-top: 0;
+    }
+
+    .welcome-preview.square img {
+      width: 100%;
+      height: auto;
     }
 
     .welcome-preview img {
@@ -1774,16 +1808,27 @@
       border-bottom-color: var(--orange);
     }
 
-    /* ── Welcome mock badge ── */
-    .welcome-mock-badge {
+    /* ── Welcome step 4：拖曳示意圖 ── */
+    .welcome-drag-illus {
+      flex: 0 0 280px;
+      align-self: flex-start;
+      position: relative;
+      top: -43px;
+    }
+
+    .welcome-drag-illus svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Welcome step 2：同步完成狀態（自動跳回後顯示） ── */
+    .welcome-canvas-synced {
+      display: inline-block;
+      margin-left: 8px;
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 2px 7px;
-      border-radius: 3px;
-      background: var(--orange);
-      color: #fff;
+      font-size: 12px;
+      color: var(--green);
     }
 
     /* ── Welcome Dash Mock ── */
@@ -1823,41 +1868,102 @@
     }
 
     .welcome-dash-mock-chart {
-      flex: 0 0 60px;
+      flex: 0 0 72px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .welcome-dash-mock-pie {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: conic-gradient(var(--orange) 0% 35%, var(--warm) 35% 60%, var(--blue) 60% 100%);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    }
-
-    .welcome-dash-mock-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      font-size: 10px;
-      color: var(--muted);
-      width: 100%;
-    }
-
-    .welcome-dash-mock-legend-item {
-      display: flex;
       align-items: center;
       gap: 4px;
+    }
+
+    /* 迷你進度環：鏡射學期待辦 .wk-ring（SVG stroke 綠弧） */
+    .welcome-dash-mock-ring {
+      width: 48px;
+      height: 48px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .welcome-dash-mock-ring svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+
+    .welcome-dash-mock-ring-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 6;
+    }
+
+    .welcome-dash-mock-ring-bar {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 6;
+      stroke-linecap: round;
+    }
+
+    .welcome-dash-mock-ring-frac {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      line-height: 1;
+      color: var(--dark);
+    }
+
+    .welcome-dash-mock-ring-frac b {
+      color: var(--green);
+      font-weight: 400;
+    }
+
+    .welcome-dash-mock-ring-cap {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .welcome-dash-mock-sum {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+      margin-top: 3px;
+    }
+
+    .welcome-dash-mock-sum-row {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--muted);
+      padding: 1px 4px;
+      border-radius: 3px;
       white-space: nowrap;
     }
 
-    .welcome-dash-mock-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
+    .welcome-dash-mock-sum-row.is-overdue {
+      background: color-mix(in srgb, var(--overdue) 8%, transparent);
+      color: var(--overdue);
+    }
+
+    .welcome-dash-mock-sum-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .welcome-dash-mock-sum-row.is-overdue .welcome-dash-mock-sum-num {
+      color: var(--overdue);
+    }
+
+    .welcome-dash-mock-sum-row.is-urgent .welcome-dash-mock-sum-num {
+      color: var(--orange);
+    }
+
+    .welcome-dash-mock-sum-row.is-soon .welcome-dash-mock-sum-num {
+      color: var(--warm);
     }
 
     .welcome-dash-mock-cards {
@@ -1934,6 +2040,90 @@
       stroke-width: 2.5;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    /* ── Welcome step 5：功能卡 ── */
+    .welcome-feat-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .welcome-feat-card {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .welcome-feat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+
+    .welcome-feat-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .welcome-feat-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .welcome-feat-name {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 16px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+
+    .welcome-feat-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* ── Welcome step 5：聯絡管道 ── */
+    .welcome-support {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .welcome-support svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--mid);
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .custom-assignment-overlay {
@@ -2086,10 +2276,6 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
 
-    html[data-theme="dark"] .course-card-grid {
-      background: #23262d;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
-    }
 
     .course-card-grid:hover {
       border-color: var(--orange);
@@ -2097,10 +2283,6 @@
       transform: translateY(-2px);
     }
 
-    html[data-theme="dark"] .course-card-grid:hover {
-      background: #2a2e37;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.34);
-    }
 
     .card-top {
       padding: 14px 20px 12px;
@@ -2170,6 +2352,47 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+    }
+
+    /* ── 同步 skeleton（首次同步的載入佔位，見 spec 2026-07-23-sync-skeleton）── */
+    @keyframes skel-shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
+    }
+
+    .skel {
+      --skel-glint: rgba(255, 255, 255, 0.5);   /* dark mode 降為微白光（見下方覆蓋） */
+      display: block;
+      height: 12px;
+      border-radius: 4px;
+      background-color: var(--border);
+      background-image: linear-gradient(90deg,
+        transparent 20%,
+        var(--skel-glint) 50%,
+        transparent 80%);
+      background-size: 200% 100%;
+      background-repeat: no-repeat;
+      animation: skel-shimmer 1.4s ease-in-out infinite;
+    }
+
+
+    .skel-card { pointer-events: none; cursor: default; }
+    .skel-card .skel-code { width: 34%; height: 11px; margin-bottom: 12px; }
+    .skel-card .skel-name { height: 16px; }
+    .skel-card .card-bottom { gap: 10px; padding-top: 14px; }
+    .skel-card .skel-row { height: 11px; }
+
+    .skel-nav-row { padding: 9px 14px; }
+    .skel-nav-row .skel { height: 12px; }
+
+    /* skeleton → 真資料到位的一次性淡入上浮 */
+    @keyframes content-arrive {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #main-section.arrive > * {
+      animation: content-arrive .3s ease-out both;
     }
 
     .card-rows-container {
@@ -2283,10 +2506,6 @@
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     }
 
-    html[data-theme="dark"] .course-detail-view {
-      background: #23262d;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.34);
-    }
 
     .detail-back {
       font-family: 'DM Mono', monospace;
@@ -2378,6 +2597,21 @@
       field-sizing: content;
       min-width: 4ch;
       padding: 0;
+    }
+
+    /* 側欄行內重命名輸入框：取代整個 .nav-course-item 按鈕，尺寸與其對齊 */
+    .nav-rename-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 9px;
+      border: 1px solid var(--orange);
+      border-radius: 5px;
+      background: var(--bg);
+      color: var(--dark);
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 15px;
+      font-weight: 400;
+      outline: none;
     }
 
     .detail-meta {
@@ -2639,10 +2873,6 @@
       will-change: transform;
     }
 
-    html[data-theme="dark"] .drag-clone.drag-clone {
-      background: var(--surface);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35), 0 14px 32px rgba(0, 0, 0, 0.5);
-    }
 
     /* 被拿起那列留在原位的殘影 */
     .drag-source {
@@ -3011,14 +3241,7 @@
 
     .weight-edit-save:hover { opacity: 0.8; }
 
-    html[data-theme="dark"] .weight-edit-modal {
-      background: #1b1d22;
-    }
 
-    html[data-theme="dark"] .weight-edit-name,
-    html[data-theme="dark"] .weight-edit-pct {
-      background: #121316;
-    }
 
     /* ── 無障礙：鍵盤 focus 一致外框（只在鍵盤導航時顯示，不干擾滑鼠點擊）──
        全域 :focus-visible 統一套用；卡片、側欄項、勾選圈、連結、modal 按鈕/輸入皆適用 */
@@ -3085,9 +3308,6 @@
       padding: 22px;
     }
 
-    html[data-theme="dark"] .confirm-modal {
-      background: #1b1d22;
-    }
 
     .confirm-title {
       font-family: 'Source Serif 4', Georgia, serif;
@@ -3218,7 +3438,6 @@
               <div class="settings-menu" id="settings-menu">
                 <div class="settings-menu-title">Quick Actions</div>
                 <div class="settings-menu-divider"></div>
-                <button class="settings-menu-item" id="menu-theme-toggle">切換深色模式</button>
                 <button class="settings-menu-item" id="menu-claude-usage-toggle">Claude 用量</button>
                 <div class="settings-menu-item has-submenu" id="menu-language-label">語言
                   <div class="settings-submenu">
@@ -3259,50 +3478,53 @@
 
           <!-- Step 1: Welcome -->
           <div class="welcome-step" id="wstep-1">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="3" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="3" />
+                  <line x1="8" y1="12" x2="16" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="16" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">1 / 5</div>
             </div>
-            <div class="welcome-eyebrow">1 / 4</div>
             <div class="welcome-title" id="wstep-1-title">歡迎使用 Due</div>
             <div class="welcome-body split" style="flex:1; padding-top: 8px;">
               <div class="welcome-body-text">
                 <span id="wstep-1-intro">Due，提醒你該做的事 ⚡️</span>
                 <div
                   style="margin-top: 40px; font-style: italic; color: var(--muted); line-height: 1.7; font-size: 14px;">
-                  <span id="wstep-1-q1">「Canvas 很靠北，找個作業要翻半天」- 有人</span>
+                  <span id="wstep-1-q1">「Canvas找個作業要翻半天」- 有人</span>
                   <div style="margin-top: 15px;">
-                    <span id="wstep-1-q2">「蛤?明天要交Lab喔」- 另外一個人</span>
+                    <span id="wstep-1-q2">「明天要交Lab喔...」- 另一個人</span>
                   </div>
                 </div>
               </div>
 
-              <div class="welcome-dash-mock" style="flex:0 0 280px; margin-top:0; align-self: center; position: relative; top: -30px;">
+              <div class="welcome-dash-mock" style="flex:0 0 280px; margin-top:0; align-self: flex-start; position: relative; top: -51px;">
                 <div class="welcome-dash-mock-header">
                   <span class="welcome-dash-mock-title">Dashboard 概覽</span>
-                  <span class="welcome-mock-badge" style="font-size: 10px;">示例</span>
                 </div>
                 <div class="welcome-dash-mock-body">
                   <div class="welcome-dash-mock-chart">
-                    <div class="welcome-dash-mock-pie"></div>
-                    <div class="welcome-dash-mock-legend">
-                      <div class="welcome-dash-mock-legend-item">
-                        <div class="welcome-dash-mock-dot" style="background: var(--orange)"></div> 7天內 (3)
+                    <div class="welcome-dash-mock-ring" role="img" aria-label="本週完成 3/5">
+                      <svg viewBox="0 0 48 48" aria-hidden="true">
+                        <circle class="welcome-dash-mock-ring-track" cx="24" cy="24" r="20"></circle>
+                        <circle class="welcome-dash-mock-ring-bar" cx="24" cy="24" r="20"
+                          stroke-dasharray="125.66" stroke-dashoffset="50.27"></circle>
+                      </svg>
+                      <div class="welcome-dash-mock-ring-center">
+                        <div class="welcome-dash-mock-ring-frac"><b>3</b>/5</div>
                       </div>
-                      <div class="welcome-dash-mock-legend-item">
-                        <div class="welcome-dash-mock-dot" style="background: var(--warm)"></div> 8-30天 (2)
-                      </div>
-                      <div class="welcome-dash-mock-legend-item">
-                        <div class="welcome-dash-mock-dot" style="background: var(--blue)"></div> 30天+ (4)
-                      </div>
+                    </div>
+                    <div class="welcome-dash-mock-ring-cap">本週完成</div>
+                    <div class="welcome-dash-mock-sum">
+                      <div class="welcome-dash-mock-sum-row is-overdue"><span class="welcome-dash-mock-sum-num">1</span>已逾期</div>
+                      <div class="welcome-dash-mock-sum-row is-urgent"><span class="welcome-dash-mock-sum-num">3</span>7天內</div>
+                      <div class="welcome-dash-mock-sum-row is-soon"><span class="welcome-dash-mock-sum-num">2</span>8-30天</div>
                     </div>
                   </div>
                   <div class="welcome-dash-mock-cards">
-                    <div style="color: var(--orange); font-size: 10px; font-weight: bold; margin-bottom: 2px;">7天內 (3)
-                    </div>
                     <div class="welcome-dash-mock-card">
                       <div class="welcome-dash-mock-card-tag">CHINESE</div>
                       <div class="welcome-dash-mock-card-title">期中小組報告大綱</div>
@@ -3321,19 +3543,21 @@
 
           <!-- Step 2: Canvas Login -->
           <div class="welcome-step" id="wstep-2">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">2 / 5</div>
             </div>
-            <div class="welcome-eyebrow">2 / 4</div>
             <div class="welcome-title" id="wstep-2-title">登入 Canvas（必須）</div>
             <div class="welcome-body" style="flex:1">
               <span id="wstep-2-body">Due 透過你的 Canvas 登入狀態同步資料，不需要額外設定或 Token。</span>
               <ul class="welcome-inst-list">
                 <div style="margin-bottom: 10px;"></div>
-                <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-2-li1">登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下這個連結用於第一次同步😭）</span></li>
+                <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-2-li1">登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下，同步完成會自動帶你回來）</span><span class="welcome-canvas-synced" id="welcome-canvas-synced" hidden></span></li>
                 <li><span class="welcome-inst-num">2</span><span class="welcome-inst-text" id="wstep-2-li2">Due 會<strong>在你每次打開Canvas時自動更新</strong>你的所有課程與作業</span></li>
                 <li><span class="welcome-inst-num">3</span><span class="welcome-inst-text" id="wstep-2-li3">點擊工具列或進入 Dashboard 都可以看到相關資訊</span></li>
               </ul>
@@ -3342,18 +3566,21 @@
 
           <!-- Step 3:釘選 Due 到工具列 -->
           <div class="welcome-step" id="wstep-3">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M12 2C9.2 2 7 4.2 7 7c0 1.9 1 3.5 2.5 4.3V13l-1.3 1.3c-.3.3-.3.7 0 1L9.5 16.5c.3.3.7.3 1 0L12 15l1.5 1.5c.3.3.7.3 1 0l1.3-1.3c.3-.3.3-.7 0-1L14.5 13v-1.7C16 10.5 17 8.9 17 7c0-2.8-2.2-5-5-5z" />
-                <line x1="12" y1="16" x2="12" y2="22" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 2C9.2 2 7 4.2 7 7c0 1.9 1 3.5 2.5 4.3V13l-1.3 1.3c-.3.3-.3.7 0 1L9.5 16.5c.3.3.7.3 1 0L12 15l1.5 1.5c.3.3.7.3 1 0l1.3-1.3c.3-.3.3-.7 0-1L14.5 13v-1.7C16 10.5 17 8.9 17 7c0-2.8-2.2-5-5-5z" />
+                  <line x1="12" y1="16" x2="12" y2="22" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">3 / 5</div>
             </div>
-            <div class="welcome-eyebrow">3 / 4</div>
             <div class="welcome-title" id="wstep-3-title">釘選 Due 到工具列</div>
             <div class="welcome-body split" style="flex:1">
               <div class="welcome-body-text">
-                <span id="wstep-3-body">釘選後點一下圖示就能查看 7 天待辦（煮菠愛用😋）</span>
+                <span id="wstep-3-body">釘選後點一下圖示就能查看 7 天待辦</span>
+                <span id="wstep-3-joke">（是為了這碟醋包的餃子btw）</span>
                 <ul class="welcome-inst-list">
                   <div style="margin-bottom: 15px;"></div>
                   <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-3-li1">點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）</span></li>
@@ -3361,43 +3588,123 @@
                   <li><span class="welcome-inst-num">3</span><span class="welcome-inst-text" id="wstep-3-li3">工具列出現 Due 圖示後即完成</span></li>
                 </ul>
               </div>
-              <div class="welcome-preview square" style="align-self: center; background: var(--bg); position: relative; top: -15px;">
+              <div class="welcome-preview square" style="align-self: flex-start; background: var(--bg); position: relative; top: -43px;">
                 <img src="../icons/pin_guide.png" alt="釘選 Due 示意圖"
                   onerror="this.closest('.welcome-preview').style.display='none'" />
               </div>
             </div>
           </div>
 
-          <!-- Step 4: Done -->
+          <!-- Step 4: 拖曳整理作業清單（隱藏／還原） -->
           <div class="welcome-step" id="wstep-4">
-            <div class="welcome-icon green">
-              <svg viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">4 / 5</div>
             </div>
-            <div class="welcome-eyebrow">4 / 4</div>
-            <div class="welcome-title" id="wstep-4-title">一切就緒</div>
+            <div class="welcome-title" id="wstep-4-title">拖曳整理作業清單</div>
+            <div class="welcome-body split" style="flex:1">
+              <div class="welcome-body-text">
+                <span id="wstep-4-body">Due 會自動隱藏考試、簽到<br>你也可以自己決定要藏誰、留誰</span>
+                <p class="welcome-inst-text" id="wstep-4-li1" style="margin-top: 42px;">按住作業的 <strong>⠿</strong> 拖到底部「<strong>已隱藏</strong>」區即可隱藏；反之亦然</p>
+              </div>
+              <div class="welcome-drag-illus" aria-hidden="true">
+                <svg viewBox="0 0 280 232" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <filter id="wds-shadow" x="-20%" y="-20%" width="140%" height="160%">
+                      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#141413" flood-opacity="0.18" />
+                    </filter>
+                    <marker id="wds-arrow-o" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M0,0 L8,4 L0,8 z" style="fill:var(--orange)" />
+                    </marker>
+                    <marker id="wds-arrow-g" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M0,0 L8,4 L0,8 z" style="fill:var(--green)" />
+                    </marker>
+                  </defs>
+
+                  <!-- 課程大卡片：整個拖曳場景都發生在這張卡裡 -->
+                  <rect x="8" y="6" width="264" height="218" rx="8" style="fill:var(--bg); stroke:var(--border)" />
+                  <!-- 課程 header 帶（代碼＋Serif 課名，課程詳情的識別元素） -->
+                  <path d="M16 6 h248 a8 8 0 0 1 8 8 v30 h-264 v-30 a8 8 0 0 1 8 -8 z" style="fill:var(--surface)" />
+                  <text x="20" y="21" style="font-family:'DM Mono',monospace; font-size:7px; fill:var(--mid); letter-spacing:.08em">DSAA 5002</text>
+                  <text x="20" y="38" style="font-family:'Source Serif 4',Georgia,serif; font-size:14px; fill:var(--dark)">Data Mining</text>
+
+                  <!-- 作業清單：兩列極簡列（無 due 色條，焦點留給拖曳列） -->
+                  <circle cx="32" cy="66" r="5.5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
+                  <rect x="44" y="63" width="110" height="6" rx="3" style="fill:var(--mid); opacity:.4" />
+                  <circle cx="32" cy="90" r="5.5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
+                  <rect x="44" y="87" width="88" height="6" rx="3" style="fill:var(--mid); opacity:.4" />
+
+                  <!-- 拖曳中的浮起列（陰影＋微傾，仿 .drag-clone）——畫面主角 -->
+                  <g transform="translate(52 112) rotate(2)">
+                    <rect width="170" height="26" rx="6" style="fill:var(--bg); stroke:var(--orange); stroke-width:1" filter="url(#wds-shadow)" />
+                    <circle cx="15" cy="13" r="5" style="fill:none; stroke:var(--border); stroke-width:1.5" />
+                    <rect x="27" y="10" width="78" height="6" rx="3" style="fill:var(--mid); opacity:.55" />
+                    <g style="fill:var(--orange)">
+                      <circle cx="146" cy="8" r="1.3" /><circle cx="151" cy="8" r="1.3" />
+                      <circle cx="146" cy="13" r="1.3" /><circle cx="151" cy="13" r="1.3" />
+                      <circle cx="146" cy="18" r="1.3" /><circle cx="151" cy="18" r="1.3" />
+                    </g>
+                  </g>
+
+                  <!-- 清單底部的已隱藏區（放置目標） -->
+                  <rect x="22" y="156" width="230" height="52" rx="6" style="fill:var(--surface); stroke:var(--border); stroke-dasharray:4 3" />
+                  <path d="M32 167 l4 4 -4 4" style="fill:none; stroke:var(--mid); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round" />
+                  <text x="44" y="175" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--mid); letter-spacing:.05em">已隱藏 2 項</text>
+                  <rect x="44" y="190" width="74" height="6" rx="3" style="fill:var(--purple); opacity:.8" />
+                  <rect x="126" y="186" width="26" height="13" rx="3" style="fill:none; stroke:var(--purple); opacity:.8" />
+                  <text x="130" y="196" style="font-family:'DM Mono',monospace; font-size:8px; fill:var(--purple)">考試</text>
+
+                  <!-- 右側：拖下隱藏（橘）；左側：拖回還原（綠） -->
+                  <path d="M 246 90 C 262 112, 262 130, 248 152" marker-end="url(#wds-arrow-o)" style="fill:none; stroke:var(--orange); stroke-width:1.5" />
+                  <text x="247" y="115" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--orange)">隱</text>
+                  <text x="247" y="127" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--orange)">藏</text>
+                  <path d="M 34 184 C 18 158, 18 122, 30 96" marker-end="url(#wds-arrow-g)" style="fill:none; stroke:var(--green); stroke-width:1.5" />
+                  <text x="22" y="132" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--green)">還</text>
+                  <text x="22" y="144" style="font-family:'DM Mono',monospace; font-size:9px; fill:var(--green)">原</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Done -->
+          <div class="welcome-step" id="wstep-5">
+            <div class="welcome-step-head">
+              <div class="welcome-icon green">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">5 / 5</div>
+            </div>
+            <div class="welcome-title" id="wstep-5-title">開始用 Due 吧</div>
             <div class="welcome-body" style="flex:1">
-              <span id="wstep-4-body">設定完成。登入 Canvas 後資料會自動同步。</span>
-              <div class="welcome-done-list">
-                <div class="welcome-done-item">
-                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
-                      <polyline points="10 3 5 9 2 6" />
-                    </svg></div>
-                  <span id="wstep-4-done1">Due 已釘選到瀏覽器工具列</span>
+              <span id="wstep-5-body">這幾個功能容易錯過，記得試試：</span>
+              <div class="welcome-feat-cards">
+                <div class="welcome-feat-card">
+                  <div class="welcome-feat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg></div>
+                  <div class="welcome-feat-text">
+                    <div class="welcome-feat-name" id="wstep-5-feat1-name">自訂作業</div>
+                    <div class="welcome-feat-desc" id="wstep-5-feat1-desc">加入 Canvas 上沒有的個人任務</div>
+                  </div>
                 </div>
-                <div class="welcome-done-item">
-                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
-                      <polyline points="10 3 5 9 2 6" />
-                    </svg></div>
-                  <span id="wstep-4-done2">Canvas 登入狀態已確認</span>
+                <div class="welcome-feat-card">
+                  <div class="welcome-feat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg></div>
+                  <div class="welcome-feat-text">
+                    <div class="welcome-feat-name" id="wstep-5-feat2-name">課程改名</div>
+                    <div class="welcome-feat-desc" id="wstep-5-feat2-desc">改成你習慣的叫法</div>
+                  </div>
                 </div>
-                <div class="welcome-done-item">
-                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
-                      <polyline points="10 3 5 9 2 6" />
-                    </svg></div>
-                  <span id="wstep-4-done3">評分比重可在課程頁查看或編輯</span>
-                </div>
+              </div>
+              <div class="welcome-support">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 6 10-6" /></svg>
+                <span id="wstep-5-support">有 bug 或建議？跟我說一聲 → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a></span>
               </div>
             </div>
           </div>
@@ -3413,6 +3720,7 @@
             <div class="welcome-dot" data-wstep="2"></div>
             <div class="welcome-dot" data-wstep="3"></div>
             <div class="welcome-dot" data-wstep="4"></div>
+            <div class="welcome-dot" data-wstep="5"></div>
           </div>
           <div class="welcome-btn-row" id="welcome-btn-row">
             <!-- Buttons injected by JS -->

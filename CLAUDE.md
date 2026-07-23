@@ -79,7 +79,6 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
   "manualHidden": { "assignmentId": true },
   "customWeights": { "courseId": [{ "name": "Homework", "weight": 30 }] },
   "courseNames": { "courseId": "自訂名稱" },
-  "darkMode": false,
   "uiLanguage": "zh-TW",
   "showClaudeUsageInPopup": true,
   "claudeUsage": { "usedPercent": 0, "resetAt": "..." }
@@ -108,12 +107,6 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 --purple:   #a86070;   /* 考試/測驗顏色 */
 ```
 
-**Dark mode**（`html[data-theme="dark"]` 時覆蓋）：
-```css
---bg: #121316;  --surface: #1b1d22;  --dark: #eceff4;
---mid: #9aa3b2;  --muted: #8b93a1;   --border: #343843;
-```
-
 ### 字體
 
 ```css
@@ -128,7 +121,7 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 - 大量留白，不要擁擠
 - 邊框用細線（1px），圓角保守（4–8px）
-- 整體 light mode，dark mode 為可選
+- 一律 light mode（深色模式已於 2026-07-23 移除；`darkMode` 舊 key 殘留無害，不主動清除）
 - Section 標題用 DM Mono 小字大寫間距
 - 動畫克制：卡片 hover 用 `translateY(-2px)`，轉場用 View Transitions API
 
@@ -136,7 +129,7 @@ GET /api/v1/courses/:id/assignment_groups?include[]=assignments&include[]=group_
 
 色階統一由 `taskRules.urgency(dueAt)` 決定；`dashboard/urgencyClass()` 只做映射（popup 共用同一規則）。
 
-- 逾期未繳（30 天窗內）：紅橘 `var(--overdue)`（`#b3452c`／dark `#e07a5f`，class: `due-overdue`）
+- 逾期未繳（30 天窗內）：紅橘 `var(--overdue)`（`#b3452c`，class: `due-overdue`）
 - ≤7 天：橘紅 `var(--orange)`（class: `due-urgent`）
 - 8–30 天：暖黃 `var(--warm)`（class: `due-soon`）
 - 30 天以上：藍色 `var(--blue)`（class: `due-later`）
@@ -260,6 +253,13 @@ sidebar（300px）+ main-content（flex:1）
 - `← 返回` 按鈕與瀏覽器返回統一走 `history.back()` → `popstate`；`showGridView()` 現依 `currentPage`/`showSubmitted` 回對應清單（不再寫死回 courses grid，順帶修正「從週待辦開課程、Back 卻回課程頁」）
 - 動導航函式（`showCourseDetail`/`showGridView`/`switchPage`/`goToPage`）時務必同步維護對應的 push/replace，否則返回行為會錯亂
 
+**新手教學（Welcome Modal，5 頁）：**
+- 首次安裝自動開啟（`?welcome=1`），設定選單「使用教學」可重開；換頁為 translateX 滑動（track 500%、每步 20%，`welcomeGoStep` 位移 `(n-1)*20%`，完成頁按鈕判斷 `n===5`）
+- 頁面：1 歡迎（右側為 HTML/CSS 迷你「本週概覽」mock——SVG stroke 進度環＋分級摘要列；mock 文案硬編碼中文、不走 i18n）→ 2 登入 Canvas → 3 釘選（`icons/pin_guide.png`，圖中圖示為 DUE 商標）→ 4 拖曳整理（隱藏/還原教學；右側 inline SVG 示意圖：課程大卡片內含 header、作業清單、浮起拖曳列、已隱藏區與隱藏/還原雙向箭頭）→ 5 一切就緒
+- **登入 Canvas 自動跳回**（spec 2026-07-23-onboarding-redesign）：點連結（`canvasBaseUrl` 為空時 fallback `https://hkust-gz.instructure.com`）開分頁後「武裝」10 分鐘——`storage.onChanged` 只看 `lastSync` 落地（未登入時 API 401、lastSync 不動，不會過早跳回）→ `loadData()` 刷新、關閉開出的分頁、聚焦回 dashboard、連結旁顯示「✓ 已同步」；輔以 `tabs.onUpdated` 在 Canvas 分頁載入完成時補發手動 SYNC（繞過 5 分鐘節流）。chrome.* 呼叫皆守衛（dev harness 只 stub 部分 API）
+- canvas link 用**事件委派**綁在 overlay 上（`applyWelcomeTranslations` 以 innerHTML 重建該連結，直接綁定會失效）
+- i18n keys：`wTitle1-5`／`wBody1-5`／`wStep2Li*`／`wStep4Li*`／`wDone1-3`／`wCanvasSynced`，三語言齊備
+
 ---
 
 ## 資料儲存
@@ -279,7 +279,7 @@ sidebar（300px）+ main-content（flex:1）
 6. `_currentData` 是全域快取；頁面切換時用 `_currentData` 同步渲染，不要再呼叫 `loadData()`（避免空白閃爍）
 7. `courseNames` 只影響顯示層，Canvas API 呼叫仍使用原始 `course.id`，不受自訂名稱影響
 8. `field-sizing: content`（Chrome 123+）用於 inline 重命名輸入框自動縮放
-9. 完成標記動畫：勾選後不立即重繪，該列跑 1.5 秒撤銷窗口＋碎點爆才移除（`COMPLETE_DELAY_MS = 1500`）；`dashboard.js` 無 `storage.onChanged` 監聽器，故寫入 `manualDone` 不會打斷動畫（見 `completion.js`）
+9. 完成標記動畫：勾選後不立即重繪，該列跑 1.5 秒撤銷窗口＋碎點爆才移除（`COMPLETE_DELAY_MS = 1500`）；`dashboard.js` 唯一的 `storage.onChanged` 監聽器只在「登入 Canvas 自動跳回」武裝期間反應 `lastSync`（不碰 `manualDone` 等 key），故寫入 `manualDone` 不會打斷動畫（見 `completion.js`）
 
 ---
 
