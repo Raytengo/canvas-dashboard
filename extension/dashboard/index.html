@@ -2035,6 +2035,67 @@
       stroke-linejoin: round;
     }
 
+    /* ── Welcome step 5：功能卡 ── */
+    .welcome-feat-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .welcome-feat-card {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .welcome-feat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+
+    .welcome-feat-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .welcome-feat-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .welcome-feat-name {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 16px;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+
+    .welcome-feat-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
     /* ── Welcome step 5：聯絡管道 ── */
     .welcome-support {
       display: flex;
@@ -3426,9 +3487,9 @@
                 <span id="wstep-1-intro">Due，提醒你該做的事 ⚡️</span>
                 <div
                   style="margin-top: 40px; font-style: italic; color: var(--muted); line-height: 1.7; font-size: 14px;">
-                  <span id="wstep-1-q1">「Canvas 很靠北，找個作業要翻半天」- 有人</span>
+                  <span id="wstep-1-q1">「Canvas找個作業要翻半天」- 有人</span>
                   <div style="margin-top: 15px;">
-                    <span id="wstep-1-q2">「蛤?明天要交Lab喔」- 另外一個人</span>
+                    <span id="wstep-1-q2">「明天要交Lab喔...」- 另一個人</span>
                   </div>
                 </div>
               </div>
@@ -3507,7 +3568,8 @@
             <div class="welcome-title" id="wstep-3-title">釘選 Due 到工具列</div>
             <div class="welcome-body split" style="flex:1">
               <div class="welcome-body-text">
-                <span id="wstep-3-body">釘選後點一下圖示就能查看 7 天待辦（煮菠愛用😋）</span>
+                <span id="wstep-3-body">釘選後點一下圖示就能查看 7 天待辦</span>
+                <span id="wstep-3-joke">（是為了這碟醋包的餃子btw）</span>
                 <ul class="welcome-inst-list">
                   <div style="margin-bottom: 15px;"></div>
                   <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-3-li1">點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）</span></li>
@@ -3536,11 +3598,11 @@
             <div class="welcome-title" id="wstep-4-title">拖曳整理作業清單</div>
             <div class="welcome-body split" style="flex:1">
               <div class="welcome-body-text">
-                <span id="wstep-4-body">Due 會自動隱藏考試、簽到類項目；你也可以自己決定要藏誰、留誰。</span>
+                <span id="wstep-4-body">Due 會自動隱藏考試、簽到<br>你也可以自己決定要藏誰、留誰</span>
                 <ul class="welcome-inst-list">
                   <div style="margin-bottom: 15px;"></div>
-                  <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-4-li1">在課程頁按住作業名稱後方的<strong>⠿ 握把</strong>，拖進清單底部的「<strong>已隱藏</strong>」區即可隱藏</span></li>
-                  <li><span class="welcome-inst-num">2</span><span class="welcome-inst-text" id="wstep-4-li2">被誤判隱藏的項目（例如考試），展開「已隱藏」區<strong>拖回作業清單</strong>就會還原，重新出現在所有視圖</span></li>
+                  <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-4-li1">按住作業的 <strong>⠿</strong> 拖到底部「<strong>已隱藏</strong>」區即可隱藏</span></li>
+                  <li><span class="welcome-inst-num">2</span><span class="welcome-inst-text" id="wstep-4-li2">被誤判的考試等項目，從「已隱藏」<strong>拖回清單</strong>就會還原</span></li>
                 </ul>
               </div>
               <div class="welcome-drag-illus" aria-hidden="true">
@@ -3612,30 +3674,26 @@
             <div class="welcome-eyebrow">5 / 5</div>
             <div class="welcome-title" id="wstep-5-title">開始用 Due 吧</div>
             <div class="welcome-body" style="flex:1">
-              <span id="wstep-5-body">平常照舊用 Canvas，Due 就會在背景自動同步。這幾個功能容易錯過，記得試試：</span>
-              <div class="welcome-done-list">
-                <div class="welcome-done-item">
-                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
-                      <polyline points="10 3 5 9 2 6" />
-                    </svg></div>
-                  <span id="wstep-5-tip1">成績計算器：課程頁輸入分數，即時算出總分</span>
+              <span id="wstep-5-body">這幾個功能容易錯過，記得試試：</span>
+              <div class="welcome-feat-cards">
+                <div class="welcome-feat-card">
+                  <div class="welcome-feat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg></div>
+                  <div class="welcome-feat-text">
+                    <div class="welcome-feat-name" id="wstep-5-feat1-name">自訂作業</div>
+                    <div class="welcome-feat-desc" id="wstep-5-feat1-desc">加入 Canvas 上沒有的個人任務</div>
+                  </div>
                 </div>
-                <div class="welcome-done-item">
-                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
-                      <polyline points="10 3 5 9 2 6" />
-                    </svg></div>
-                  <span id="wstep-5-tip2">自訂作業：加入 Canvas 上沒有的個人任務</span>
-                </div>
-                <div class="welcome-done-item">
-                  <div class="welcome-done-check"><svg viewBox="0 0 12 12">
-                      <polyline points="10 3 5 9 2 6" />
-                    </svg></div>
-                  <span id="wstep-5-tip3">課程改名：點課程名旁的鉛筆，改成你習慣的叫法</span>
+                <div class="welcome-feat-card">
+                  <div class="welcome-feat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg></div>
+                  <div class="welcome-feat-text">
+                    <div class="welcome-feat-name" id="wstep-5-feat2-name">課程改名</div>
+                    <div class="welcome-feat-desc" id="wstep-5-feat2-desc">改成你習慣的叫法</div>
+                  </div>
                 </div>
               </div>
               <div class="welcome-support">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 6 10-6" /></svg>
-                <span id="wstep-5-support">有問題或建議？寄信給我 <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a></span>
+                <span id="wstep-5-support">有 bug 或建議？跟我說一聲 → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a></span>
               </div>
             </div>
           </div>

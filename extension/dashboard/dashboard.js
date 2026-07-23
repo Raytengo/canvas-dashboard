@@ -115,8 +115,8 @@ const I18N = {
     // welcome steps
     wTitle1: '歡迎使用 Due',
     wBody1Intro: 'Due，提醒你該做的事 ⚡️',
-    wBody1Q1: '「Canvas 很靠北，找個作業要翻半天」- 有人',
-    wBody1Q2: '「蛤？明天要交Lab喔」- 另外一個人',
+    wBody1Q1: '「Canvas找個作業要翻半天」- 有人',
+    wBody1Q2: '「明天要交Lab喔...」- 另一個人',
     wTitle2: '登入 Canvas（必須）',
     wBody2: 'Due 透過你的 Canvas 登入狀態同步資料，不需要額外設定或 Token。',
     wStep2Li1: '登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下，同步完成會自動帶你回來）',
@@ -124,20 +124,22 @@ const I18N = {
     wStep2Li3: '點擊工具列或進入 Dashboard 都可以看到相關資訊',
     wCanvasSynced: '✓ 已同步，資料已更新',
     wTitle3: '釘選 Due 到工具列',
-    wBody3: '釘選後點一下圖示就能查看 7 天待辦（煮菠愛用😋）',
+    wBody3: '釘選後點一下圖示就能查看 7 天待辦',
+    wBody3Joke: '（是為了這碟醋包的餃子btw）',
     wStep3Li1: '點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）',
     wStep3Li2: '找到 <strong>Due</strong>，點擊旁邊的<strong>釘選圖示</strong>',
     wStep3Li3: '工具列出現 Due 圖示後即完成',
     wTitle4: '拖曳整理作業清單',
-    wBody4: 'Due 會自動隱藏考試、簽到類項目；你也可以自己決定要藏誰、留誰。',
-    wStep4Li1: '在課程頁按住作業名稱後方的<strong>⠿ 握把</strong>，拖進清單底部的「<strong>已隱藏</strong>」區即可隱藏',
-    wStep4Li2: '被誤判隱藏的項目（例如考試），展開「已隱藏」區<strong>拖回作業清單</strong>就會還原，重新出現在所有視圖',
+    wBody4: 'Due 會自動隱藏考試、簽到<br>你也可以自己決定要藏誰、留誰',
+    wStep4Li1: '按住作業的 <strong>⠿</strong> 拖到底部「<strong>已隱藏</strong>」區即可隱藏',
+    wStep4Li2: '被誤判的考試等項目，從「已隱藏」<strong>拖回清單</strong>就會還原',
     wTitle5: '開始用 Due 吧',
-    wBody5: '平常照舊用 Canvas，Due 就會在背景自動同步。這幾個功能容易錯過，記得試試：',
-    wTip1: '成績計算器：課程頁輸入分數，即時算出總分',
-    wTip2: '自訂作業：加入 Canvas 上沒有的個人任務',
-    wTip3: '課程改名：點課程名旁的鉛筆，改成你習慣的叫法',
-    wSupport5: '有問題或建議？寄信給我 <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
+    wBody5: '這幾個功能容易錯過，記得試試：',
+    wFeatCustomName: '自訂作業',
+    wFeatCustomDesc: '加入 Canvas 上沒有的個人任務',
+    wFeatRenameName: '課程改名',
+    wFeatRenameDesc: '改成你習慣的叫法',
+    wSupport5: '有 bug 或建議？跟我說一聲 → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: '開始設定',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
@@ -242,20 +244,22 @@ const I18N = {
     wStep2Li3: '点击工具栏图标或进入 Dashboard 即可查看',
     wCanvasSynced: '✓ 已同步，数据已更新',
     wTitle3: '固定 Due 到工具栏',
-    wBody3: '固定后点一下图标就能查看 7 天待办😋',
+    wBody3: '固定后点一下图标就能查看 7 天待办',
+    wBody3Joke: '（是为了这碟醋包的饺子btw）',
     wStep3Li1: '点击浏览器右上角的<strong>拼图图标</strong>（扩展程序）',
     wStep3Li2: '找到 <strong>Due</strong>，点击旁边的<strong>固定图标</strong>',
     wStep3Li3: '工具栏出现 Due 图标后即完成',
     wTitle4: '拖拽整理作业清单',
-    wBody4: 'Due 会自动隐藏考试、签到类项目；你也可以自己决定要藏谁、留谁。',
-    wStep4Li1: '在课程页按住作业名称后方的<strong>⠿ 拖拽手柄</strong>，拖进清单底部的「<strong>已隐藏</strong>」区即可隐藏',
-    wStep4Li2: '被误判隐藏的项目（例如考试），展开「已隐藏」区<strong>拖回作业清单</strong>即可还原，重新出现在所有视图',
+    wBody4: 'Due 会自动隐藏考试、签到<br>你也可以自己决定要藏谁、留谁',
+    wStep4Li1: '按住作业的 <strong>⠿</strong> 拖到底部「<strong>已隐藏</strong>」区即可隐藏',
+    wStep4Li2: '被误判的考试等项目，从「已隐藏」<strong>拖回清单</strong>即可还原',
     wTitle5: '开始用 Due 吧',
-    wBody5: '平常照旧用 Canvas，Due 就会在后台自动同步。这几个功能容易错过，记得试试：',
-    wTip1: '成绩计算器：课程页输入分数，即时算出总分',
-    wTip2: '自定义作业：加入 Canvas 上没有的个人任务',
-    wTip3: '课程改名：点课程名旁的铅笔，改成你习惯的叫法',
-    wSupport5: '有问题或建议？发邮件给我 <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
+    wBody5: '这几个功能容易错过，记得试试：',
+    wFeatCustomName: '自定义作业',
+    wFeatCustomDesc: '加入 Canvas 上没有的个人任务',
+    wFeatRenameName: '课程改名',
+    wFeatRenameDesc: '改成你习惯的叫法',
+    wSupport5: '有 bug 或建议？跟我说一声 → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: '开始设置',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
@@ -360,20 +364,22 @@ const I18N = {
     wStep2Li3: 'Click the toolbar icon or open Dashboard to view your tasks',
     wCanvasSynced: '✓ Synced — data updated',
     wTitle3: 'Pin Due to Toolbar',
-    wBody3: 'Pin it and tap the icon to see your 7-day tasks at a glance 😋',
+    wBody3: 'Pin it and tap the icon to see your 7-day tasks at a glance',
+    wBody3Joke: "(it's for the dumpling dipped in vinegar, btw)",
     wStep3Li1: 'Click the <strong>puzzle icon</strong> (Extensions) in the top-right of your browser',
     wStep3Li2: 'Find <strong>Due</strong> and click the <strong>pin icon</strong> next to it',
     wStep3Li3: 'Done when the Due icon appears in your toolbar',
     wTitle4: 'Organize by dragging',
-    wBody4: 'Due auto-hides exams and attendance items — but you decide what stays hidden.',
-    wStep4Li1: 'Grab the <strong>⠿ grip</strong> after an assignment name and drop it into the <strong>Hidden</strong> section at the bottom of the list to hide it',
-    wStep4Li2: 'Item hidden by mistake (e.g. an exam)? Open the Hidden section and <strong>drag it back into the list</strong> — it returns to every view',
+    wBody4: 'Due auto-hides exams and attendance items<br>but you decide what stays hidden',
+    wStep4Li1: 'Grab an assignment\'s <strong>⠿</strong> and drop it into the <strong>Hidden</strong> section to hide it',
+    wStep4Li2: 'Hid the wrong thing (like an exam)? <strong>Drag it back</strong> from Hidden to restore it',
     wTitle5: 'Start using Due',
-    wBody5: 'Just keep using Canvas as usual — Due syncs in the background. A few features worth trying:',
-    wTip1: 'Grade calculator — enter scores on a course page to see your total',
-    wTip2: 'Custom assignments — add tasks that aren\'t on Canvas',
-    wTip3: 'Rename courses — click the pencil next to a course name',
-    wSupport5: 'Questions or feedback? Email me at <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
+    wBody5: 'A couple of features worth trying:',
+    wFeatCustomName: 'Custom assignments',
+    wFeatCustomDesc: 'Add tasks that aren\'t on Canvas',
+    wFeatRenameName: 'Rename courses',
+    wFeatRenameDesc: 'Give courses names you prefer',
+    wSupport5: 'Found a bug or have an idea? Let me know → <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: 'Get Started',
     wBtnPrev: 'Back',
     wBtnNext: 'Next',
@@ -405,18 +411,20 @@ function applyWelcomeTranslations() {
   setText('wstep-2-li3', 'wStep2Li3');
   setText('wstep-3-title', 'wTitle3');
   setText('wstep-3-body', 'wBody3');
+  setText('wstep-3-joke', 'wBody3Joke');
   setHTML('wstep-3-li1', 'wStep3Li1');
   setHTML('wstep-3-li2', 'wStep3Li2');
   setText('wstep-3-li3', 'wStep3Li3');
   setText('wstep-4-title', 'wTitle4');
-  setText('wstep-4-body', 'wBody4');
+  setHTML('wstep-4-body', 'wBody4');
   setHTML('wstep-4-li1', 'wStep4Li1');
   setHTML('wstep-4-li2', 'wStep4Li2');
   setText('wstep-5-title', 'wTitle5');
   setText('wstep-5-body', 'wBody5');
-  setText('wstep-5-tip1', 'wTip1');
-  setText('wstep-5-tip2', 'wTip2');
-  setText('wstep-5-tip3', 'wTip3');
+  setText('wstep-5-feat1-name', 'wFeatCustomName');
+  setText('wstep-5-feat1-desc', 'wFeatCustomDesc');
+  setText('wstep-5-feat2-name', 'wFeatRenameName');
+  setText('wstep-5-feat2-desc', 'wFeatRenameDesc');
   setHTML('wstep-5-support', 'wSupport5');
   // 「已同步」狀態若已顯示，隨語言切換更新文字
   const syncedEl = document.getElementById('welcome-canvas-synced');
