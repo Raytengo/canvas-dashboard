@@ -2035,6 +2035,31 @@
       stroke-linejoin: round;
     }
 
+    /* ── Welcome step 5：聯絡管道 ── */
+    .welcome-support {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .welcome-support svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--mid);
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
     .custom-assignment-overlay {
       position: fixed;
       inset: 0;
@@ -3585,28 +3610,32 @@
               </svg>
             </div>
             <div class="welcome-eyebrow">5 / 5</div>
-            <div class="welcome-title" id="wstep-5-title">一切就緒</div>
+            <div class="welcome-title" id="wstep-5-title">開始用 Due 吧</div>
             <div class="welcome-body" style="flex:1">
-              <span id="wstep-5-body">設定完成。登入 Canvas 後資料會自動同步。</span>
+              <span id="wstep-5-body">平常照舊用 Canvas，Due 就會在背景自動同步。這幾個功能容易錯過，記得試試：</span>
               <div class="welcome-done-list">
                 <div class="welcome-done-item">
                   <div class="welcome-done-check"><svg viewBox="0 0 12 12">
                       <polyline points="10 3 5 9 2 6" />
                     </svg></div>
-                  <span id="wstep-5-done1">Due 已釘選到瀏覽器工具列</span>
+                  <span id="wstep-5-tip1">成績計算器：課程頁輸入分數，即時算出總分</span>
                 </div>
                 <div class="welcome-done-item">
                   <div class="welcome-done-check"><svg viewBox="0 0 12 12">
                       <polyline points="10 3 5 9 2 6" />
                     </svg></div>
-                  <span id="wstep-5-done2">Canvas 登入狀態已確認</span>
+                  <span id="wstep-5-tip2">自訂作業：加入 Canvas 上沒有的個人任務</span>
                 </div>
                 <div class="welcome-done-item">
                   <div class="welcome-done-check"><svg viewBox="0 0 12 12">
                       <polyline points="10 3 5 9 2 6" />
                     </svg></div>
-                  <span id="wstep-5-done3">評分比重可在課程頁查看或編輯</span>
+                  <span id="wstep-5-tip3">課程改名：點課程名旁的鉛筆，改成你習慣的叫法</span>
                 </div>
+              </div>
+              <div class="welcome-support">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 6 10-6" /></svg>
+                <span id="wstep-5-support">有問題或建議？寄信給我 <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a></span>
               </div>
             </div>
           </div>

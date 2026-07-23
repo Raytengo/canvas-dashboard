@@ -132,11 +132,12 @@ const I18N = {
     wBody4: 'Due 會自動隱藏考試、簽到類項目；你也可以自己決定要藏誰、留誰。',
     wStep4Li1: '在課程頁按住作業名稱後方的<strong>⠿ 握把</strong>，拖進清單底部的「<strong>已隱藏</strong>」區即可隱藏',
     wStep4Li2: '被誤判隱藏的項目（例如考試），展開「已隱藏」區<strong>拖回作業清單</strong>就會還原，重新出現在所有視圖',
-    wTitle5: '一切就緒',
-    wBody5: '設定完成。登入 Canvas 後資料會自動同步。',
-    wDone1: 'Due 已釘選到瀏覽器工具列',
-    wDone2: 'Canvas 登入狀態已確認',
-    wDone3: '評分比重可在課程頁查看或編輯',
+    wTitle5: '開始用 Due 吧',
+    wBody5: '平常照舊用 Canvas，Due 就會在背景自動同步。這幾個功能容易錯過，記得試試：',
+    wTip1: '成績計算器：課程頁輸入分數，即時算出總分',
+    wTip2: '自訂作業：加入 Canvas 上沒有的個人任務',
+    wTip3: '課程改名：點課程名旁的鉛筆，改成你習慣的叫法',
+    wSupport5: '有問題或建議？寄信給我 <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: '開始設定',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
@@ -249,11 +250,12 @@ const I18N = {
     wBody4: 'Due 会自动隐藏考试、签到类项目；你也可以自己决定要藏谁、留谁。',
     wStep4Li1: '在课程页按住作业名称后方的<strong>⠿ 拖拽手柄</strong>，拖进清单底部的「<strong>已隐藏</strong>」区即可隐藏',
     wStep4Li2: '被误判隐藏的项目（例如考试），展开「已隐藏」区<strong>拖回作业清单</strong>即可还原，重新出现在所有视图',
-    wTitle5: '一切就绪',
-    wBody5: '设置完成。登录 Canvas 后数据将自动同步。',
-    wDone1: 'Due 已固定到浏览器工具栏',
-    wDone2: 'Canvas 登录状态已确认',
-    wDone3: '评分比重可在课程页查看或编辑',
+    wTitle5: '开始用 Due 吧',
+    wBody5: '平常照旧用 Canvas，Due 就会在后台自动同步。这几个功能容易错过，记得试试：',
+    wTip1: '成绩计算器：课程页输入分数，即时算出总分',
+    wTip2: '自定义作业：加入 Canvas 上没有的个人任务',
+    wTip3: '课程改名：点课程名旁的铅笔，改成你习惯的叫法',
+    wSupport5: '有问题或建议？发邮件给我 <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: '开始设置',
     wBtnPrev: '上一步',
     wBtnNext: '下一步',
@@ -366,11 +368,12 @@ const I18N = {
     wBody4: 'Due auto-hides exams and attendance items — but you decide what stays hidden.',
     wStep4Li1: 'Grab the <strong>⠿ grip</strong> after an assignment name and drop it into the <strong>Hidden</strong> section at the bottom of the list to hide it',
     wStep4Li2: 'Item hidden by mistake (e.g. an exam)? Open the Hidden section and <strong>drag it back into the list</strong> — it returns to every view',
-    wTitle5: 'All Set!',
-    wBody5: 'Setup complete. Data syncs automatically after you log in to Canvas.',
-    wDone1: 'Due pinned to browser toolbar',
-    wDone2: 'Canvas login confirmed',
-    wDone3: 'Grade weights available on each course page',
+    wTitle5: 'Start using Due',
+    wBody5: 'Just keep using Canvas as usual — Due syncs in the background. A few features worth trying:',
+    wTip1: 'Grade calculator — enter scores on a course page to see your total',
+    wTip2: 'Custom assignments — add tasks that aren\'t on Canvas',
+    wTip3: 'Rename courses — click the pencil next to a course name',
+    wSupport5: 'Questions or feedback? Email me at <a class="welcome-inline-link" href="mailto:0610raymond@gmail.com">0610raymond@gmail.com</a>',
     wBtnStart: 'Get Started',
     wBtnPrev: 'Back',
     wBtnNext: 'Next',
@@ -411,9 +414,10 @@ function applyWelcomeTranslations() {
   setHTML('wstep-4-li2', 'wStep4Li2');
   setText('wstep-5-title', 'wTitle5');
   setText('wstep-5-body', 'wBody5');
-  setText('wstep-5-done1', 'wDone1');
-  setText('wstep-5-done2', 'wDone2');
-  setText('wstep-5-done3', 'wDone3');
+  setText('wstep-5-tip1', 'wTip1');
+  setText('wstep-5-tip2', 'wTip2');
+  setText('wstep-5-tip3', 'wTip3');
+  setHTML('wstep-5-support', 'wSupport5');
   // 「已同步」狀態若已顯示，隨語言切換更新文字
   const syncedEl = document.getElementById('welcome-canvas-synced');
   if (syncedEl && !syncedEl.hidden) syncedEl.textContent = tr('wCanvasSynced');
