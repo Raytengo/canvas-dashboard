@@ -119,16 +119,21 @@ const I18N = {
     wBody1Q2: '「蛤？明天要交Lab喔」- 另外一個人',
     wTitle2: '登入 Canvas（必須）',
     wBody2: 'Due 透過你的 Canvas 登入狀態同步資料，不需要額外設定或 Token。',
-    wStep2Li1: '登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下這個連結用於第一次同步😭）',
+    wStep2Li1: '登入 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（點一下，同步完成會自動帶你回來）',
     wStep2Li2: 'Due 會<strong>在你每次打開Canvas時自動更新</strong>你的所有課程與作業',
     wStep2Li3: '點擊工具列或進入 Dashboard 都可以看到相關資訊',
+    wCanvasSynced: '✓ 已同步，資料已更新',
     wTitle3: '釘選 Due 到工具列',
     wBody3: '釘選後點一下圖示就能查看 7 天待辦（煮菠愛用😋）',
     wStep3Li1: '點擊瀏覽器右上角的<strong>拼圖圖示</strong>（擴充功能）',
     wStep3Li2: '找到 <strong>Due</strong>，點擊旁邊的<strong>釘選圖示</strong>',
     wStep3Li3: '工具列出現 Due 圖示後即完成',
-    wTitle4: '一切就緒',
-    wBody4: '設定完成。登入 Canvas 後資料會自動同步。',
+    wTitle4: '拖曳整理作業清單',
+    wBody4: 'Due 會自動隱藏考試、簽到類項目；你也可以自己決定要藏誰、留誰。',
+    wStep4Li1: '在課程頁按住作業名稱後方的<strong>⠿ 握把</strong>，拖進清單底部的「<strong>已隱藏</strong>」區即可隱藏',
+    wStep4Li2: '被誤判隱藏的項目（例如考試），展開「已隱藏」區<strong>拖回作業清單</strong>就會還原，重新出現在所有視圖',
+    wTitle5: '一切就緒',
+    wBody5: '設定完成。登入 Canvas 後資料會自動同步。',
     wDone1: 'Due 已釘選到瀏覽器工具列',
     wDone2: 'Canvas 登入狀態已確認',
     wDone3: '評分比重可在課程頁查看或編輯',
@@ -231,16 +236,21 @@ const I18N = {
     wBody1Q2: '「啥？明天要交Lab？」- 另一个人',
     wTitle2: '登录 Canvas（必须）',
     wBody2: 'Due 通过你的 Canvas 登录状态同步数据，无需额外设置或 Token。',
-    wStep2Li1: '登录 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（点击此链接以完成第一次同步😭）',
+    wStep2Li1: '登录 <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a>（点一下，同步完成后会自动带你回来）',
     wStep2Li2: 'Due 会<strong>在每次打开 Canvas 时自动更新</strong>你的所有课程和作业',
     wStep2Li3: '点击工具栏图标或进入 Dashboard 即可查看',
+    wCanvasSynced: '✓ 已同步，数据已更新',
     wTitle3: '固定 Due 到工具栏',
     wBody3: '固定后点一下图标就能查看 7 天待办😋',
     wStep3Li1: '点击浏览器右上角的<strong>拼图图标</strong>（扩展程序）',
     wStep3Li2: '找到 <strong>Due</strong>，点击旁边的<strong>固定图标</strong>',
     wStep3Li3: '工具栏出现 Due 图标后即完成',
-    wTitle4: '一切就绪',
-    wBody4: '设置完成。登录 Canvas 后数据将自动同步。',
+    wTitle4: '拖拽整理作业清单',
+    wBody4: 'Due 会自动隐藏考试、签到类项目；你也可以自己决定要藏谁、留谁。',
+    wStep4Li1: '在课程页按住作业名称后方的<strong>⠿ 拖拽手柄</strong>，拖进清单底部的「<strong>已隐藏</strong>」区即可隐藏',
+    wStep4Li2: '被误判隐藏的项目（例如考试），展开「已隐藏」区<strong>拖回作业清单</strong>即可还原，重新出现在所有视图',
+    wTitle5: '一切就绪',
+    wBody5: '设置完成。登录 Canvas 后数据将自动同步。',
     wDone1: 'Due 已固定到浏览器工具栏',
     wDone2: 'Canvas 登录状态已确认',
     wDone3: '评分比重可在课程页查看或编辑',
@@ -343,16 +353,21 @@ const I18N = {
     wBody1Q2: '"Wait, the lab is due tomorrow?" — someone else',
     wTitle2: 'Log in to Canvas (Required)',
     wBody2: 'Due syncs data using your Canvas login session — no extra setup or tokens needed.',
-    wStep2Li1: 'Log in to <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a> (click this link for your first sync 😭)',
+    wStep2Li1: 'Log in to <a class="welcome-inline-link" id="welcome-canvas-link">Canvas ↗</a> (click it — you\'ll be brought back automatically once syncing finishes)',
     wStep2Li2: 'Due <strong>auto-syncs all your courses and assignments</strong> every time you open Canvas',
     wStep2Li3: 'Click the toolbar icon or open Dashboard to view your tasks',
+    wCanvasSynced: '✓ Synced — data updated',
     wTitle3: 'Pin Due to Toolbar',
     wBody3: 'Pin it and tap the icon to see your 7-day tasks at a glance 😋',
     wStep3Li1: 'Click the <strong>puzzle icon</strong> (Extensions) in the top-right of your browser',
     wStep3Li2: 'Find <strong>Due</strong> and click the <strong>pin icon</strong> next to it',
     wStep3Li3: 'Done when the Due icon appears in your toolbar',
-    wTitle4: 'All Set!',
-    wBody4: 'Setup complete. Data syncs automatically after you log in to Canvas.',
+    wTitle4: 'Organize by dragging',
+    wBody4: 'Due auto-hides exams and attendance items — but you decide what stays hidden.',
+    wStep4Li1: 'Grab the <strong>⠿ grip</strong> after an assignment name and drop it into the <strong>Hidden</strong> section at the bottom of the list to hide it',
+    wStep4Li2: 'Item hidden by mistake (e.g. an exam)? Open the Hidden section and <strong>drag it back into the list</strong> — it returns to every view',
+    wTitle5: 'All Set!',
+    wBody5: 'Setup complete. Data syncs automatically after you log in to Canvas.',
     wDone1: 'Due pinned to browser toolbar',
     wDone2: 'Canvas login confirmed',
     wDone3: 'Grade weights available on each course page',
@@ -392,9 +407,16 @@ function applyWelcomeTranslations() {
   setText('wstep-3-li3', 'wStep3Li3');
   setText('wstep-4-title', 'wTitle4');
   setText('wstep-4-body', 'wBody4');
-  setText('wstep-4-done1', 'wDone1');
-  setText('wstep-4-done2', 'wDone2');
-  setText('wstep-4-done3', 'wDone3');
+  setHTML('wstep-4-li1', 'wStep4Li1');
+  setHTML('wstep-4-li2', 'wStep4Li2');
+  setText('wstep-5-title', 'wTitle5');
+  setText('wstep-5-body', 'wBody5');
+  setText('wstep-5-done1', 'wDone1');
+  setText('wstep-5-done2', 'wDone2');
+  setText('wstep-5-done3', 'wDone3');
+  // 「已同步」狀態若已顯示，隨語言切換更新文字
+  const syncedEl = document.getElementById('welcome-canvas-synced');
+  if (syncedEl && !syncedEl.hidden) syncedEl.textContent = tr('wCanvasSynced');
   _welcomeUpdateButtons(_welcomeStep);
 }
 
@@ -2973,9 +2995,9 @@ function _welcomeUpdateButtons(n) {
   let html = '';
   if (n === 1) {
     html = `<button class="welcome-btn" data-wgo="2">${tr('wBtnStart')}</button>`;
-  } else if (n === 4) {
+  } else if (n === 5) {
     html = `
-      <button class="welcome-btn sec" data-wgo="3">${tr('wBtnPrev')}</button>
+      <button class="welcome-btn sec" data-wgo="4">${tr('wBtnPrev')}</button>
       <button class="welcome-btn ora" id="welcome-done-btn">${tr('wBtnDone')}</button>
     `;
   } else {
@@ -3014,22 +3036,95 @@ function welcomeGoStep(n) {
   if (n === _welcomeStep) return;
   _welcomeStep = n;
   const track = document.getElementById('welcome-track');
-  if (track) track.style.transform = `translateX(-${(n - 1) * 25}%)`;
+  if (track) track.style.transform = `translateX(-${(n - 1) * 20}%)`;
   _welcomeUpdateDots(n);
   _welcomeUpdateButtons(n);
 }
 
 document.getElementById('welcome-close')?.addEventListener('click', closeWelcomeModal);
 document.getElementById('welcome-done-btn')?.addEventListener('click', closeWelcomeModal);
-document.getElementById('welcome-canvas-link')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  const base = _currentData.canvasBaseUrl || '';
-  if (base) chrome.tabs.create({ url: base });
-});
 
-// Delegate: overlay background click to close, data-wgo step nav, dot clicks
+// ── 登入 Canvas 自動跳回 ──
+// 點連結開 Canvas 分頁後「武裝」監聽：同步成功（lastSync 落地）→ 關閉開出的分頁、聚焦回 dashboard。
+// 未登入時 Canvas API 401、lastSync 不會動，所以不會過早跳回；登入完成後 auto-sync 成功才觸發。
+// 所有 chrome.* 呼叫皆守衛（dev harness 只 stub 部分 API）。
+const CANVAS_RETURN_TIMEOUT_MS = 10 * 60 * 1000; // 超時自動解除，避免使用者早已離開流程還被突然拉回
+let _canvasReturn = null; // { canvasTabId, dashboardTabId, timeoutId, onUpdated }
+
+function _disarmCanvasReturn() {
+  if (!_canvasReturn) return;
+  clearTimeout(_canvasReturn.timeoutId);
+  if (_canvasReturn.onUpdated && chrome.tabs?.onUpdated?.removeListener) {
+    chrome.tabs.onUpdated.removeListener(_canvasReturn.onUpdated);
+  }
+  _canvasReturn = null;
+}
+
+function _returnToDashboard() {
+  const armed = _canvasReturn;
+  if (!armed) return;
+  _disarmCanvasReturn();
+  loadData(); // 剛同步完的資料上畫面
+  const syncedEl = document.getElementById('welcome-canvas-synced');
+  if (syncedEl) { syncedEl.hidden = false; syncedEl.textContent = tr('wCanvasSynced'); }
+  // 只關我們自己開的那個 Canvas 分頁（可能已被使用者關掉，lastError 靜默）
+  if (chrome.tabs?.remove && armed.canvasTabId != null) {
+    chrome.tabs.remove(armed.canvasTabId, () => void chrome.runtime.lastError);
+  }
+  if (chrome.tabs?.update && armed.dashboardTabId != null) {
+    chrome.tabs.update(armed.dashboardTabId, { active: true }, (tab) => {
+      if (chrome.runtime.lastError) return;
+      if (tab && chrome.windows?.update) chrome.windows.update(tab.windowId, { focused: true });
+    });
+  }
+}
+
+function _armCanvasReturn(canvasTabId) {
+  _disarmCanvasReturn();
+  _canvasReturn = {
+    canvasTabId,
+    dashboardTabId: null,
+    timeoutId: setTimeout(_disarmCanvasReturn, CANVAS_RETURN_TIMEOUT_MS),
+    onUpdated: null,
+  };
+  if (chrome.tabs?.getCurrent) {
+    chrome.tabs.getCurrent((tab) => { if (_canvasReturn && tab) _canvasReturn.dashboardTabId = tab.id; });
+  }
+  // 輔助訊號：Canvas 分頁每次載入完成就補發手動 SYNC（不受 5 分鐘節流限制），
+  // 涵蓋「近期已同步過、auto-sync 被節流 → lastSync 不會變」的情況；跳回仍統一由 lastSync 變化觸發
+  if (chrome.tabs?.onUpdated?.addListener) {
+    const onUpdated = (tabId, info) => {
+      if (!_canvasReturn || tabId !== _canvasReturn.canvasTabId || info.status !== 'complete') return;
+      chrome.runtime.sendMessage({ type: 'SYNC' }, () => void chrome.runtime.lastError);
+    };
+    _canvasReturn.onUpdated = onUpdated;
+    chrome.tabs.onUpdated.addListener(onUpdated);
+  }
+}
+
+// 唯一的 storage 監聽：只在武裝期間反應 lastSync（不碰 manualDone 等 key，不影響完成動畫，見 CLAUDE.md）
+if (chrome.storage?.onChanged?.addListener) {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local' || !_canvasReturn || !changes.lastSync) return;
+    if (changes.lastSync.newValue && changes.lastSync.newValue !== changes.lastSync.oldValue) {
+      _returnToDashboard();
+    }
+  });
+}
+
+// Delegate: overlay background click to close, canvas link, data-wgo step nav, dot clicks
+// （canvas link 用委派：applyWelcomeTranslations 會以 innerHTML 重建該連結，直接綁定會失效）
 document.getElementById('welcome-overlay')?.addEventListener('click', (e) => {
   if (e.target === document.getElementById('welcome-overlay')) { closeWelcomeModal(); return; }
+  const link = e.target.closest('#welcome-canvas-link');
+  if (link) {
+    e.preventDefault();
+    const url = _currentData.canvasBaseUrl || 'https://hkust-gz.instructure.com';
+    if (chrome.tabs?.create) {
+      chrome.tabs.create({ url, active: true }, (tab) => { if (tab) _armCanvasReturn(tab.id); });
+    }
+    return;
+  }
   const btn = e.target.closest('[data-wgo]');
   if (btn) { welcomeGoStep(+btn.dataset.wgo); return; }
   const dot = e.target.closest('.welcome-dot[data-wstep]');
