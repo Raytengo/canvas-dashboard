@@ -1178,7 +1178,7 @@ function switchPage(page) {
 }
 
 // ── 本週待辦 ──
-function renderWeekSection(courses, assignments) {
+function renderWeekSection(courses, assignments, celebrate = false) {
   const el = document.getElementById('main-section');
   // 重繪前清掉殘留的完成計時器（切頁/重繪時避免週卡幽靈 callback）
   clearCompleteTimers();
@@ -1230,6 +1230,7 @@ function renderWeekSection(courses, assignments) {
   const ringStyle = `--ring-pct: ${_prevRingPct}%; background: conic-gradient(var(--green) 0% var(--ring-pct), var(--border) var(--ring-pct) 100%);`;
   const ringAria = `${tr('weekDoneLabel')} ${nearDone}/${nearTotal}`;
   const showEars = nearTotal > 0 && nearDone === nearTotal;   // 近期作業全部完成 → 顯示貓耳朵
+  const celebrateNow = celebrate && showEars;                 // render 端即時核對，不完全信任呼叫端旗標
 
   // 分級摘要列（只顯示 count>0；逾期紅色，點擊跳到右側對應區塊）
   const sumRows = [
@@ -1283,11 +1284,12 @@ function renderWeekSection(courses, assignments) {
         <div class="week-left">
           <div class="wk-ring-wrap">
             <div class="wk-ring" role="img" aria-label="${esc(ringAria)}" style="${ringStyle}">
+              ${celebrateNow ? `<div class="wk-spin-arc wk-spin-1"></div><div class="wk-spin-arc wk-spin-2"></div><div class="wk-spin-arc wk-spin-3"></div>` : ''}
               <div class="wk-ring-center">
                 <div class="wk-ring-frac"><b>${nearDone}</b>/${nearTotal}</div>
                 <div class="wk-ring-cap">${tr('weekDoneLabel')}</div>
               </div>
-              ${showEars ? `<div class="wk-ears"><span class="wk-ear wk-ear-l"></span><span class="wk-ear wk-ear-r"></span></div>` : ''}
+              ${showEars ? `<div class="wk-ears${celebrateNow ? ' wk-ears-pop' : ''}"><span class="wk-ear wk-ear-l"></span><span class="wk-ear wk-ear-r"></span></div>` : ''}
             </div>
           </div>
           ${sumRows ? `<div class="wk-breakdown">${sumRows}</div>` : ''}
@@ -1322,7 +1324,9 @@ function renderWeekSection(courses, assignments) {
       const a = ((_currentData.assignments || {})[cid] || []).find((x) => String(x.id) === id);
       const nowDone = a ? isDone(a) : false;
       if (nowDone && card) {
-        beginCompleteWeek(card, id, cid);
+        const { nearDone: _nd, nearTotal: _nt } = computeNearProgress(_currentData.courses || [], _currentData.assignments || {});
+        const celebrate = _nt > 0 && _nd === _nt;   // 這次勾選讓近期作業全部完成 → 觸發慶祝
+        beginCompleteWeek(card, id, cid, celebrate);
       } else {
         rerenderWeekAndNav();
       }
@@ -1848,14 +1852,14 @@ function cancelComplete(item, id, cid) {
 }
 
 // ── 週卡片完成過渡（平行於 assignment-item 版；共用 COMPLETE_* 常數與 spawnBurstDots）──
-function rerenderWeekAndNav() {
+function rerenderWeekAndNav(celebrate = false) {
   const { courses = [], assignments = {} } = _currentData;
-  renderWeekSection(courses, assignments);
+  renderWeekSection(courses, assignments, celebrate);
   updateSideNav();
   renderNav(courses, assignments);
 }
 
-function beginCompleteWeek(card, id, cid) {
+function beginCompleteWeek(card, id, cid, celebrate = false) {
   const chk = card.querySelector('.assignment-check');
   if (chk) { chk.dataset.done = 'true'; chk.setAttribute('aria-label', tr('markUndone')); }
   card.classList.add('completing');
@@ -1876,15 +1880,15 @@ function beginCompleteWeek(card, id, cid) {
   }
   _completeTimers[id] = setTimeout(() => {
     delete _completeTimers[id];
-    finishCompleteWeek(card, id, cid);
+    finishCompleteWeek(card, id, cid, celebrate);
   }, COMPLETE_DELAY_MS);
 }
 
-function finishCompleteWeek(card /* id, cid */) {
+function finishCompleteWeek(card, id, cid, celebrate = false) {
   spawnBurstDots(card);
   card.classList.add('bursting');
   // 已完成者會被 applyFilters 濾掉；重繪週 section＋側欄＋左欄（用 _currentData，避免閃白）
-  setTimeout(rerenderWeekAndNav, COMPLETE_BURST_MS);
+  setTimeout(() => rerenderWeekAndNav(celebrate), COMPLETE_BURST_MS);
 }
 
 function cancelCompleteWeek(card, id) {

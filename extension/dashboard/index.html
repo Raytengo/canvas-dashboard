@@ -751,6 +751,30 @@
     .wk-ear-l { transform: rotate(-12deg); }
     .wk-ear-r { transform: rotate(12deg); }
 
+    /* 全部完成慶祝：三色圓弧交錯旋轉（橘→藍→綠依序疊加），1.9s 後一起淡出露出綠環 */
+    @keyframes wk-spin { from { transform: rotate(0deg); } to { transform: rotate(720deg); } }
+    @keyframes wk-spin-fade { to { opacity: 0; } }
+    .wk-spin-arc {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      mask-image: radial-gradient(circle, transparent 58px, #000 60px);
+      -webkit-mask-image: radial-gradient(circle, transparent 58px, #000 60px);
+      pointer-events: none;
+      animation: wk-spin .9s linear both, wk-spin-fade .3s ease-out 1.9s forwards;
+    }
+    .wk-spin-1 { background: conic-gradient(var(--orange) 0deg 90deg, transparent 90deg 360deg); animation-delay: 0s, 1.9s; }
+    .wk-spin-2 { background: conic-gradient(var(--blue)   0deg 90deg, transparent 90deg 360deg); animation-delay: .5s, 1.9s; }
+    .wk-spin-3 { background: conic-gradient(var(--green)  0deg 90deg, transparent 90deg 360deg); animation-delay: 1s,  1.9s; }
+
+    /* 貓耳朵彈出：接在旋轉淡出（2.2s）之後，scale 小彈跳冒出 */
+    @keyframes wk-ears-pop {
+      0%   { opacity: 0; transform: scale(0) translateY(6px); }
+      60%  { opacity: 1; transform: scale(1.15) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .wk-ears-pop .wk-ear { animation: wk-ears-pop .35s cubic-bezier(.34,1.56,.64,1) 2.2s both; }
+
     /* 分級摘要：可點列，跳到右側對應區塊 */
     .wk-breakdown {
       display: flex;
