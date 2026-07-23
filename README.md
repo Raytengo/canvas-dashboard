@@ -54,23 +54,15 @@ Due never asks for an API token or a password. It uses the Canvas session
 already in your browser, so any school running Canvas works out of the box —
 just be logged in.
 
-> Built for HKUST(GZ), where students can't generate personal access tokens, so
-> Due borrows the browser's login instead. Nothing about it is tied to one school.
-
 ---
 
 ## Install
 
-Due isn't on the Chrome Web Store yet — load it unpacked:
+Due is on the Chrome Web Store — one click, no setup:
 
-1. **Download** this repo — green **Code** button → *Download ZIP*, then unzip (or `git clone`).
-2. Open **`chrome://extensions`** in Chrome.
-3. Turn on **Developer mode** (top-right toggle).
-4. Click **Load unpacked** and select the **`extension/`** folder.
-5. **Log in to Canvas** — Due syncs automatically on your next visit.
-6. Click the Due icon → **Open Dashboard**. 📌 Pin the extension for one-click access.
+**[→ Add Due to Chrome](https://chromewebstore.google.com/detail/due/mgncgfpppjecmfkahchchidfpckpnfid)**
 
-A short 5-step tour opens the first time to walk you through it.
+Then **log in to Canvas** and Due syncs automatically on your next visit. Click the Due icon → **Open Dashboard**, and 📌 pin the extension for one-click access. A short 5-step tour opens the first time to walk you through it.
 
 ---
 
@@ -104,14 +96,6 @@ extension/
   `node extension/dashboard/taskRules.test.js`.
 
 For the full architecture, data model, and design system, see [`CLAUDE.md`](CLAUDE.md).
-
----
-
-## Design
-
-Built on Anthropic's design language — warm off-white surfaces, Source Serif 4
-headings, DM Sans body text, DM Mono for labels and numbers. Light mode, with
-lots of breathing room.
 
 ---
 

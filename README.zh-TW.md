@@ -53,23 +53,15 @@ Due 以「你」的身分登入：它借用瀏覽器裡現成的 Canvas 登入�
 Due 從不要求 API token 或密碼。它使用瀏覽器裡既有的 Canvas 登入狀態，所以任何
 使用 Canvas 的學校都能直接用——只要你已經登入。
 
-> 為 HKUST(GZ) 打造——該校不允許學生自行產生 personal access token，所以 Due
-> 改為借用瀏覽器的登入狀態。但它的設計並不綁定任何單一學校。
-
 ---
 
 ## 安裝
 
-Due 還沒上架 Chrome Web Store，先以「載入未封裝項目」的方式安裝：
+Due 已上架 Chrome Web Store，一鍵安裝、免設定：
 
-1. **下載**本專案——綠色 **Code** 按鈕 → *Download ZIP*，解壓縮（或用 `git clone`）。
-2. 在 Chrome 打開 **`chrome://extensions`**。
-3. 開啟右上角的 **開發人員模式**。
-4. 點 **載入未封裝項目**，選擇 **`extension/`** 資料夾。
-5. **登入 Canvas**——下次造訪時 Due 會自動同步。
-6. 點 Due 圖示 → **開啟 Dashboard**。📌 建議把擴充功能釘選，方便一鍵開啟。
+**[→ 加到 Chrome](https://chromewebstore.google.com/detail/due/mgncgfpppjecmfkahchchidfpckpnfid?hl=zh-TW)**
 
-首次開啟時會有一段 5 頁導覽帶你走一遍。
+接著**登入 Canvas**，下次造訪時 Due 就會自動同步。點 Due 圖示 →「**開啟 Dashboard**」，並 📌 建議把擴充功能釘選，方便一鍵開啟。首次開啟時會有一段 5 頁導覽帶你走一遍。
 
 ---
 
@@ -103,13 +95,6 @@ extension/
   `node extension/dashboard/taskRules.test.js`。
 
 完整架構、資料格式與設計規範，見 [`CLAUDE.md`](CLAUDE.md)。
-
----
-
-## 設計
-
-遵循 Anthropic 品牌設計語言——暖米白底色、Source Serif 4 標題、DM Sans 內文、
-DM Mono 標籤與數字。純 light mode，大量留白。
 
 ---
 
