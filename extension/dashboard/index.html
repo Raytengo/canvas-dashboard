@@ -1435,7 +1435,7 @@
       border-radius: 20px;
       width: 100%;
       max-width: 680px;
-      height: 540px;
+      height: 448px;
       max-height: calc(100vh - 64px);
       position: relative;
       box-shadow: 0 24px 64px rgba(20, 20, 19, 0.18);
@@ -1505,6 +1505,14 @@
       overflow-y: auto;
     }
 
+    /* 頂部一列：圖標 ＋ 頁碼（N / 5） */
+    .welcome-step-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
     .welcome-icon {
       width: 44px;
       height: 44px;
@@ -1514,8 +1522,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
       color: var(--orange);
+      flex-shrink: 0;
     }
 
     .welcome-icon svg {
@@ -1534,11 +1542,10 @@
 
     .welcome-eyebrow {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--mid);
-      margin-bottom: 6px;
     }
 
     .welcome-title {
@@ -3473,14 +3480,16 @@
 
           <!-- Step 1: Welcome -->
           <div class="welcome-step" id="wstep-1">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="3" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="3" />
+                  <line x1="8" y1="12" x2="16" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="16" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">1 / 5</div>
             </div>
-            <div class="welcome-eyebrow">1 / 5</div>
             <div class="welcome-title" id="wstep-1-title">歡迎使用 Due</div>
             <div class="welcome-body split" style="flex:1; padding-top: 8px;">
               <div class="welcome-body-text">
@@ -3536,13 +3545,15 @@
 
           <!-- Step 2: Canvas Login -->
           <div class="welcome-step" id="wstep-2">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">2 / 5</div>
             </div>
-            <div class="welcome-eyebrow">2 / 5</div>
             <div class="welcome-title" id="wstep-2-title">登入 Canvas（必須）</div>
             <div class="welcome-body" style="flex:1">
               <span id="wstep-2-body">Due 透過你的 Canvas 登入狀態同步資料，不需要額外設定或 Token。</span>
@@ -3557,14 +3568,16 @@
 
           <!-- Step 3:釘選 Due 到工具列 -->
           <div class="welcome-step" id="wstep-3">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M12 2C9.2 2 7 4.2 7 7c0 1.9 1 3.5 2.5 4.3V13l-1.3 1.3c-.3.3-.3.7 0 1L9.5 16.5c.3.3.7.3 1 0L12 15l1.5 1.5c.3.3.7.3 1 0l1.3-1.3c.3-.3.3-.7 0-1L14.5 13v-1.7C16 10.5 17 8.9 17 7c0-2.8-2.2-5-5-5z" />
-                <line x1="12" y1="16" x2="12" y2="22" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 2C9.2 2 7 4.2 7 7c0 1.9 1 3.5 2.5 4.3V13l-1.3 1.3c-.3.3-.3.7 0 1L9.5 16.5c.3.3.7.3 1 0L12 15l1.5 1.5c.3.3.7.3 1 0l1.3-1.3c.3-.3.3-.7 0-1L14.5 13v-1.7C16 10.5 17 8.9 17 7c0-2.8-2.2-5-5-5z" />
+                  <line x1="12" y1="16" x2="12" y2="22" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">3 / 5</div>
             </div>
-            <div class="welcome-eyebrow">3 / 5</div>
             <div class="welcome-title" id="wstep-3-title">釘選 Due 到工具列</div>
             <div class="welcome-body split" style="flex:1">
               <div class="welcome-body-text">
@@ -3586,23 +3599,22 @@
 
           <!-- Step 4: 拖曳整理作業清單（隱藏／還原） -->
           <div class="welcome-step" id="wstep-4">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
-                <line x1="1" y1="1" x2="23" y2="23" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">4 / 5</div>
             </div>
-            <div class="welcome-eyebrow">4 / 5</div>
             <div class="welcome-title" id="wstep-4-title">拖曳整理作業清單</div>
             <div class="welcome-body split" style="flex:1">
               <div class="welcome-body-text">
                 <span id="wstep-4-body">Due 會自動隱藏考試、簽到<br>你也可以自己決定要藏誰、留誰</span>
-                <ul class="welcome-inst-list">
-                  <div style="margin-bottom: 15px;"></div>
-                  <li><span class="welcome-inst-num">1</span><span class="welcome-inst-text" id="wstep-4-li1">按住作業的 <strong>⠿</strong> 拖到底部「<strong>已隱藏</strong>」區即可隱藏；被誤判的考試從「已隱藏」<strong>拖回清單</strong>就會還原</span></li>
-                </ul>
+                <p class="welcome-inst-text" id="wstep-4-li1" style="margin-top: 18px;">按住作業的 <strong>⠿</strong> 拖到底部「<strong>已隱藏</strong>」區即可隱藏；被誤判的考試從「已隱藏」<strong>拖回清單</strong>就會還原</p>
               </div>
               <div class="welcome-drag-illus" aria-hidden="true">
                 <svg viewBox="0 0 280 232" xmlns="http://www.w3.org/2000/svg">
@@ -3665,12 +3677,14 @@
 
           <!-- Step 5: Done -->
           <div class="welcome-step" id="wstep-5">
-            <div class="welcome-icon green">
-              <svg viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+            <div class="welcome-step-head">
+              <div class="welcome-icon green">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <div class="welcome-eyebrow">5 / 5</div>
             </div>
-            <div class="welcome-eyebrow">5 / 5</div>
             <div class="welcome-title" id="wstep-5-title">開始用 Due 吧</div>
             <div class="welcome-body" style="flex:1">
               <span id="wstep-5-body">這幾個功能容易錯過，記得試試：</span>
