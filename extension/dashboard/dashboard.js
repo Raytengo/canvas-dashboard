@@ -961,8 +961,44 @@ function fitLegendText(root) {
   });
 }
 
+// ── 同步 skeleton（首次同步的載入佔位，見 spec 2026-07-23-sync-skeleton）──
+// 只在「無資料＋點同步」時渲染；成功後 loadData 原位替換成真卡片、失敗由 loadData 還原空狀態
+function renderSyncSkeleton() {
+  document.getElementById('header-meta').textContent = tr('syncing');
+  fitMetaText();
+
+  // 側欄：4 列課名佔位（寬度略變化，避免整齊到假）
+  document.getElementById('course-nav').innerHTML = [72, 58, 80, 64]
+    .map((w) => `<div class="skel-nav-row" aria-hidden="true"><span class="skel" style="width:${w}%"></span></div>`)
+    .join('');
+
+  // 主區：6 張課程卡佔位（對齊 .course-card-grid 結構：code 短條、name 長條、2–3 列作業條）
+  const card = (nameW, rows) => `
+    <div class="course-card-grid skel-card" aria-hidden="true">
+      <div class="card-top">
+        <span class="skel skel-code"></span>
+        <span class="skel skel-name" style="width:${nameW}%"></span>
+      </div>
+      <div class="card-bottom">
+        ${Array.from({ length: rows }, (_, i) => `<span class="skel skel-row" style="width:${88 - i * 14}%"></span>`).join('')}
+      </div>
+    </div>`;
+  const main = document.getElementById('main-section');
+  main.innerHTML = `<div class="courses-grid">${[[76, 3], [58, 2], [84, 3], [66, 2], [72, 3], [60, 2]]
+    .map(([w, r]) => card(w, r)).join('')}</div>`;
+  main.dataset.skeleton = '1';   // render() 據此在真資料到位時做一次性淡入
+}
+
 // ── 主要渲染 ──
 function render(data) {
+  // skeleton → 真資料的一次性淡入（同步完成、真課程原位出現的瞬間）
+  const _mainEl = document.getElementById('main-section');
+  if (_mainEl.dataset.skeleton) {
+    delete _mainEl.dataset.skeleton;
+    _mainEl.classList.add('arrive');
+    setTimeout(() => _mainEl.classList.remove('arrive'), 400);
+  }
+
   const canvasAssignments = data.assignments || {};
   const customAssignments = data.customAssignments || {};
   const mergedAssignments = DueCustomAssignments.mergeAssignmentMaps(canvasAssignments, customAssignments);
@@ -2808,9 +2844,13 @@ document.getElementById('sync-btn').addEventListener('click', () => {
   const btn = document.getElementById('sync-btn');
   btn.innerHTML = '<span class="sync-dots"><span></span><span></span><span></span></span>';
   btn.disabled = true;
+  // 首次同步（無資料）→ 渲染 skeleton 佔位；已有資料則維持靜默背景刷新（不用佔位蓋真資料）
+  const firstSync = !(_currentData.courses || []).length;
+  if (firstSync) renderSyncSkeleton();
   chrome.runtime.sendMessage({ type: 'SYNC' }, (resp) => {
     if (chrome.runtime.lastError || !resp || !resp.success) {
-      // 同步失敗：顯示錯誤態，2.5 秒後恢復可點狀態
+      // 同步失敗：先還原畫面（清掉 skeleton、回空狀態），再顯示錯誤態 2.5 秒
+      if (firstSync) loadData();
       btn.textContent = tr('syncFailed');
       btn.classList.add('sync-error');
       setTimeout(() => {
@@ -2841,6 +2881,7 @@ function loadData() {
         document.getElementById('page-tabs').style.display = '';
         document.getElementById('main-section').style.display = '';
         document.getElementById('course-detail-container').style.display = 'none';
+        delete document.getElementById('main-section').dataset.skeleton;   // 失敗還原：清掉 skeleton 標記
         document.getElementById('main-section').innerHTML = `
           <div class="state-msg">
             <div class="big">${tr('noData')}</div>
