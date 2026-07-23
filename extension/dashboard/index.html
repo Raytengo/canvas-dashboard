@@ -665,31 +665,34 @@
       justify-content: center;
     }
 
-    @property --ring-pct {
-      syntax: '<percentage>';
-      inherits: false;
-      initial-value: 0%;
-    }
-
-    /* 進度環：綠色弧＝完成比例（--ring-pct 由 JS 內聯 + 接續動畫，終點明顯減速無回彈） */
+    /* 進度環：SVG stroke 畫弧（抗鋸齒、圓帽端點），stroke-dashoffset 過渡，終點明顯減速無回彈 */
     .wk-ring {
       width: 158px;
       height: 158px;
-      border-radius: 50%;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: --ring-pct .5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .wk-ring::before {
-      content: '';
+    .wk-ring-svg {
       position: absolute;
-      width: 118px;
-      height: 118px;
-      border-radius: 50%;
-      background: var(--surface);
+      inset: 0;
+      transform: rotate(-90deg);   /* 弧從 12 點鐘方向開始順時針生長 */
+    }
+
+    .wk-ring-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 20;
+    }
+
+    .wk-ring-bar {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 20;
+      stroke-linecap: round;
+      transition: stroke-dashoffset .8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .wk-ring-center {
@@ -709,6 +712,17 @@
       font-weight: 400;
     }
 
+    /* 分子變動時的微上滑 tick（與弧的過渡同曲線，首次渲染不觸發） */
+    @keyframes wk-frac-tick {
+      from { opacity: 0; transform: translateY(7px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .wk-ring-frac b.tick {
+      display: inline-block;
+      animation: wk-frac-tick .4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
     .wk-ring-cap {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
@@ -717,63 +731,6 @@
       color: var(--muted);
       margin-top: 6px;
     }
-
-    /* 貓耳朵：全部完成時的持續性裝飾（深色描邊 + 背景色內填，簡約線條風格） */
-    .wk-ears {
-      position: absolute;
-      top: -9px;
-      left: 50%;
-      width: 96px;
-      margin-left: -48px;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-    .wk-ear {
-      width: 0;
-      height: 0;
-      border-left: 12px solid transparent;
-      border-right: 12px solid transparent;
-      border-bottom: 18px solid var(--dark);
-      position: relative;
-    }
-    .wk-ear::before {
-      content: '';
-      position: absolute;
-      left: -9px;
-      top: 3px;
-      width: 0;
-      height: 0;
-      border-left: 9px solid transparent;
-      border-right: 9px solid transparent;
-      border-bottom: 13px solid var(--bg);
-    }
-    .wk-ear-l { transform: rotate(-12deg); }
-    .wk-ear-r { transform: rotate(12deg); }
-
-    /* 全部完成慶祝：三色圓弧交錯旋轉（橘→藍→綠依序疊加），1.9s 後一起淡出露出綠環 */
-    @keyframes wk-spin { from { transform: rotate(0deg); } to { transform: rotate(720deg); } }
-    @keyframes wk-spin-fade { to { opacity: 0; } }
-    .wk-spin-arc {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      mask-image: radial-gradient(circle, transparent 58px, #000 60px);
-      -webkit-mask-image: radial-gradient(circle, transparent 58px, #000 60px);
-      pointer-events: none;
-      animation: wk-spin .9s linear both, wk-spin-fade .3s ease-out 1.9s forwards;
-    }
-    .wk-spin-1 { background: conic-gradient(var(--orange) 0deg 90deg, transparent 90deg 360deg); animation-delay: 0s, 1.9s; }
-    .wk-spin-2 { background: conic-gradient(var(--blue)   0deg 90deg, transparent 90deg 360deg); animation-delay: .5s, 1.9s; }
-    .wk-spin-3 { background: conic-gradient(var(--green)  0deg 90deg, transparent 90deg 360deg); animation-delay: 1s,  1.9s; }
-
-    /* 貓耳朵彈出：接在旋轉淡出（2.2s）之後，scale 小彈跳冒出 */
-    @keyframes wk-ears-pop {
-      0%   { opacity: 0; transform: scale(0) translateY(6px); }
-      60%  { opacity: 1; transform: scale(1.15) translateY(-2px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .wk-ears-pop .wk-ear { animation: wk-ears-pop .35s cubic-bezier(.34,1.56,.64,1) 2.2s both; }
 
     /* 分級摘要：可點列，跳到右側對應區塊 */
     .wk-breakdown {
