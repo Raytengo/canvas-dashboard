@@ -1001,7 +1001,7 @@
       flex-shrink: 0;
       width: 18px;
       height: 18px;
-      margin-top: 4px;
+      margin-top: 5px;
       margin-right: 12px;
       padding: 0;
       border: 1px solid var(--border);
@@ -1009,11 +1009,22 @@
       background: transparent;
       cursor: pointer;
       position: relative;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
 
+    /* 擴大點擊/hover 範圍：圓圈外約 7px（仍小於與文字的 12px 間距，不壓到字） */
+    .assignment-check::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+    }
+
+    /* 進入範圍即「亮起」：綠框 + 微綠填充 + 柔光暈（暗示可點範圍比圓圈大一圈） */
     .assignment-check:hover {
       border-color: var(--green);
+      background: color-mix(in srgb, var(--green) 12%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 10%, transparent);
     }
 
     .assignment-check[data-done="true"] {
@@ -1092,7 +1103,7 @@
       align-items: center;
       gap: 7px;
       min-width: 0;
-      font-size: 15px;
+      font-size: 16px;
       color: var(--dark);
     }
 
@@ -1134,13 +1145,13 @@
 
     .due-label {
       font-family: 'DM Mono', monospace;
-      font-size: 13px;
+      font-size: 14px;
       white-space: nowrap;
     }
 
     .submitted-badge {
       font-family: 'DM Mono', monospace;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--green);
       text-transform: uppercase;
       letter-spacing: 0.04em;
