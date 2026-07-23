@@ -729,6 +729,25 @@ function isHidden(a) {
   return isHideable(a) ? !isManuallyShown(a) : isManuallyHidden(a);
 }
 
+// 是否為進度環分母的「近期作業」：7 天內到期，或在 30 天逾期窗內的逾期作業
+// （與 renderWeekSection 的 isNear 邏輯相同，抽出供週卡完成 handler 共用判斷「是否全部完成」）
+function isNearAssignment(a) {
+  const u = DueTaskRules.urgency(a.due_at);
+  return u === 'urgent' || (u === 'overdue' && DueTaskRules.isWithinOverdueWindow(a.due_at));
+}
+
+// 算出「本週概覽」進度環的分子/分母：所有課程作業中，未隱藏的近期作業，及其中已完成數
+function computeNearProgress(courses, assignments) {
+  const items = [];
+  for (const course of courses) {
+    for (const a of (assignments[course.id] || [])) items.push(a);
+  }
+  const nearItems = items.filter((a) => !isHidden(a) && isNearAssignment(a));
+  const nearTotal = nearItems.length;
+  const nearDone = nearItems.filter((a) => isDone(a)).length;
+  return { nearDone, nearTotal };
+}
+
 // 拖曳落點統一寫入：makeHidden=true 收進稽核區、false 拉回清單（依類型寫 manualShown/manualHidden）
 function setItemHiddenByDrag(id, makeHidden) {
   const a = ((_currentData.assignments || {})[currentCourseId] || []).find((x) => String(x.id) === String(id));
@@ -1201,13 +1220,7 @@ function renderWeekSection(courses, assignments) {
     String(a.name).localeCompare(String(b.name)));
 
   // 「本週概覽」進度環：範圍＝逾期窗 ∪ 未來 7 天（近期可行動集），現算完成/總數（含已完成項）
-  const isNear = (a) => {
-    const u = DueTaskRules.urgency(a.due_at);
-    return u === 'urgent' || (u === 'overdue' && DueTaskRules.isWithinOverdueWindow(a.due_at));
-  };
-  const nearItems = items.filter((a) => !isHidden(a) && isNear(a));
-  const nearTotal = nearItems.length;
-  const nearDone = nearItems.filter((a) => isDone(a)).length;
+  const { nearDone, nearTotal } = computeNearProgress(courses, assignments);
   const donePct = nearTotal > 0 ? (nearDone / nearTotal) * 100 : 0;
   const ringStyle = `background: conic-gradient(var(--green) 0% ${donePct}%, var(--border) ${donePct}% 100%);`;
   const ringAria = `${tr('weekDoneLabel')} ${nearDone}/${nearTotal}`;
