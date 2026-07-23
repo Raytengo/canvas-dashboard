@@ -1028,7 +1028,7 @@ function renderNav(courses, assignments) {
       </button>`;
   }).join('');
 
-  // Bind nav clicks → 單擊即時開詳情；同課 300ms 內雙擊 → 進入重命名（詳情頁 inline）
+  // Bind nav clicks → 單擊即時開詳情；同課 300ms 內雙擊 → 就地在側欄行內重命名（左側編輯）
   navEl.querySelectorAll('.nav-course-item').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.targetCourse, 10);
@@ -1037,9 +1037,9 @@ function renderNav(courses, assignments) {
       _navLastRenameId = id;
       _navLastRenameTime = now;
       if (isDouble) {
-        // 第一下已同步渲染詳情（無 cardEl → 走同步 fallback），.detail-name-text 已就緒可直接重命名；
-        // 三連點時 .detail-name-text 已被 input 取代，startCourseRename 內部 early-return，保留進行中的編輯
-        startCourseRename(id);
+        // 雙擊：就地在側欄把課名換成輸入框編輯（編輯在左側，不跑到右側詳情）；
+        // 三連點時該側欄項已被 input 取代，startSidebarRename 找不到目標而 early-return，保留進行中的編輯
+        startSidebarRename(id);
       } else {
         showCourseDetail(id);   // 單擊：維持即時開啟
       }
@@ -1682,22 +1682,7 @@ function startCourseRename(courseId) {
     const displayName = newName || (course ? course.name : '');
     restore(displayName);
 
-    if (!_currentData.courseNames) _currentData.courseNames = {};
-    if (newName && course && newName !== course.name) {
-      _currentData.courseNames[courseId] = newName;
-    } else {
-      delete _currentData.courseNames[courseId];
-    }
-
-    chrome.storage.local.get(['courseNames'], (data) => {
-      const names = data.courseNames || {};
-      if (newName && course && newName !== course.name) {
-        names[courseId] = newName;
-      } else {
-        delete names[courseId];
-      }
-      chrome.storage.local.set({ courseNames: names });
-    });
+    persistCourseName(courseId, newName, course);
 
     const { courses = [], assignments = {} } = _currentData;
     renderNav(courses, assignments);
@@ -1707,6 +1692,71 @@ function startCourseRename(courseId) {
     if (committed) return;
     committed = true;
     restore(currentName);
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') commit();
+    if (e.key === 'Escape') cancel();
+  });
+  input.addEventListener('blur', commit);
+}
+
+// 寫入課程自訂名稱（單一真相：_currentData + chrome.storage.local.courseNames）；
+// newName 已 trim，空或等於原始課名 → 視為移除自訂（startCourseRename / startSidebarRename 共用）
+function persistCourseName(courseId, newName, course) {
+  const useCustom = !!(newName && course && newName !== course.name);
+  if (!_currentData.courseNames) _currentData.courseNames = {};
+  if (useCustom) _currentData.courseNames[courseId] = newName;
+  else delete _currentData.courseNames[courseId];
+
+  chrome.storage.local.get(['courseNames'], (data) => {
+    const names = data.courseNames || {};
+    if (useCustom) names[courseId] = newName;
+    else delete names[courseId];
+    chrome.storage.local.set({ courseNames: names });
+  });
+}
+
+// ── 側欄課程 inline 重命名（雙擊側欄課名觸發：就地在左欄編輯，不跑到右側詳情）──
+function startSidebarRename(courseId) {
+  const item = document.querySelector(`.nav-course-item[data-target-course="${courseId}"]`);
+  if (!item) return;   // 目標不在（如三連點時已被 input 取代）→ 直接略過
+
+  const course = (_currentData.courses || []).find((c) => c.id === courseId);
+  const currentName = (_currentData.courseNames || {})[courseId] || (course ? course.name : '');
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'nav-rename-input';
+  input.value = currentName;
+  item.replaceWith(input);   // 用輸入框取代整個按鈕（避免把 input 巢狀進 button 造成事件/焦點問題）
+  input.focus();
+  input.select();
+
+  const rerenderNav = () => {
+    const { courses = [], assignments = {} } = _currentData;
+    renderNav(courses, assignments);   // 重繪還原按鈕（commit 後即套用新名）
+  };
+
+  let committed = false;
+  const commit = () => {
+    if (committed) return;
+    committed = true;
+    const newName = input.value.trim();
+    const displayName = newName || (course ? course.name : '');
+    persistCourseName(courseId, newName, course);
+    rerenderNav();
+    // 若右側正顯示同一課，順手同步詳情標題（只改文字、不整段重繪，避免打斷成績計算器/捲動）
+    if (currentView === 'course' && currentCourseId === courseId) {
+      const dName = document.querySelector('#course-detail-container .detail-name-text');
+      if (dName) dName.textContent = displayName;
+    }
+  };
+
+  const cancel = () => {
+    if (committed) return;
+    committed = true;
+    rerenderNav();   // 還原原本按鈕（不寫入）
   };
 
   input.addEventListener('keydown', (e) => {
