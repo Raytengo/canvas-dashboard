@@ -1548,6 +1548,44 @@
       color: var(--mid);
     }
 
+    .welcome-lang-switch-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+      margin-bottom: 16px;
+    }
+
+    .welcome-lang-switch {
+      display: flex;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+      background: var(--surface);
+    }
+
+    .welcome-lang-switch button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 5px 11px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+
+    .welcome-lang-switch button:hover {
+      color: var(--dark);
+    }
+
+    .welcome-lang-switch button.active {
+      background: var(--bg);
+      color: var(--orange);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
     .welcome-title {
       font-family: 'Source Serif 4', Georgia, serif;
       font-weight: 400;
@@ -3537,6 +3575,13 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div class="welcome-lang-switch-row">
+              <div class="welcome-lang-switch" id="welcome-lang-switch">
+                <button data-lang="zh-TW" id="welcome-lang-zh-tw">繁中</button>
+                <button data-lang="zh-CN" id="welcome-lang-zh-cn">简中</button>
+                <button data-lang="en" id="welcome-lang-en">EN</button>
               </div>
             </div>
           </div>

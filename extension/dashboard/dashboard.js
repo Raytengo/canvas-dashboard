@@ -425,7 +425,18 @@ function applyWelcomeTranslations() {
   // 「已同步」狀態若已顯示，隨語言切換更新文字
   const syncedEl = document.getElementById('welcome-canvas-synced');
   if (syncedEl && !syncedEl.hidden) syncedEl.textContent = tr('wCanvasSynced');
+  document.querySelectorAll('.welcome-lang-switch button').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.lang === _uiLanguage);
+  });
   _welcomeUpdateButtons(_welcomeStep);
+}
+
+function setUILanguage(lang) {
+  _uiLanguage = lang;
+  chrome.storage.local.set({ uiLanguage: lang });
+  applyUILanguage();
+  updateClaudeUsageMenuLabel();
+  loadData();
 }
 
 function applyUILanguage() {
@@ -506,11 +517,7 @@ function bindLanguageMenuActions() {
   };
 
   const setLang = (lang) => {
-    _uiLanguage = lang;
-    chrome.storage.local.set({ uiLanguage: lang });
-    applyUILanguage();
-    updateClaudeUsageMenuLabel();
-    loadData();
+    setUILanguage(lang);
     if (settingsMenu) settingsMenu.classList.remove('open');
     if (settingsMenuBtn) settingsMenuBtn.classList.remove('open');
   };
@@ -3051,6 +3058,9 @@ function welcomeGoStep(n) {
 
 document.getElementById('welcome-close')?.addEventListener('click', closeWelcomeModal);
 document.getElementById('welcome-done-btn')?.addEventListener('click', closeWelcomeModal);
+document.querySelectorAll('.welcome-lang-switch button').forEach((btn) => {
+  btn.addEventListener('click', () => setUILanguage(btn.dataset.lang));
+});
 
 // ── 登入 Canvas 自動跳回 ──
 // 點連結開 Canvas 分頁後「武裝」監聽：同步成功（lastSync 落地）→ 關閉開出的分頁、聚焦回 dashboard。
